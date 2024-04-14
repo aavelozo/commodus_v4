@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "627070481926",
+    "project_id": "commodus-project",
+    "storage_bucket": "commodus-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627070481926:android:416e0d0077c8f0b07ef587",
+        "android_client_info": {
+          "package_name": "com.commodus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-7mZtpzGwJUz1WKOO0LhUPtJNyXtZz2E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

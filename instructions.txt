@@ -1,0 +1,26 @@
+android\app\build.gradle
+add this line to end of of file: 
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle");
+
+locais onde devem estar as fontes:
+app/src/main/assets/fonts
+src/views/assets/fonts
+
+na raiz do projeto criar arquio react-native.config.js, com essas informacoes:
+module.exports = {
+    project: {
+      ios: {},
+      android: {},
+    },
+    assets: ['./src/assets/fonts'],
+};
+
+to run dev app
+  npm start
+  npm run android
+
+to run production app
+  uninstall previous app development versions
+  npx react-native build-android --mode=release
+  npx react-native build-ios --mode=release (use xcode in mac computer if ios release)
+  npm run android -- --mode="release"
