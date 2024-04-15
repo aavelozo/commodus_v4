@@ -12,6 +12,7 @@ import Utils from '../../controllers/Utils'
 import moment from 'moment'
 import 'moment/locale/pt-br'
 import { useNavigation } from '@react-navigation/native'
+import EditExpenseController from '../../controllers/EditExpenseController'
 
 function ButtonCardExpense(props): JSX.Element {
     const item = props.data
@@ -48,11 +49,9 @@ function ButtonCardExpense(props): JSX.Element {
     return (
         <TouchableWithoutFeedback 
             onPress={() => {
+                EditExpenseController.currentExpense = item;
                 navigation.navigate('StackIncludeExpense', { 
                     screen: routeName, 
-                    params: {
-                        expenseId: item.id 
-                    }
                 });
             }}
         >

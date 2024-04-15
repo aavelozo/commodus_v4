@@ -55,7 +55,7 @@ class DefaultStyles {
         fontSize: RFValue(14),
         fontFamily: 'verdana',
     }
-    static textInputWithDropdown = {
+    /*static textInputWithDropdown = {
         width: '100%',
         //height: DefaultStyles.dimensions.height.formElement,
         //marginBottom: RFValue(7),        
@@ -65,8 +65,9 @@ class DefaultStyles {
         backgroundColor: DefaultStyles.colors.fundoInput,                    
         fontSize: RFValue(14),
         fontFamily: 'verdana',
-    }
-    static selectDropdown = {
+    }*/
+
+    /*static selectDropdown = {
         paddingHorizontal: 0,
         width: DefaultStyles.dimensions.width.formElement,
         height: DefaultStyles.dimensions.height.formElement + 10,
@@ -79,9 +80,27 @@ class DefaultStyles {
         //fontFamily: 'verdana',
         //borderWidth: 1,
         //borderColor: DefaultStyles.colors.tabBar 
+    }*/
+
+    static dropdownMenuStyle = {
+        backgroundColor: DefaultStyles.colors.fundoInput, 
+        borderWidth: 1, 
+        borderColor: DefaultStyles.colors.tabBar 
     }
 
-    static selectDropdownWithTextInput = {
+    static dropdownTextView = {
+        backgroundColor: 'transparent', 
+        width:'100%',
+        padding:4
+    }
+
+    static dropdownText = {
+        backgroundColor: 'transparent', 
+        fontSize: DefaultStyles.dimensions.defaultInputFontSize, 
+        fontFamily: 'verdana'
+    }
+
+    /*static selectDropdownWithTextInput = {
         width: DefaultStyles.dimensions.width.formElement,
         marginBottom: RFValue(7),        
         paddingLeft: RFValue(15),
@@ -91,10 +110,8 @@ class DefaultStyles {
         fontSize: RFValue(14),
         fontFamily: 'verdana',
         borderWidth: 0,        
-        borderColor: 'transparent'/*,
-        borderColor: 'none',
-        backgroundColor: 'none' */
-    }
+        borderColor: 'transparent'
+    }*/
 
     static viewSwitch =  {
         width: '100%', 

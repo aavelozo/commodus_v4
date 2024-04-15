@@ -1,7 +1,7 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import SpeedometerModal from '../expenses/create/SpeedometerModal';
-import FuelExpense from '../expenses/create/FuelExpense';
+import {FuelExpense} from '../expenses/create/FuelExpense';
 import OilExpense from '../expenses/create/OilExpense';
 import DocumentationExpense from '../expenses/create/DocumentationExpense';
 import OthersExpense from '../expenses/create/OthersExpense';

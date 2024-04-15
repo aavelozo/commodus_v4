@@ -16,6 +16,7 @@ import auth from '@react-native-firebase/auth';
 import AuthController from '../../../controllers/AuthController'
 import Utils from '../../../controllers/Utils';
 import _ from "lodash";
+import EditExpenseController from '../../../controllers/EditExpenseController'
 const { height, width } = Dimensions.get('window');
 
 function ViewExpense(props): JSX.Element {
@@ -178,7 +179,10 @@ function ViewExpense(props): JSX.Element {
                             <Text style={style.info}>Não há despesa cadastrada. </Text>
                             <View style={[style.info, { flexDirection: 'row' }]}>
                                 <Text style={style.info}>Clique</Text>
-                                <TouchableWithoutFeedback onPress={() => navigation.navigate('StackIncludeExpense')}>
+                                <TouchableWithoutFeedback onPress={() => {
+                                    EditExpenseController.currentExpense = null;
+                                    navigation.navigate('StackIncludeExpense');
+                                }}>
                                     <View>
                                         <Text style={[style.info, { fontWeight: 'bold', color: 'blue' }]}> aqui </Text>
                                     </View>
@@ -192,7 +196,10 @@ function ViewExpense(props): JSX.Element {
 
                     {/* BOTÃO ACRESCENTAR DESPESA -> Abre modal velocimetro */}
                     <View style={style.button} >
-                        <TouchableOpacity onPress={() => navigation.navigate('StackIncludeExpense')}>
+                        <TouchableOpacity onPress={() => {
+                            EditExpenseController.currentExpense = null;
+                            navigation.navigate('StackIncludeExpense');
+                        }}>
                             <Icon name='plus' size={RFValue(35)} color={DefaultStyles.colors.botao} />
                         </TouchableOpacity>
                     </View>

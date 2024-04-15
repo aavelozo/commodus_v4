@@ -13,7 +13,7 @@ import TitleView from '../../components/TitleView';
 import ContentContainer from '../../components/ContentContainer';
 import FormLayout from '../../components/FormLayout';
 import Radio from '../../components/Radio';
-import { TextInput } from 'react-native-paper';
+import { Icon, TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../DefaultProps';
 import SelectDropdown from 'react-native-select-dropdown';
 import { Switch } from 'react-native';
@@ -27,7 +27,15 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Brands from '../../../database/models/Brands';
 import Models from '../../../database/models/Models';
+import { setCurrentViewVehicle } from './ViewVehicle';
 const { width, height } = Dimensions.get('window');
+
+
+let currentVehicle;
+function setCurrentVehicle(newCurrentVehicle) {
+    currentVehicle = newCurrentVehicle;
+}
+
 
 /*********************************************************************************************************
  *                                      TELA EDITVEICULO
@@ -35,21 +43,19 @@ const { width, height } = Dimensions.get('window');
 function EditVehicle(props: React.PropsWithChildren): JSX.Element {
     const [loading,setLoading] = useState(false);
     const [loaded,setLoaded] = useState(false);
-    const [idVehicle,setIdVehicle] = useState<string | null>(null);
-    const [vehicle,setVehicle] = useState(null);
-    const [brands, setBrands] = useState(Brands.data || []);
+    const [vehicle,setVehicle] = useState(currentVehicle);
+    const [brands, setBrands] = useState([]);
     const [showAlert, setShowAlert] = useState(false);
     const [selectedBrand, setSelectedBrand] = useState(null);
-    const [models, setModels] = useState(Models.data || []);
     const [selectedModel, setSelectedModel] = useState(null);
     const [selectedYear, setSelectedYear] = useState(null);
     const [selectedFuel, setSelectedFuel] = useState(null);
     const [isColorEnabled, setIsColorEnabled] = useState(false);
-    const [color, setColor] = useState(null);
-    const [km, setKm] = useState(null);
+    const [color, setColor] = useState('');
+    const [km, setKm] = useState('');
     const [idEngineType, setIdEngineType] = useState(0);
-    const [plate, setPlate] = useState(null);
-    const [photo, setPhoto] = useState(null);
+    const [plate, setPlate] = useState('');
+    const [photo, setPhoto] = useState('');
     const fuels = ['Álcool', 'Gasolina', 'Diesel'];
     const years = (function () {
         let anos = [];
@@ -63,40 +69,43 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
 
     const navigation = useNavigation();
 
+
     useEffect(()=>{
         if (!loading && !loaded) {
             setLoading(true);
+
             (async () => {
-                try {
+                try {  
+                    let newBrands = await Brands.getSingleData();
+                    console.log('newBrands',newBrands);
+                    setBrands(newBrands);
 
-                    //load vehicle
-                    let newIdvehicle : string | null = ((props?.route || {}).params || {}).idVehicle || props?.idVehicle || null; 
-                    let newVehicle = null;
-                    setIdVehicle(newIdvehicle);
-                    if (newIdvehicle) {
-                        newVehicle = await firestore().collection('Vehicles').doc(newIdvehicle).get();
-                        console.log('newVehicle',newVehicle);
-                        setVehicle({
-                            id :newVehicle.id,
-                            ...newVehicle.data()
-                        });
-                    }
-
-                    //load brands and models
-                    let newModels = await handleSelectedBrand(newVehicle?.data().idBrand);
-
-                    if (newVehicle) {                        
-                        if (newVehicle.data().idModel && newModels.length > 0) {
-                            setSelectedModel(newModels.find(el=>el.id == newVehicle.data().idModel)||null)
+                    //use currentVehicle otherise vehicle, because setState is async
+                    if (currentVehicle) {    
+                        console.log('current vehicle',currentVehicle.data());                    
+                        if (currentVehicle.data().model && newBrands.length > 0) {
+                            console.log('selecting model');
+                            let newSelectedBrand = null;
+                            let newSelectedModel = null;
+                            for(let i = 0; i < newBrands.length; i++) {
+                                newSelectedModel = newBrands[i].models.find(el=>el.id == currentVehicle.data().model.id);
+                                if (newSelectedModel) {
+                                    newSelectedBrand = newBrands[i];
+                                    break;
+                                }
+                            }
+                            console.log('selected model and brand',newSelectedBrand,newSelectedModel);
+                            setSelectedBrand(newSelectedBrand);
+                            setSelectedModel(newSelectedModel)
                         }
-                        setSelectedYear(newVehicle.data().year);
-                        setSelectedFuel(newVehicle.data().preferedFuel);
-                        setColor(newVehicle.data().color);
-                        setIsColorEnabled(newVehicle.data().color ? true : false);
-                        setKm(newVehicle.data().km);
-                        setPlate(newVehicle.data().plate);
-                        setPhoto(newVehicle.data().photo);
-                        setIdEngineType(newVehicle.data().idEngineType || 0);
+                        setSelectedYear(currentVehicle.data().year ? currentVehicle.data().year.toString() : '');
+                        setSelectedFuel(currentVehicle.data().preferedFuel);
+                        setColor(currentVehicle.data().color||'');
+                        setIsColorEnabled(currentVehicle.data().color ? true : false);
+                        setKm(currentVehicle.data().km ? currentVehicle.data().km.toString() : '');
+                        setPlate(currentVehicle.data().plate||'');
+                        setPhoto(currentVehicle.data().photo||'');
+                        setIdEngineType(currentVehicle.data().idEngineType || 0);
                     }
                 } catch (e) {
                     console.log(e);                    
@@ -108,52 +117,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
         }
     },[navigation]);
 
-    async function handleSelectedBrand(newSelectedIdBrand : string | null) {
-        try {
-            let newBrands = Brands.data || [];
-            if (!newBrands?.length) {                        
-                const newBrandsCollection = await firestore().collection('Brands').get();
-                if (newBrandsCollection && newBrandsCollection.size > 0) {
-
-                    newBrandsCollection.forEach(documentSnapshot => {
-                        newBrands.push({
-                            id: documentSnapshot.id,
-                            name: documentSnapshot.data().name
-                        });
-                    });    
-                    console.log('newBrands',newBrands);                                        
-                }
-                Brands.data = newBrands;
-                setBrands(newBrands);                        
-            } 
-
-
-            let newModels = [];
-            const newModelsCollection = await firestore().collection('Models').get();
-            if (newModelsCollection && newModelsCollection.size > 0) {
-                newModelsCollection.forEach(documentSnapshot => {                                
-                    newModels.push({
-                        id: documentSnapshot.id,
-                        ...documentSnapshot.data()
-                    });
-                });    
-            }
-            
-            if (newSelectedIdBrand) {
-                console.log('find',newSelectedIdBrand,newBrands.find(el=>el.id == newSelectedIdBrand));
-                setSelectedBrand(newBrands.find(el=>el.id == newSelectedIdBrand));
-                newModels = newModels.filter(el=>el.idBrand == newSelectedIdBrand)
-            } else {
-                setSelectedBrand(null);            
-            }
-            console.log('seted',newModels);
-            setModels(newModels);
-            return newModels;
-        } catch (e) {
-            return [];
-        }
-    }
-
+ 
 
 
     const saveVehicle = async () => {
@@ -161,13 +125,12 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
             if (!selectedModel || !selectedBrand || !selectedYear || !km || !plate) {
                 setShowAlert(true)
             } else {
-                let newVehicle = null;
-                if (idVehicle) {
-                    newVehicle = await firestore().collection('Vehicles').doc(idVehicle);
-                    await newVehicle.update({
-                        //idUser: auth().currentUser.id,
-                        idBrand:selectedBrand?.id,
-                        idModel: selectedModel?.id,
+                let dbBrands = await Brands.getDBData();
+                let dbBrand = dbBrands?.docs.find(el=>el.id == selectedBrand.id);
+                let dbModel = await dbBrand?.models.docs.find(el=>el.id == selectedModel.id);
+                if (vehicle) {
+                    await vehicle.ref.update({
+                        model: dbModel?.ref,
                         idEngineType: idEngineType,
                         year: selectedYear,
                         km: Utils.toNumber(km),
@@ -176,15 +139,15 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         preferedFuel: selectedFuel,
                         photo: photo
                     });
-                    
+
+                    //reload to update current view
+                    let newVehicle = await AuthController.getLoggedUser().ref.collection('vehicles').doc(vehicle.id).get();
+                    console.log('newVehicleData',newVehicle);
+                    setCurrentViewVehicle(newVehicle);                    
                 } else {
-                    console.log(AuthController.getLoggedUser().id)
-                    //create
-                    newVehicle = await firestore().collection('Vehicles').add({
-                        authUserId: auth().currentUser.uid,
-                        idUser: AuthController.getLoggedUser().id,
-                        idBrand:selectedBrand?.id,
-                        idModel: selectedModel?.id,
+                    //create                    
+                    let newVehicle = await AuthController.getLoggedUser().ref.collection('vehicles').add({
+                        model: dbModel.ref,
                         idEngineType: idEngineType,
                         year: selectedYear,                        
                         km: Utils.toNumber(km),
@@ -193,11 +156,13 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         preferedFuel: selectedFuel,
                         photo: photo
                     });
-
-                    
+                    console.log('saved vehicle',newVehicle);
+                    newVehicle = await AuthController.getLoggedUser().ref.collection('vehicles').doc(newVehicle.id).get();
+                    console.log('newVehicleData',newVehicle);
+                    setCurrentViewVehicle(newVehicle);                   
                 }
-                console.log('newVehicle',newVehicle.id,newVehicle);
-                navigation.navigate('ViewVehicle', { idVehicle: idVehicle || newVehicle.id });
+                setCurrentVehicle(null);
+                navigation.navigate('ViewVehicle');
             }
         } catch (e) {
             console.log(e);
@@ -275,7 +240,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
             }
             <Header withButtons={true} onPressConclude={saveVehicle} onPressCancel={() => navigation.goBack()} />
             <View style={style.title}>
-                <TitleView title={idVehicle ? 'Edição de veículo' : 'Cadastro de veículo'} />
+                <TitleView title={vehicle ? 'Edição de veículo' : 'Cadastro de veículo'} />
                 <ContentContainer  >
                     <FormLayout>
                         <Radio
@@ -290,68 +255,129 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         
                         {/* dropdown: usado para selecionar marca e atualizar o txtinput */}
                         <SelectDropdown
-                            {...DefaultProps.selectDropdown}
+                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
+                            search={true}
+                            showsVerticalScrollIndicator={true}                            
                             data={brands}
-                            label="Marca"
-                            rowTextForSelection={(item, index) => {
-                                return item.name;
+                            defaultValue={selectedBrand}
+                            renderButton={(selectedItem, isOpened) => {
+                                return (
+                                    <View>
+                                        <TextInput
+                                            {...DefaultProps.textInput}
+                                            style={DefaultStyles.textInput}
+                                            label='Marca'
+                                            value={selectedItem?.id}
+                                            pointerEvents="none"
+                                            readOnly
+                                        />
+                                    </View>
+                                );
                             }}
-                            buttonTextAfterSelection={(selectedItem, index) => {
-                                return selectedItem.name;
+                            renderItem={(item, index, isSelected) => {
+                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                        <Text style={DefaultStyles.dropdownText}>{item.id}</Text>
+                                </View>);
                             }}
-                            defaultButtonText={selectedBrand ? selectedBrand?.name || ' ' : ' '}
-                            onSelect={async (selectedItem, index) => {
-                                await handleSelectedBrand(selectedItem.id);
-                                setSelectedModel(null);
-                            }}
-                        />
+                            onSelect={(selectedItem, index) => {
+                                setSelectedBrand(selectedItem);
+                            }}                                                        
+                        />                       
 
                         {/*SELECT MODEL*/}                        
                         {/* dropdown: usado para selecionar o modelo e atualizar o txtinput */}
                         <SelectDropdown
-                            {...DefaultProps.selectDropdown}
-                            data={models}
-                            label="Modelo"
-                            onSelect={(selectedItem, index) => {
-                                setSelectedModel(selectedItem);
-                            }}
-                            buttonTextAfterSelection={(selectedItem, index) => {
+                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
+                            search={true}
+                            showsVerticalScrollIndicator={true} 
+                            data={selectedBrand?.models}
+                            defaultValue={selectedModel}
+                            renderButton={(selectedItem, isOpened) => {
                                 return (
-                                    selectedModel
-                                        ? (selectedItem ? selectedItem.name : null)
-                                        : null
+                                    <View>
+                                        <TextInput
+                                            {...DefaultProps.textInput}
+                                            style={DefaultStyles.textInput}
+                                            label='Modelo'
+                                            value={selectedItem?.id}
+                                            pointerEvents="none"
+                                            readOnly
+                                        />
+                                    </View>
                                 );
                             }}
-                            rowTextForSelection={(item, index) => {
-                                return item.name;
+                            renderItem={(item, index, isSelected) => {
+                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                        <Text style={DefaultStyles.dropdownText}>{item.id}</Text>
+                                </View>);
                             }}
-                            defaultButtonText={selectedModel ? selectedModel?.name || ' ' : ' '}
+                            onSelect={(selectedItem, index) => {
+                                setSelectedModel(selectedItem);
+                            }}                            
                         />
 
                         {/*SELECT YEAR*/}                        
                         {/* dropdown: usado para selecionar o modelo e atualizar o txtinput */}
                         <SelectDropdown
-                            {...DefaultProps.selectDropdown}
+                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
+                            search={true}
+                            showsVerticalScrollIndicator={true} 
                             data={years}
-                            label="Ano modelo"
+                            defaultValue={selectedYear}
+                            renderButton={(selectedItem, isOpened) => {
+                                return (
+                                    <View>
+                                        <TextInput
+                                            {...DefaultProps.textInput}
+                                            style={DefaultStyles.textInput}
+                                            label='Ano Modelo'
+                                            value={selectedItem ? selectedItem.toString() : ''}
+                                            pointerEvents="none"
+                                            readOnly
+                                        />
+                                    </View>
+                                );
+                            }}
+                            renderItem={(item, index, isSelected) => {
+                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                        <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                                </View>);
+                            }}
                             onSelect={(selectedItem, index) => {
                                 setSelectedYear(selectedItem);
                             }}
-
-                            defaultButtonText={selectedYear ? selectedYear.toString() || ' ' : ' '}
                         />
 
                         {/*SELECT FUEL*/}                        
                         {/* dropdown: usado para selecionar o modelo e atualizar o txtinput */}
                         <SelectDropdown
-                            {...DefaultProps.selectDropdown}
+                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
+                            search={true}
+                            showsVerticalScrollIndicator={true} 
                             data={fuels}
-                            label="Combustível preferido"
+                            defaultValue={selectedFuel}
+                            renderButton={(selectedItem, isOpened) => {
+                                return (
+                                    <View>
+                                        <TextInput
+                                            {...DefaultProps.textInput}
+                                            style={DefaultStyles.textInput}
+                                            label='Combustível preferido'
+                                            value={selectedItem}
+                                            pointerEvents="none"
+                                            readOnly
+                                        />
+                                    </View>
+                                );
+                            }}
+                            renderItem={(item, index, isSelected) => {
+                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                        <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                                </View>);
+                            }}
                             onSelect={(selectedItem, index) => {
                                 setSelectedFuel(selectedItem);
                             }}
-
-                            defaultButtonText={selectedFuel ? selectedFuel.toString() || ' ' : ' '}
                         />
 
                         {/*TEXTINPUT KM*/}
@@ -368,7 +394,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                 setKm(km);
                             }}
                             maxLength={7}
-                            defaultValue={(km || '').toString()}
+                            value={(km || '').toString()}
                         />
 
                         {/*TEXTINPUT PLACA*/}
@@ -376,8 +402,8 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                             {...DefaultProps.textInput}
                             style={[DefaultStyles.textInput, { marginTop: RFValue(7) }]}
                             label='Placa do veículo'
+                            value={plate}
                             onChangeText={plate => setPlate(plate)}
-                            defaultValue={plate}
                             maxLength={7}
                         />
 
@@ -402,9 +428,9 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
                                 label='Cor'
-                                value={color ? color : null}
+                                value={color ? color : ''}
                                 onChangeText={color => setColor(color)}
-                                defaultValue={color}
+                                //defaultValue={color}
                                 maxLength={15}
                             /> 
                             : null
@@ -418,6 +444,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         >
                             <Camera width={RFValue(50)} height={RFValue(50)} />
                         </TouchableOpacity >
+                        
                     </FormLayout>
                 </ContentContainer>
             </View>
@@ -475,9 +502,52 @@ const style = StyleSheet.create({
         color: DefaultStyles.colors.tabBar,
         fontSize: 20,
         borderColor: 'transparent',
-    }
+    },
+    dropdownButtonStyle: {
+        width: 200,
+        height: 50,
+        backgroundColor: '#E9ECEF',
+        borderRadius: 12,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+      },
+      dropdownButtonTxtStyle: {
+        flex: 1,
+        fontSize: 18,
+        fontWeight: '500',
+        color: '#151E26',
+      },
+      dropdownButtonArrowStyle: {
+        fontSize: 28,
+      },
+      dropdownButtonIconStyle: {
+        fontSize: 28,
+        marginRight: 8,
+      },
+     
+      dropdownItemStyle: {
+        width: '100%',
+        flexDirection: 'row',
+        paddingHorizontal: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 8,
+      },
+      dropdownItemTxtStyle: {
+        flex: 1,
+        fontSize: 18,
+        fontWeight: '500',
+        color: '#151E26',
+      },
+      dropdownItemIconStyle: {
+        fontSize: 28,
+        marginRight: 8,
+      },
 });
 
-export default EditVehicle;
+
+export {EditVehicle, setCurrentVehicle};
 
 

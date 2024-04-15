@@ -1,11 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { View, StyleSheet, Alert, Dimensions, ScrollView } from 'react-native'
 import { RFValue } from "react-native-responsive-fontsize";
 import TitleView from '../../../components/TitleView';
 import Header from '../../../components/Header';
 import ContentContainer from '../../../components/ContentContainer';
 import { DefaultStyles } from '../../../DefaultStyles';
-import { TextInput } from 'react-native-paper';
+import { Text, TextInput } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import { DefaultProps } from '../../../DefaultProps';
 import SelectVehicle from '../../../components/vehicles/SelectVehicle';
@@ -15,11 +15,14 @@ import InputKM from '../../../components/vehicles/InputKM';
 import Establishment from '../../../components/expenses/Establishment';
 import Observations from '../../../components/expenses/Observations';
 import Utils from '../../../../controllers/Utils';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import AuthController from '../../../../controllers/AuthController';
+import EditExpenseController from '../../../../controllers/EditExpenseController';
 const { width, height } = Dimensions.get('window')
+
+
 
 
 /******************************************************
@@ -27,17 +30,16 @@ const { width, height } = Dimensions.get('window')
 ******************************************************/
 function FuelExpense(props): JSX.Element {
     //default properties
-    const currentExpenseId = (props?.route?.params || props?.params || {})?.expenseId || null;    
     const [loading,setLoading] = useState(false);
     const [loaded,setLoaded] = useState(false);          
-    const [currentExpense,setCurrentExpense] = useState(null);    
+    const [currentExpense,setCurrentExpense] = useState(EditExpenseController.currentExpense);    
     const [idVehicle,setIdVehicle] = useState(null);
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [date, setDate] = useState(null);
-    const [km, setKM] = useState(null);
-    const [establishment, setEstablishment] = useState(null);
+    const [km, setKM] = useState('');
+    const [establishment, setEstablishment] = useState('');
     const [isEnabledEstablishment, setIsEnabledEstablishment] = useState(false);
-    const [observations, setObservations] = useState(null);
+    const [observations, setObservations] = useState('');
     const [isEnabledObservations, setIsEnabledObservations] = useState(false);
     const [totalValue, setTotalValue] = useState(0);
 
@@ -48,71 +50,53 @@ function FuelExpense(props): JSX.Element {
     const [liters, setLiters] = useState(0);
     //const navagation = useNavigation();
 
-    useEffect(() => {
-        if (currentExpenseId) {
-            if (!loading && !loaded && !currentExpense) {
-                setLoading(true);
+    useFocusEffect(useCallback(() => {
+        if (!loading && !loaded && !currentExpense) {
+            setLoading(true);
 
-                //load expense data
-                (async () => {
-                    try {
-                        console.log('loading expense...');
-                        let newExpense = await firestore().collection('Expenses').doc(currentExpenseId).get();
-                        if (newExpense && newExpense.id) {
-                            newExpense = {
-                                id:newExpense.id,
-                                ...newExpense.data()
-                            }
-                            if (newExpense?.date) {
-                                newExpense.date = new Date(newExpense.date.seconds * 1000 + newExpense.date.nanoseconds / 1000000);
-                            }
-                        } else {
-                            newExpense = null;
-                        }                        
-                                               
-
+            //load expense data
+            (async () => {
+                try {
+                    console.log('loading expense...');
+                                        
+                    if (EditExpenseController.currentExpense) {              
                         //default properties
-                        setCurrentExpense(newExpense);
-                        setIdVehicle(newExpense.idVehicle||null);
-                        setDate(newExpense.date||null);
-                        setKM(newExpense.actualkm||null);
-                        setEstablishment(newExpense.establishment||null);
-                        setIsEnabledEstablishment(newExpense.establishment?true:false);
-                        setObservations(newExpense.observations||null);
-                        setIsEnabledObservations(newExpense.observations?true:false);
-                        setTotalValue(newExpense.totalValue||null);
+                        setIdVehicle(EditExpenseController.currentExpense.parent.parent.id||null);
+                        setDate(EditExpenseController.currentExpense.data().date||null);
+                        setKM(EditExpenseController.currentExpense.data().actualkm||null);
+                        setEstablishment(EditExpenseController.currentExpense.data().establishment||null);
+                        setIsEnabledEstablishment(EditExpenseController.currentExpense.data().establishment?true:false);
+                        setObservations(EditExpenseController.currentExpense.data().observations||null);
+                        setIsEnabledObservations(EditExpenseController.currentExpense.data().observations?true:false);
+                        setTotalValue(EditExpenseController.currentExpense.data().totalValue||null);
 
                         //specific properties
-                        setUnValue(newExpense.othersdatas.unValue||null);
-                        setLiters(newExpense.othersdatas.liters||null);
-                        setSelectedFuel(newExpense.othersdatas.fuel||null);
-
-                        console.log('loading expense... ok');
-                    } catch (e) {
-                        console.log(e);                    
-                    } finally {
-                        setLoaded(true);
-                        setLoading(false);                
+                        setUnValue(EditExpenseController.currentExpense.data().othersdatas.unValue||null);
+                        setLiters(EditExpenseController.currentExpense.data().othersdatas.liters||null);
+                        setSelectedFuel(EditExpenseController.currentExpense.data().othersdatas.fuel||null);
+                    } else {
+                        setDate(new Date());
                     }
-                })();
 
-            }
-        } else {
-            setDate(new Date());
-        }        
-    }, [currentExpenseId]);
+                    console.log('loading expense... ok');
+                } catch (e) {
+                    console.log(e);                    
+                } finally {
+                    setLoaded(true);
+                    setLoading(false);                
+                }
+            })();
+        }          
+    }, []));
 
  
     async function saveExpense() {
         try {
-            if (totalValue && date && selectedVehicle && selectedFuel) {
-
-                let newExpense = null;
-                if (currentExpenseId) {
-                    //update
-                    newExpense = await firestore().collection('Expenses').doc(currentExpenseId);
-                    await newExpense.update({
-                        idVehicle: selectedVehicle?.id || idVehicle,
+            if (totalValue && date && selectedVehicle && selectedFuel) {                
+                let vehicle = await AuthController.getLoggedUser().ref.collection('vehicles').doc(idVehicle).get();
+                if (currentExpense) {
+                    //update                    
+                    await currentExpense.update({
                         type: 'FUEL',
                         date: date,
                         actualkm: km,
@@ -127,10 +111,7 @@ function FuelExpense(props): JSX.Element {
                     });                    
                 } else {
                     //create
-                    newExpense = await firestore().collection('Expenses').add({
-                        authUserId: auth().currentUser.uid,
-                        idUser: AuthController.getLoggedUser().id,
-                        idVehicle: selectedVehicle?.id || idVehicle,
+                    let newExpense = await vehicle.ref.collection('expenses').add({
                         type: 'FUEL',
                         date: date,
                         actualkm: km,
@@ -144,8 +125,6 @@ function FuelExpense(props): JSX.Element {
                         }
                     });                    
                 }
-                newExpense = await newExpense.get();
-                console.log(newExpense);                
                 Alert.alert("Salvo", "Dados Salvos com Sucesso", [{ "text": "OK", onPress: () => goBack(), style: "ok" }]);
             } else {
                 Alert.alert("Faltam dados essenciais");
@@ -181,23 +160,33 @@ function FuelExpense(props): JSX.Element {
                         {/* FUEL */}                        
                         {/* dropdown: usado para selecionar o ano e atualizar o txtinput */}
                         <SelectDropdown
-                            {...DefaultProps.selectDropdown}
+                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
+                            search={true}
+                            showsVerticalScrollIndicator={true}                            
                             data={listaCombustiveis}
-                            label="Combustível"
+                            defaultValue={selectedFuel}
+                            renderButton={(selectedItem, isOpened) => {
+                                return (
+                                    <View>
+                                        <TextInput
+                                            {...DefaultProps.textInput}
+                                            style={DefaultStyles.textInput}
+                                            label='Combustível'
+                                            value={selectedItem}
+                                            pointerEvents="none"
+                                            readOnly
+                                        />
+                                    </View>
+                                );
+                            }}
+                            renderItem={(item, index, isSelected) => {
+                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                        <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                                </View>);
+                            }}
                             onSelect={(selectedItem, index) => {
                                 setSelectedFuel(selectedItem);
                             }}
-                            buttonTextAfterSelection={(selectedItem, index) => {
-                                return (
-                                    selectedFuel
-                                        ? (selectedItem ? selectedItem.toString() : null)
-                                        : null
-                                );
-                            }}
-                            rowTextForSelection={(item, index) => {
-                                return item.toString();
-                            }}
-                            defaultButtonText={selectedFuel ? selectedFuel.toString() : ' '}
                         />
 
                         {/* PREÇO/L, LITRO, VALOR */}
@@ -321,4 +310,4 @@ const style = StyleSheet.create({
 
 });
 
-export default FuelExpense;
+export {FuelExpense};

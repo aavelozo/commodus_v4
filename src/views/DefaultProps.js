@@ -10,8 +10,8 @@ class DefaultProps {
         //dense: true
     }
 
-    static selectDropdown = {
-        search: true,
+    /*static selectDropdown = {
+        search: true,/*
         buttonStyle: DefaultStyles.selectDropdown,
         buttonTextStyle:{
             color: DefaultStyles.colors.tabBar, 
@@ -19,8 +19,7 @@ class DefaultProps {
             fontSize: DefaultStyles.dimensions.defaultInputFontSize, 
             fontFamily: 'verdana',
             backgroundColor:'transparent'
-        },
-        dropdownStyle:{
+        },dropdownStyle:{
             backgroundColor: DefaultStyles.colors.fundoInput, 
             borderWidth: 1, 
             borderColor: DefaultStyles.colors.tabBar 
@@ -33,9 +32,9 @@ class DefaultProps {
             fontSize: DefaultStyles.dimensions.defaultInputFontSize, 
             fontFamily: 'verdana'  
         }
-    }
+    }*/
 
-    static selectDropdownWithTextInput = {
+    /*static selectDropdownWithTextInput = {
         search: true,
         buttonStyle: DefaultStyles.selectDropdownWithTextInput,
         buttonTextStyle:{
@@ -58,7 +57,7 @@ class DefaultProps {
             fontSize: DefaultStyles.dimensions.defaultInputFontSize, 
             fontFamily: 'verdana'  
         }
-    }
+    }*/
 }
 
 export {DefaultProps}

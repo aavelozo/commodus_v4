@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/Fontisto'
 import { RFValue } from "react-native-responsive-fontsize";
 import { DefaultStyles } from '../DefaultStyles'
 import Models from '../../database/models/Models'
+import { setCurrentViewVehicle } from '../screens/vehicles/ViewVehicle'
 const { width, height } = Dimensions.get('window')
 
 function CardRegisteredVehicle(props : React.PropsWithChildren) : JSX.Element {
@@ -13,29 +14,32 @@ function CardRegisteredVehicle(props : React.PropsWithChildren) : JSX.Element {
     const vehicle = ((props.route || {}).params || {}).vehicle || props.vehicle || {};
     return (
         <TouchableOpacity
-            onPress={() => navigator.navigate(props.screen, { idVehicle: vehicle.id, vehicle: vehicle })}
+            onPress={() => {
+                setCurrentViewVehicle(vehicle);
+                navigator.navigate(props.screen);
+            }}
             //Ao clicar no card, abre a tela com o veículo clicado 
         >
             <View style={style.buttonVehicle}>
                 <View style={style.viewPicture}>
                     {
-                        vehicle.photo ?
+                        vehicle.data().photo ?
                         // Caso tenha foto, renderiza a foto. Caso contrario, mostra ícone do carro
                             <Image
                                 style={{ width: '100%', height: '100%', borderRadius: 5 }}
                                 resizeMethod='auto'
-                                // source={{ uri: 'asset:/' + vehicle.foto }}
-                                source={{ uri: vehicle.photo }}
+                                // source={{ uri: 'asset:/' + vehicle.data().foto }}
+                                source={{ uri: vehicle.data().photo }}
                             /> :
                             <Icon name='car' size={RFValue(80)} color={DefaultStyles.colors.tabBar} />
                     }
                 </View>
                 {/* dados do veiculo */}
                 <View style={style.info}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit style={[style.textInfo, { fontSize: RFValue(17) }]}>Veículo: {vehicle.vehicleName}</Text>
-                    <Text numberOfLines={1} adjustsFontSizeToFit style={style.textInfo}>Cor: {vehicle.color}</Text>
-                    <Text style={style.textInfo}>KM: {vehicle.km}</Text>
-                    <Text style={style.textInfo}>{vehicle.type}</Text>
+                    <Text numberOfLines={1} adjustsFontSizeToFit style={[style.textInfo, { fontSize: RFValue(17) }]}>Veículo: {`${vehicle.data().model?.id}-${vehicle.data().plate}`}</Text>
+                    <Text numberOfLines={1} adjustsFontSizeToFit style={style.textInfo}>Cor: {vehicle.data().color}</Text>
+                    <Text style={style.textInfo}>KM: {vehicle.data().km}</Text>
+                    <Text style={style.textInfo}>{vehicle.data().type}</Text>
                 </View>
                 <View style={style.icon}>
                     <Fontisto name="angle-right" size={RFValue(20)} color={DefaultStyles.colors.tabBar} style={{ alignSelf: 'center', paddingLeft: 3, paddingTop: 4 }} />

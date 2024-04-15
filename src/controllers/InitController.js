@@ -2,12 +2,18 @@ import { CommonActions } from "@react-navigation/native";
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import AuthController from "./AuthController";
+import Brands from "../database/models/Brands";
 
 const firebaseConfig = {
     // Your Firebase project configuration here
 };
 
 class InitController{
+
+    /**
+     * Init function run on start app, load initial data and check logged user
+     * @param {*} navigation 
+     */
     static async init(navigation){
         console.log('INIT InitController.init');
         let nextRoute = {
@@ -16,24 +22,28 @@ class InitController{
                 email:'', 
                 senha:''
             }
-        }
+        }        
         try {            
+
+            //load brands of server in "singleton" request
+            await Brands.getDBData();
+
             const currentUser = auth().currentUser;
             if (currentUser) {
+
+                //load user register of server
                 console.log('currentUser',currentUser.email); 
-                console.log('getting user of collection...');
+                console.log('getting user of collection...');                
                 let loggedUser = await firestore().collection('Users').where('authUserId','==',currentUser.uid).get();
                 console.log('getting user of collection... ok');
                 if (loggedUser && loggedUser.docs && loggedUser.docs.length > 0) {
-                    loggedUser = {
-                        id: loggedUser.docs[0].id,
-                        ...loggedUser.docs[0].data()
-                    };
                     console.log('loggedUser',loggedUser);
-                    AuthController.setLoggedUser(loggedUser);
+                    AuthController.setLoggedUser(loggedUser.docs[0]);
                     console.log('loggedUser setted');
-                }              
-                nextRoute = {name:"Tab"}
+                }   
+                
+                //navigate to home
+                nextRoute = {name:"Tab",params:{route:'StackVehicle'}};
             } 
         } catch (e) {
             console.log('error',e);

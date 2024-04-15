@@ -1,8 +1,8 @@
 import React from 'react'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import ListVehicle from '../vehicles/ListVehicle'
-import ViewVehicle from '../vehicles/ViewVehicle'
-import EditVehicle from '../vehicles/EditVehicle'
+import {ViewVehicle} from '../vehicles/ViewVehicle'
+import {EditVehicle} from '../vehicles/EditVehicle'
 
 const Stack = createNativeStackNavigator()
 
