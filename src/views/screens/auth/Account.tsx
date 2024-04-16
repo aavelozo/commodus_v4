@@ -42,10 +42,10 @@ function Account(props): JSX.Element {
                         console.log('currentAuthUser',currentAuthUser);
                         let userData = AuthController.getLoggedUser();//await firestore().collection('Users').where('authUserId','==',currentAuthUser.uid).get();
                         if (userData) {
-                            setEmail(userData.email)
-                            setPassword(userData.password)
-                            setName(userData.name)
-                            setFoto(userData.photo)
+                            setEmail(userData.data().email)
+                            setPassword(userData.data().password)
+                            setName(userData.data().name)
+                            setFoto(userData.data().photo)
                         }                       
                     }
                                         

@@ -142,8 +142,8 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
 
                     //reload to update current view
                     let newVehicle = await AuthController.getLoggedUser().ref.collection('vehicles').doc(vehicle.id).get();
-                    console.log('newVehicleData',newVehicle);
-                    setCurrentViewVehicle(newVehicle);                    
+                    console.log('newVehicleData');
+                    setCurrentViewVehicle(newVehicle);                 
                 } else {
                     //create                    
                     let newVehicle = await AuthController.getLoggedUser().ref.collection('vehicles').add({
@@ -156,7 +156,6 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         preferedFuel: selectedFuel,
                         photo: photo
                     });
-                    console.log('saved vehicle',newVehicle);
                     newVehicle = await AuthController.getLoggedUser().ref.collection('vehicles').doc(newVehicle.id).get();
                     console.log('newVehicleData',newVehicle);
                     setCurrentViewVehicle(newVehicle);                   

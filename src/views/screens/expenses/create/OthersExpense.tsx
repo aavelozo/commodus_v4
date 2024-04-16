@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import { View, StyleSheet, Alert, Dimensions, ScrollView, Switch, TouchableWithoutFeedback, Text } from 'react-native'
 import { RFValue } from "react-native-responsive-fontsize";
 import TitleView from '../../../components/TitleView';
@@ -6,7 +6,6 @@ import Vehicles from '../../../../database/models/Vehicles';
 import Header from '../../../components/Header';
 import ContentContainer from '../../../components/ContentContainer';
 import Observations from '../../../components/expenses/Observations';
-import SelectVehicle from '../../../components/vehicles/SelectVehicle';
 import DateComponent from '../../../components/expenses/DateComponent';
 import InputKM from '../../../components/vehicles/InputKM';
 import { TextInput } from 'react-native-paper';
@@ -14,22 +13,21 @@ import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
 import Utils from '../../../../controllers/Utils';
 import SelectDropdown from 'react-native-select-dropdown';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import AuthController from '../../../../controllers/AuthController';
+import { useFocusEffect } from '@react-navigation/native';
+import EditExpenseController from '../../../../controllers/EditExpenseController';
 const { width, height } = Dimensions.get('window')
 
 /******************************************************
 ** COMPONENTE DA VIEW PRINCIPAL                      **
 ******************************************************/
 function OthersExpense(props): JSX.Element {
+    const selectVehicleRef = useRef();
+    const [loading,setLoading] = useState(false);    
+    const [loaded,setLoaded] = useState(false); 
 
     //default properties
-    const currentExpenseId = (props?.route?.params || props?.params || {})?.expenseId || null;
-    const [loading, setLoading] = useState(false);
-    const [loaded, setLoaded] = useState(false);
     const [currentExpense, setCurrentExpense] = useState(null);
-    const [idVehicle, setIdVehicle] = useState(null);
+    const [vehicles, setVehicles] = useState([]);   
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [date, setDate] = useState(null);
     const [km, setKM] = useState(null);
@@ -45,70 +43,65 @@ function OthersExpense(props): JSX.Element {
     const [description, setDescription] = useState('')
 
 
-    useEffect(() => {
-        if (currentExpenseId) {
-            if (!loading && !loaded && !currentExpense) {
-                setLoading(true);
+    useFocusEffect(useCallback(() => {
+        console.log('INIT OthersExpense.useFocusEffect.useCallBack');
+        if (!loading && !loaded ) {
+            setLoading(true);
 
-                //load expense data
-                (async () => {
-                    try {
-                        console.log('loading expense...');
-                        let newExpense = await firestore().collection('Expenses').doc(currentExpenseId).get();
-                        if (newExpense && newExpense.id) {
-                            newExpense = {
-                                id: newExpense.id,
-                                ...newExpense.data()
-                            }
-                            if (newExpense?.date) {
-                                newExpense.date = new Date(newExpense.date.seconds * 1000 + newExpense.date.nanoseconds / 1000000);
-                            }
+            //load expense data
+            (async () => {
+                try {
+                    console.log('loading expense...');
+                    let newVehicles = await Vehicles.getSingleData();
+                    setVehicles(newVehicles);                                        
+                    console.log('EditExpenseController.currentExpense',EditExpenseController.currentExpense);
+                    if (EditExpenseController.currentExpense) { 
+                        console.log('loading states...');             
+                        //default properties    
+                        setCurrentExpense(EditExpenseController.currentExpense);  
+                        let vehicleId = EditExpenseController.currentExpense.ref.parent.parent.id;
+                        setSelectedVehicle(newVehicles.find(el=>el.id == vehicleId));
+                        console.log('loading states...2');
+                        let dataExpense = EditExpenseController.currentExpense.data();
+                        //date in firestore is object {"nanoseconds": 743000000, "seconds": 1713185626}
+                        if (EditExpenseController.currentExpense.data().date) {
+                            setDate(new Date(dataExpense.date.seconds * 1000 + dataExpense.date.nanoseconds / 1000000));
                         } else {
-                            newExpense = null;
-                        }
-
-
-                        //default properties
-                        setCurrentExpense(newExpense);
-                        setIdVehicle(newExpense.idVehicle || null);
-                        setDate(newExpense.date || null);
-                        setKM(newExpense.actualkm || null);
-                        setEstablishment(newExpense.establishment || null);
-                        setIsEnabledEstablishment(newExpense.establishment ? true : false);
-                        setObservations(newExpense.observations || null);
-                        setIsEnabledObservations(newExpense.observations ? true : false);
-                        setTotalValue(newExpense.totalValue || null);
+                            setDate(new Date());
+                        }                        
+                        setKM(dataExpense.actualkm||'');
+                        setEstablishment(dataExpense.establishment||'');
+                        setIsEnabledEstablishment(dataExpense.establishment?true:false);
+                        setObservations(dataExpense.observations||'');
+                        setIsEnabledObservations(dataExpense.observations?true:false);
+                        setTotalValue(dataExpense.totalValue||0);
 
                         //specific properties
-                        setDescription(newExpense.othersdatas.description || null);
-                        setDateReminder(newExpense.othersdatas.dateReminder || null);
-
-                        console.log('loading expense... ok');
-                    } catch (e) {
-                        console.log(e);
-                    } finally {
-                        setLoaded(true);
-                        setLoading(false);
-                    }
-                })();
-
-            }
-        } else {
-            setDate(new Date());
+                        setDescription(dataExpense.othersdatas.description || null);
+                        setDateReminder(dataExpense.othersdatas.dateReminder || null);
+                    } else {
+                       clearStates();
+                    }                          
+                    console.log('loading expense... ok');
+                } catch (e) {
+                    console.log(e);
+                } finally {
+                    setLoaded(true);
+                    setLoading(false);
+                }
+            })();            
         }
-    }, [currentExpenseId]);
+    }, [props.navigation]));
 
 
     async function saveExpense() {
         try {
             if (totalValue && date && selectedVehicle) {
-
-                let newExpense = null;
-                if (currentExpenseId) {
-                    //update
-                    newExpense = await firestore().collection('Expenses').doc(currentExpenseId);
-                    await newExpense.update({
-                        idVehicle: selectedVehicle?.id || idVehicle,
+                console.log('idVehicle',selectedVehicle.id);
+                let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);
+                if (currentExpense) {
+                    //update                    
+                    await currentExpense.ref.update({
                         type: 'OTHER',
                         date: date,
                         actualkm: km,
@@ -119,13 +112,10 @@ function OthersExpense(props): JSX.Element {
                             description: description,
                             dateReminder: dateReminder
                         }
-                    });
+                    });                    
                 } else {
                     //create
-                    newExpense = await firestore().collection('Expenses').add({
-                        authUserId: auth().currentUser.uid,
-                        idUser: AuthController.getLoggedUser().id,
-                        idVehicle: selectedVehicle?.id || idVehicle,
+                    let newExpense = await vehicle.ref.collection('expenses').add({
                         type: 'OTHER',
                         date: date,
                         actualkm: km,
@@ -136,10 +126,8 @@ function OthersExpense(props): JSX.Element {
                             description: description,
                             dateReminder: dateReminder
                         }
-                    });
-                }
-                newExpense = await newExpense.get();
-                console.log(newExpense);
+                    });                    
+                }                  
                 Alert.alert("Salvo", "Dados Salvos com Sucesso", [{ "text": "OK", onPress: () => goBack(), style: "ok" }]);
             } else {
                 Alert.alert("Faltam dados essenciais");
@@ -149,9 +137,33 @@ function OthersExpense(props): JSX.Element {
         }
     }
 
+    function clearStates(){
+        console.log('clearing states...');
+        setCurrentExpense(null);                
+        setSelectedVehicle(null);
+        setDate(new Date());
+        setKM('');
+        setEstablishment('');
+        setIsEnabledEstablishment(false);
+        setObservations('');
+        setIsEnabledObservations(false);
+        setTotalValue(0);
+
+        //specific properties
+        setDescription(null);
+        setDateReminder(null);
+
+        if (selectVehicleRef) {
+            selectVehicleRef.current?.reset();
+        }
+    }
+    
+
     //pressionado Cancelar do Header, volta o velocimetro
     goBack = () => {
-        props.navigation.goBack(null);
+        EditExpenseController.currentExpense = null;
+        clearStates();
+        props.navigation.goBack();
     };
 
     /**
@@ -169,9 +181,37 @@ function OthersExpense(props): JSX.Element {
 
                 <ContentContainer >
                     <ScrollView>
-                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}
-                        <SelectVehicle selectedId={idVehicle} setSelected={setSelectedVehicle} />
-
+                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}                        
+                        <SelectDropdown
+                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
+                            search={true}
+                            showsVerticalScrollIndicator={true}                            
+                            data={vehicles}
+                            defaultValue={selectedVehicle}
+                            renderButton={(selectedItem, isOpened) => {
+                                return (
+                                    <View>
+                                        <TextInput
+                                            {...DefaultProps.textInput}
+                                            style={DefaultStyles.textInput}
+                                            label='Veículo'
+                                            value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
+                                            pointerEvents="none"
+                                            readOnly
+                                        />
+                                    </View>
+                                );
+                            }}
+                            renderItem={(item, index, isSelected) => {
+                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                        <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate }</Text>
+                                </View>);
+                            }}
+                            onSelect={(selectedItem, index) => {
+                                setSelectedVehicle(selectedItem);
+                            }}
+                            ref={selectVehicleRef}
+                        />
                         {/* DATE INPUT */}
                         <DateComponent date={date} setDate={setDate} />
 

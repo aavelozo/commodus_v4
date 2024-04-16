@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Dimensions, View } from 'react-native';
 import { RFValue } from "react-native-responsive-fontsize";
 import { Text, TextInput } from 'react-native-paper';
@@ -17,17 +17,19 @@ import AuthController from '../../../controllers/AuthController';
 function SelectVehicle(props) : JSX.Element {
     const [loading,setLoading] = useState(false);
     const [loaded,setLoaded] = useState(false); 
+    const ref = useRef();
     const [list,setList] = useState(props?.list || []);
-    const [selected,setSelected] = useState(null);
+    //const [selected,setSelected] = useState(props.selected || null);
 
 
     //carregamento dos dados do banco
     useEffect(() => {
+        console.log('INIT SelectVehicle.useEffect',props.selected);
         if (!loading && !loaded && !list.length) {
             setLoading(true);
             (async () => {
                 try {
-                    let newVehiclesCollection = await AuthController.getLoggedUser().ref.collection('vehicles').get();
+                    const newVehiclesCollection = await Vehicles.getDBData();
                     let newVehicles = [];
                     newVehiclesCollection.forEach(el=>{
                         newVehicles.push({
@@ -36,8 +38,19 @@ function SelectVehicle(props) : JSX.Element {
                         })
                     });
                     setList(newVehicles);
-                    let newSelected = newVehicles.find(el=>el.id == props.selectedId)||null;
-                    setSelected(newSelected);
+                    if (props.selected) {
+                        console.log('finding ', props.selected.id);
+                        let newSelected = newVehicles.find(el=>el.id == props.selected.id)||null;
+                        console.log('founded',newSelected);
+                        //setSelected(newSelected);
+                        props.setSelected(newSelected);
+                    } else {
+                        //setSelected(null);
+                        props.setSelected(null); 
+                        if (props?.ref || ref) {
+                            (props?.ref || ref).current?.reset();
+                        }
+                    }
                 } catch (e) {
                     console.log('error on selectvehicle',e);                    
                 } finally {
@@ -46,12 +59,21 @@ function SelectVehicle(props) : JSX.Element {
                 }
             })();
         } else if (loaded) {
-            if (props.selectedId) {
-                let newSelected = list.find(el=>el.id == props.selectedId)||null;
-                setSelected(newSelected);
+            if (props.selected) {
+                console.log('finding 2 ', props.selected.id);
+                let newSelected = list.find(el=>el.id == props.selected.id)||null;
+                //setSelected(newSelected);
+                console.log('founded 2',newSelected);
+                props.setSelected(newSelected);
+            } else {
+                //setSelected(null);
+                props.setSelected(null);
+                if (props?.ref || ref) {
+                    (props?.ref || ref).current?.reset();
+                }
             }
         }
-    });
+    },[props.selected]);
 
         
         
@@ -61,7 +83,7 @@ function SelectVehicle(props) : JSX.Element {
                 search={true}
                 showsVerticalScrollIndicator={true}                            
                 data={list}
-                defaultValue={selected}
+                defaultValue={props.selected}
                 renderButton={(selectedItem, isOpened) => {
                     return (
                         <View>
@@ -81,8 +103,8 @@ function SelectVehicle(props) : JSX.Element {
                             <Text style={DefaultStyles.dropdownText}>{item.name}</Text>
                     </View>);
                 }}
-                ref={props?.ref}
-                onSelect={(selectedItem, index) => props.setSelected(selectedItem?.id||null)}
+                ref={props?.ref || ref}
+                onSelect={(selectedItem, index) => props.setSelected(selectedItem)}
             />
     );
 };

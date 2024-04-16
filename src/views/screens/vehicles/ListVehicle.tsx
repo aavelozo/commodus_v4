@@ -1,22 +1,17 @@
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { View, StyleSheet, TouchableOpacity, Dimensions, FlatList, Text } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import Empty from '../../assets/iconSvg/empty.svg'
 import { DefaultStyles } from '../../DefaultStyles';
 import Vehicles from '../../../database/models/Vehicles';
 import Header from '../../components/Header';
 import CardRegisteredVehicle from '../../components/CardRegisteredVehicle';
 import TitleView from '../../components/TitleView';
-import EditVehicleController from '../../../controllers/EditVehicleController';
 import { RFValue } from 'react-native-responsive-fontsize';
-import firestore from '@react-native-firebase/firestore';
-import AuthController from '../../../controllers/AuthController'
-import Models from '../../../database/models/Models';
 import _ from "lodash";
-import { Loading } from '../Loading'
 import { ActivityIndicator } from 'react-native-paper'
 import { setCurrentVehicle } from './EditVehicle'
+import EditExpenseController from '../../../controllers/EditExpenseController'
 const { height } = Dimensions.get('window');
 
 function ListVehicle(props: React.PropsWithChildren): JSX.Element {
@@ -27,12 +22,13 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
 
     //carregamento dos dados do banco
     useFocusEffect(useCallback(() => {
+        EditExpenseController.currentExpense = null;
         if (!loading && !loaded) {
             setLoading(true);
             (async () => {
                 try {
                     console.log('loading vehicles...');                    
-                    const newVehiclesCollection = await AuthController.getLoggedUser().ref.collection('vehicles').get();
+                    const newVehiclesCollection = await Vehicles.getDBData();
                     newVehicles = newVehiclesCollection.docs;
                     setVehicles(newVehicles);
                     console.log('loading vehicles... ok size',newVehicles.length); 

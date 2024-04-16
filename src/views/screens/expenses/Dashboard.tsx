@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { Text, View, StyleSheet, FlatList, Dimensions, TouchableWithoutFeedback, ActivityIndicator, ScrollView, RefreshControl } from 'react-native'
-import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import {  useFocusEffect } from '@react-navigation/native'
 import Velo from '../../assets/iconSvg/velo.svg'
 import Oil from '../../assets/iconSvg/oil.svg'
 import Media from '../../assets/iconSvg/media.svg'
@@ -14,12 +14,10 @@ import ExpenseComparison from '../../components/graphs/ExpenseComparison'
 import CashFlow from '../../components/graphs/CashFlow'
 import PercentageExpenses from '../../components/graphs/PercentageExpenses'
 import ExpenseLastYear from '../../components/graphs/ExpenseLastYear'
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import AuthController from '../../../controllers/AuthController'
-import Models from '../../../database/models/Models';
 import _ from "lodash";
 import Utils from '../../../controllers/Utils'
+import EditExpenseController from '../../../controllers/EditExpenseController'
+import Vehicles from '../../../database/models/Vehicles'
 const { height, width } = Dimensions.get('window')
 
 
@@ -69,6 +67,7 @@ function Dashboard(props): JSX.Element {
 
     useFocusEffect(useCallback(() => {
         console.log('INIT Dashboard.useFocusEffect');
+        EditExpenseController.currentExpense = null;
         async function getExpenses() {
             console.log('INIT Dashboard.useFocusEffect -> async getExpenses');
             try {
@@ -125,47 +124,42 @@ function Dashboard(props): JSX.Element {
 
     async function getExpensesThisUser() {
         let carros = [];
-        let models = [];
-        const newModelsCollection = await firestore().collection('Models').get();
-        if (newModelsCollection && newModelsCollection.size > 0) {
-            newModelsCollection.forEach(documentSnapshot => {                                
-                models.push({
-                    id: documentSnapshot.id,
-                    ...documentSnapshot.data()
-                });
-            });    
-        }
-        models = _.keyBy(models, 'id');
-        let newVehiclesCollection = await firestore().collection('Vehicles').where('idUser', '==', AuthController.getLoggedUser().id).get();
-        let newExpensesCollection = await firestore().collection('Expenses').where('idUser', '==', AuthController.getLoggedUser().id).get();
-        newVehiclesCollection.forEach(vehicle => {
+        
+        
+        let newVehicles = await Vehicles.getDBData();  
+        for(let k in newVehicles.docs) {
+            let newVehicle = {
+                id:newVehicles.docs[k].id,
+                plate:newVehicles.docs[k].data().plate,
+                idEngineType:newVehicles.docs[k].data().idEngineType,
+                km:newVehicles.docs[k].data().km,                    
+                model:newVehicles.docs[k].data().model.id,
+                brand:newVehicles.docs[k].data().model.parent.parent.id,
+                preferedFuel:newVehicles.docs[k].data().preferedFuel,
+                color:newVehicles.docs[k].data().color,
+                photo:newVehicles.docs[k].data().photo,
+                vehicleName : `${newVehicles.docs[k].data().model.id}-${newVehicles.docs[k].data().plate}`,
+                expenses : []
+            }; 
             let despesas = []
             let completo = {}
-            let newVehicle = {
-                id: vehicle.id,
-                ...vehicle.data(),
-                vehicleName: `${models[vehicle.data().idModel].name}-${vehicle.data().plate}`,
-                expenses: []
-            }
-
-            newExpensesCollection.forEach(expense => {
+            let newExpensesCollection = await newVehicles.docs[k].ref.collection('expenses').get();
+            for (let j in newExpensesCollection.docs) {
                 let newExpense = {
-                    id: expense.id,
-                    ...expense.data()
+                    id: newExpensesCollection.docs[j].id,
+                    ...newExpensesCollection.docs[j].data()
                 }
                 if (newExpense.date && typeof newExpense.date == 'object' && newExpense.date.seconds) {
                     newExpense.date = new Date(newExpense.date.seconds * 1000 + newExpense.date.nanoseconds / 1000000);
                 }
                 newExpense.totalValue = Utils.toNumber(newExpense.totalValue || null);
-                if (newExpense.idVehicle == newVehicle.id) {
-                    despesas.push(newExpense);
-                    newVehicle.expenses.push(newExpense);
-                }
-            });
+                despesas.push(newExpense);
+                newVehicle.expenses.push(newExpense);                
+            };
             completo.vehicle = newVehicle;
             completo.despesas = despesas;
             carros.push(completo)
-        });
+        };
 
         console.log('returning cars', JSON.stringify(carros));
 

@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react'
-import { Text, View, StyleSheet, TouchableWithoutFeedback, Alert, Dimensions, Switch, ScrollView } from 'react-native'
+import React, { useState, useRef, useCallback } from 'react'
+import { Text, View, StyleSheet, TouchableWithoutFeedback, Alert, Dimensions, ScrollView } from 'react-native'
 import { Checkbox, TextInput } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Header from '../../../components/Header';
 import TitleView from '../../../components/TitleView';
 import ContentContainer from '../../../components/ContentContainer';
-import SelectVehicle from '../../../components/vehicles/SelectVehicle';
 import Vehicles from '../../../../database/models/Vehicles';
 import DateComponent from '../../../components/expenses/DateComponent';
 import InputKM from '../../../components/vehicles/InputKM';
@@ -15,9 +14,8 @@ import Utils from '../../../../controllers/Utils';
 import Observations from '../../../components/expenses/Observations';
 import Establishment from '../../../components/expenses/Establishment';
 import SelectDropdown from 'react-native-select-dropdown';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import AuthController from '../../../../controllers/AuthController';
+import EditExpenseController from '../../../../controllers/EditExpenseController';
+import { useFocusEffect } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window')
 
 
@@ -27,13 +25,14 @@ const { width, height } = Dimensions.get('window')
 ** COMPONENTE PRINCIPAL                             **
 ******************************************************/
 function AppearanceExpense(props): JSX.Element {
+    const selectVehicleRef = useRef();
+    const selectServiceRef = useRef();
+    const [loading,setLoading] = useState(false);    
+    const [loaded,setLoaded] = useState(false); 
 
     //default properties
-    const currentExpenseId = (props?.route?.params || props?.params || {})?.expenseId || null;    
-    const [loading,setLoading] = useState(false);
-    const [loaded,setLoaded] = useState(false);          
     const [currentExpense,setCurrentExpense] = useState(null);    
-    const [idVehicle,setIdVehicle] = useState(null);
+    const [vehicles, setVehicles] = useState([]);   
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [date, setDate] = useState(null);
     const [km, setKM] = useState(null);
@@ -51,70 +50,66 @@ function AppearanceExpense(props): JSX.Element {
 
 
 
-    useEffect(() => {
-        if (currentExpenseId) {
-            if (!loading && !loaded && !currentExpense) {
-                setLoading(true);
-
-                //load expense data
-                (async () => {
-                    try {
-                        console.log('loading expense...');
-                        let newExpense = await firestore().collection('Expenses').doc(currentExpenseId).get();
-                        if (newExpense && newExpense.id) {
-                            newExpense = {
-                                id:newExpense.id,
-                                ...newExpense.data()
-                            }
-                            if (newExpense?.date) {
-                                newExpense.date = new Date(newExpense.date.seconds * 1000 + newExpense.date.nanoseconds / 1000000);
-                            }                            
+    useFocusEffect(useCallback(() => {
+        console.log('INIT AppearanceExpense.useFocusEffect.useCallBack');
+        if (!loading && !loaded) {
+            setLoading(true);
+            (async()=>{
+                try {
+                    console.log('loading expense...');
+                    let newVehicles = await Vehicles.getSingleData();
+                    setVehicles(newVehicles);                                        
+                    console.log('EditExpenseController.currentExpense',EditExpenseController.currentExpense);
+                    if (EditExpenseController.currentExpense) { 
+                        console.log('loading states...');             
+                        //default properties    
+                        setCurrentExpense(EditExpenseController.currentExpense);  
+                        let vehicleId = EditExpenseController.currentExpense.ref.parent.parent.id;
+                        setSelectedVehicle(newVehicles.find(el=>el.id == vehicleId));
+                        console.log('loading states...2');
+                        let dataExpense = EditExpenseController.currentExpense.data();
+                        //date in firestore is object {"nanoseconds": 743000000, "seconds": 1713185626}
+                        if (EditExpenseController.currentExpense.data().date) {
+                            setDate(new Date(dataExpense.date.seconds * 1000 + dataExpense.date.nanoseconds / 1000000));
                         } else {
-                            newExpense = null;
-                        }
-
-                        //default properties
-                        setCurrentExpense(newExpense);
-                        setIdVehicle(newExpense.idVehicle||null);
-                        setDate(newExpense.date||null);
-                        setKM(newExpense.actualkm||null);
-                        setEstablishment(newExpense.establishment||null);
-                        setIsEnabledEstablishment(newExpense.establishment?true:false);
-                        setObservations(newExpense.observations||null);
-                        setIsEnabledObservations(newExpense.observations?true:false);
-                        setTotalValue(newExpense.totalValue||null);
+                            setDate(new Date());
+                        }                        
+                        setKM(dataExpense.actualkm||'');
+                        setEstablishment(dataExpense.establishment||'');
+                        setIsEnabledEstablishment(dataExpense.establishment?true:false);
+                        setObservations(dataExpense.observations||'');
+                        setIsEnabledObservations(dataExpense.observations?true:false);
+                        setTotalValue(dataExpense.totalValue||0);
 
                         //specific properties
-                        setRegularWashing(newExpense.othersdatas.regularWashing ? true : false);
-                        setCompleteWashing(newExpense.othersdatas.completeWashing ? true : false);
-                        setService(newExpense.othersdatas.service||null);
-
-                        console.log('loading expense... ok');
-                    } catch (e) {
-                        console.log(e);                    
-                    } finally {
-                        setLoaded(true);
-                        setLoading(false);                
+                        setRegularWashing(dataExpense.othersdatas.regularWashing ? true : false);
+                        setCompleteWashing(dataExpense.othersdatas.completeWashing ? true : false);
+                        setService(dataExpense.othersdatas.service||null);
+                    } else {
+                       clearStates();
                     }
-                })();
 
-            }
-        } else {
-            setDate(new Date());
-        }        
-    }, [currentExpenseId]);   
+                    console.log('loading expense... ok');
+                            
+                } catch (e) {
+                    console.log(e);                    
+                } finally {
+                    setLoaded(true);
+                    setLoading(false);                    
+                }
+            })();
+        }
+    }, [props.navigation]));
 
     async function saveExpense() {
         try {
             if (totalValue && date && selectedVehicle && regularWashing || completeWashing  ) {
-
-                let newExpense = null;
-                if (currentExpenseId) {
-                    //update
-                    newExpense = await firestore().collection('Expenses').doc(currentExpenseId);
-                    await newExpense.update({
-                        idVehicle: selectedVehicle?.id || idVehicle,
-                        type: 'APPEARENCE',
+                console.log('idVehicle',selectedVehicle.id);
+                let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);
+                if (currentExpense) {
+                    //update                    
+                    await currentExpense.ref.update({
+                        type: 'APPEARANCE',
                         date: date,
                         actualkm: km,
                         totalValue: totalValue,
@@ -128,11 +123,8 @@ function AppearanceExpense(props): JSX.Element {
                     });                    
                 } else {
                     //create
-                    newExpense = await firestore().collection('Expenses').add({
-                        authUserId: auth().currentUser.uid,
-                        idUser: AuthController.getLoggedUser().id,
-                        idVehicle: selectedVehicle?.id || idVehicle,
-                        type: 'APPEARENCE',
+                    let newExpense = await vehicle.ref.collection('expenses').add({
+                        type: 'APPEARANCE',
                         date: date,
                         actualkm: km,
                         totalValue: totalValue,
@@ -144,9 +136,7 @@ function AppearanceExpense(props): JSX.Element {
                             othersServices: service
                         }
                     });                    
-                }
-                newExpense = await newExpense.get();
-                console.log(newExpense);                
+                }                               
                 Alert.alert("Salvo", "Dados Salvos com Sucesso", [{ "text": "OK", onPress: () => goBack(), style: "ok" }]);
             } else {
                 Alert.alert("Faltam dados essenciais");
@@ -154,13 +144,41 @@ function AppearanceExpense(props): JSX.Element {
         } catch (e) {
             Utils.showError(e);
         }
+    
     }
 
+
+    function clearStates(){
+        console.log('clearing states...');
+        setCurrentExpense(null);                
+        setSelectedVehicle(null);
+        setDate(new Date());
+        setKM('');
+        setEstablishment('');
+        setIsEnabledEstablishment(false);
+        setObservations('');
+        setIsEnabledObservations(false);
+        setTotalValue(0);
+
+        //specific properties
+        setRegularWashing(false);
+        setCompleteWashing(false);
+        setService(null);
+
+        if (selectVehicleRef) {
+            selectVehicleRef.current?.reset();
+        }
+        if (selectServiceRef) {
+            selectServiceRef.current?.reset();
+        }
+    }
     
 
     //pressionado Cancelar do Header, volta o velocimetro
     goBack = () => {
-        props.navigation.goBack(null);
+        EditExpenseController.currentExpense = null;
+        clearStates();
+        props.navigation.goBack();
     };
 
 
@@ -172,8 +190,37 @@ function AppearanceExpense(props): JSX.Element {
 
                 <ContentContainer >
                     <ScrollView>
-                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}
-                        <SelectVehicle selectedId={idVehicle} setSelected={setSelectedVehicle} />
+                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}                        
+                        <SelectDropdown
+                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
+                            search={true}
+                            showsVerticalScrollIndicator={true}                            
+                            data={vehicles}
+                            defaultValue={selectedVehicle}
+                            renderButton={(selectedItem, isOpened) => {
+                                return (
+                                    <View>
+                                        <TextInput
+                                            {...DefaultProps.textInput}
+                                            style={DefaultStyles.textInput}
+                                            label='Veículo'
+                                            value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
+                                            pointerEvents="none"
+                                            readOnly
+                                        />
+                                    </View>
+                                );
+                            }}
+                            renderItem={(item, index, isSelected) => {
+                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                        <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate }</Text>
+                                </View>);
+                            }}
+                            onSelect={(selectedItem, index) => {
+                                setSelectedVehicle(selectedItem);
+                            }}
+                            ref={selectVehicleRef}
+                        />
 
                         {/* DATE INPUT */}
                         <DateComponent date={date} setDate={setDate} />
@@ -210,26 +257,38 @@ function AppearanceExpense(props): JSX.Element {
 
                         
                         {/* dropdown: usado para selecionar o ano e atualizar o txtinput */}
+
                         <SelectDropdown
-                            {...DefaultProps.selectDropdown}
+                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
+                            search={true}
+                            showsVerticalScrollIndicator={true}                            
                             data={serviceList}
-                            label="Serviço"
+                            defaultValue={selectedVehicle}
+                            renderButton={(selectedItem, isOpened) => {
+                                return (
+                                    <View>
+                                        <TextInput
+                                            {...DefaultProps.textInput}
+                                            style={DefaultStyles.textInput}
+                                            label='Serviço'
+                                            value={selectedItem}
+                                            pointerEvents="none"
+                                            readOnly
+                                        />
+                                    </View>
+                                );
+                            }}
+                            renderItem={(item, index, isSelected) => {
+                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                        <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                                </View>);
+                            }}
                             onSelect={(selectedItem, index) => {
                                 setService(selectedItem);
                             }}
-                            buttonTextAfterSelection={(selectedItem, index) => {
-                                return (
-                                    service
-                                        ? (selectedItem ? selectedItem.toString() : null)
-                                        : null
-                                );
-                            }}
-                            rowTextForSelection={(item, index) => {
-                                return item.toString();
-                            }}
-                            defaultButtonText={service ? service.toString() : null}
+                            ref={selectServiceRef}
                         />
-
+                       
                         {/* PREÇO TOTAL */}
                         <TextInput
                             {...DefaultProps.textInput}

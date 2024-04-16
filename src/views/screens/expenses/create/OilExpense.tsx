@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import { Text, View, StyleSheet, TouchableWithoutFeedback, Alert, Dimensions, Switch, ScrollView } from 'react-native'
 import { Checkbox, TextInput } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -6,7 +6,6 @@ import Header from '../../../components/Header';
 import TitleView from '../../../components/TitleView';
 import ContentContainer from '../../../components/ContentContainer';
 import SelectVehicle from '../../../components/vehicles/SelectVehicle';
-import Vehicles from '../../../../database/models/Vehicles';
 import DateComponent from '../../../components/expenses/DateComponent';
 import InputKM from '../../../components/vehicles/InputKM';
 import { DefaultProps } from '../../../DefaultProps';
@@ -14,9 +13,11 @@ import { DefaultStyles } from '../../../DefaultStyles';
 import Utils from '../../../../controllers/Utils';
 import Observations from '../../../components/expenses/Observations';
 import Establishment from '../../../components/expenses/Establishment';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import AuthController from '../../../../controllers/AuthController';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import EditExpenseController from '../../../../controllers/EditExpenseController';
+import SelectDropdown from 'react-native-select-dropdown';
+import Vehicles from '../../../../database/models/Vehicles';
 const { width, height } = Dimensions.get('window')
 
 
@@ -26,13 +27,13 @@ const { width, height } = Dimensions.get('window')
 ** COMPONENTE PRINCIPAL                             **
 ******************************************************/
 function OilExpense(props): JSX.Element {
+    const selectVehicleRef = useRef();
+    const [loading,setLoading] = useState(false);    
+    const [loaded,setLoaded] = useState(false);   
 
     //default properties
-    const currentExpenseId = (props?.route?.params || props?.params || {})?.expenseId || null;
-    const [loading, setLoading] = useState(false);
-    const [loaded, setLoaded] = useState(false);
     const [currentExpense, setCurrentExpense] = useState(null);
-    const [idVehicle, setIdVehicle] = useState(null);
+    const [vehicles, setVehicles] = useState([]);   
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [date, setDate] = useState(null);
     const [km, setKM] = useState(null);
@@ -58,80 +59,75 @@ function OilExpense(props): JSX.Element {
     const [oilBrand, setOilBrand] = useState(null);
 
 
-    useEffect(() => {
-        if (currentExpenseId) {
-            if (!loading && !loaded && !currentExpense) {
-                setLoading(true);
-
-                //load expense data
-                (async () => {
-                    try {
-                        console.log('loading expense...');
-                        let newExpense = await firestore().collection('Expenses').doc(currentExpenseId).get();
-                        if (newExpense && newExpense.id) {
-                            newExpense = {
-                                id: newExpense.id,
-                                ...newExpense.data()
-                            }
-                            if (newExpense?.date) {
-                                newExpense.date = new Date(newExpense.date.seconds * 1000 + newExpense.date.nanoseconds / 1000000);
-                            }
+    useFocusEffect(useCallback(() => {
+        console.log('INIT OilExpense.useFocusEffect.useCallBack');
+        if (!loading && !loaded) {
+            setLoading(true);
+            (async()=>{
+                try {
+                    console.log('loading expense...');
+                    let newVehicles = await Vehicles.getSingleData();
+                    setVehicles(newVehicles);                      
+                    console.log('EditExpenseController.currentExpense',EditExpenseController.currentExpense);
+                    if (EditExpenseController.currentExpense) { 
+                        console.log('loading states...');             
+                        //default properties    
+                        setCurrentExpense(EditExpenseController.currentExpense);  
+                        let vehicleId = EditExpenseController.currentExpense.ref.parent.parent.id;
+                        setSelectedVehicle(newVehicles.find(el=>el.id == vehicleId));
+                        let dataExpense = EditExpenseController.currentExpense.data();
+                        //date in firestore is object {"nanoseconds": 743000000, "seconds": 1713185626}
+                        if (dataExpense.date) {
+                            setDate(new Date(dataExpense.date.seconds * 1000 + dataExpense.date.nanoseconds / 1000000));
                         } else {
-                            newExpense = null;
-                        }
-
-                        //default properties
-                        setCurrentExpense(newExpense);
-                        setIdVehicle(newExpense.idVehicle || null);
-                        setDate(newExpense.date || null);
-                        setKM(newExpense.actualkm || null);
-                        setEstablishment(newExpense.establishment || null);
-                        setIsEnabledEstablishment(newExpense.establishment ? true : false);
-                        setObservations(newExpense.observations || null);
-                        setIsEnabledObservations(newExpense.observations ? true : false);
-                        setTotalValue(newExpense.totalValue || null);
-
+                            setDate(new Date());
+                        }                        
+                        setKM(dataExpense.actualkm||'');
+                        setEstablishment(dataExpense.establishment||'');
+                        setIsEnabledEstablishment(dataExpense.establishment?true:false);
+                        setObservations(dataExpense.observations||'');
+                        setIsEnabledObservations(dataExpense.observations?true:false);
+                        setTotalValue(dataExpense.totalValue||0);
+                    
                         //specific properties
-                        setCodOil(newExpense.othersdatas.codOil || null);
-                        setIsReminderEnabled((newExpense?.othersdatas?.reminderMonths || newExpense?.othersdatas?.reminderKM) ? true : false);
-                        setReminderMonths(newExpense.othersdatas.reminderMonths || null);
-                        setReminderKM(newExpense.othersdatas.reminderKM || null);
-                        setIsFiltersEnabled((newExpense?.othersdatas?.oilFilterPrice || newExpense?.othersdatas?.fuelFilterPrice || newExpense?.othersdatas?.airFilterPrice) ? true : false);
-                        setIsOilFilterChecked((newExpense?.othersdatas?.oilFilterPrice) ? true : false);
-                        setOilFilterPrice(newExpense.othersdatas.oilFilterPrice || null);
-                        setIsFuelFilterChecked((newExpense?.othersdatas?.fuelFilterPrice) ? true : false);
-                        setFuelFilterPrice(newExpense.othersdatas.fuelFilterPrice || null);
-                        setIsAirFilterChecked((newExpense?.othersdatas?.airFilterPrice) ? true : false);
-                        setAirFilterPrice(newExpense.othersdatas.airFilterPrice || null);
-                        setIsOilBrandEnabled((newExpense?.othersdatas?.oilBrand) ? true : false);
-                        setOilBrand(newExpense.othersdatas.oilBrand || null);
-
-                        console.log('loading expense... ok');
-                    } catch (e) {
-                        console.log(e);
-                    } finally {
-                        setLoaded(true);
-                        setLoading(false);
+                        setCodOil(dataExpense.othersdatas.codOil || null);
+                        setIsReminderEnabled((dataExpense?.othersdatas?.reminderMonths || dataExpense?.othersdatas?.reminderKM) ? true : false);
+                        setReminderMonths(dataExpense.othersdatas.reminderMonths || null);
+                        setReminderKM(dataExpense.othersdatas.reminderKM || null);
+                        setIsFiltersEnabled((dataExpense?.othersdatas?.oilFilterPrice || dataExpense?.othersdatas?.fuelFilterPrice || dataExpense?.othersdatas?.airFilterPrice) ? true : false);
+                        setIsOilFilterChecked((dataExpense?.othersdatas?.oilFilterPrice) ? true : false);
+                        setOilFilterPrice(dataExpense.othersdatas.oilFilterPrice || null);
+                        setIsFuelFilterChecked((dataExpense?.othersdatas?.fuelFilterPrice) ? true : false);
+                        setFuelFilterPrice(dataExpense.othersdatas.fuelFilterPrice || null);
+                        setIsAirFilterChecked((dataExpense?.othersdatas?.airFilterPrice) ? true : false);
+                        setAirFilterPrice(dataExpense.othersdatas.airFilterPrice || null);
+                        setIsOilBrandEnabled((dataExpense?.othersdatas?.oilBrand) ? true : false);
+                        setOilBrand(dataExpense.othersdatas.oilBrand || null);
+                    } else {
+                        clearStates();
                     }
-                })();
 
-            }
-        } else {
-            setDate(new Date());
+                    console.log('loading expense... ok');
+                } catch (e) {
+                    console.log(e);                    
+                } finally {
+                    setLoaded(true);
+                    setLoading(false);                    
+                }
+            })();
         }
-    }, [currentExpenseId]);
+    }, [props.navigation]));
+
 
 
     async function saveExpense() {
         try {
-            if (totalValue && date && selectedVehicle && codOil) {
-
-                let newExpense = null;
-                if (currentExpenseId) {
-                    //update
-                    newExpense = await firestore().collection('Expenses').doc(currentExpenseId);
-                    await newExpense.update({
-                        idVehicle: selectedVehicle?.id || idVehicle,
+            if (totalValue && date && selectedVehicle && codOil) {           
+                console.log('idVehicle',selectedVehicle.id);
+                let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);
+                if (currentExpense) {
+                    //update                    
+                    await currentExpense.ref.update({
                         type: 'OIL',
                         date: date,
                         actualkm: km,
@@ -147,17 +143,10 @@ function OilExpense(props): JSX.Element {
                             airFilterPrice: airFilterPrice,
                             oilBrand: oilBrand
                         }
-                    });
-                    await firestore().collection('Vehicles').doc(selectedVehicle?.id).update({
-                        oilChange: reminderKM
-                    }).catch(err => console.log(err))
-
+                    });                    
                 } else {
                     //create
-                    newExpense = await firestore().collection('Expenses').add({
-                        authUserId: auth().currentUser.uid,
-                        idUser: AuthController.getLoggedUser().id,
-                        idVehicle: selectedVehicle?.id || idVehicle,
+                    let newExpense = await vehicle.ref.collection('expenses').add({
                         type: 'OIL',
                         date: date,
                         actualkm: km,
@@ -173,14 +162,8 @@ function OilExpense(props): JSX.Element {
                             airFilterPrice: airFilterPrice,
                             oilBrand: oilBrand
                         }
-                    });
-
-                    await firestore().collection('Vehicles').doc(selectedVehicle?.id).update({
-                        oilChange: Number(reminderKM)
-                    }).catch(err => console.log(err))
+                    });                    
                 }
-                newExpense = await newExpense.get();
-                console.log(newExpense);
                 Alert.alert("Salvo", "Dados Salvos com Sucesso", [{ "text": "OK", onPress: () => goBack(), style: "ok" }]);
             } else {
                 Alert.alert("Faltam dados essenciais");
@@ -190,9 +173,43 @@ function OilExpense(props): JSX.Element {
         }
     }
 
+    function clearStates(){
+        console.log('clearing states ...');
+        setCurrentExpense(null);                
+        setSelectedVehicle(null);
+        setDate(new Date());
+        setKM('');
+        setEstablishment('');
+        setIsEnabledEstablishment(false);
+        setObservations('');
+        setIsEnabledObservations(false);
+        setTotalValue(0);
+
+        //specific properties
+        setCodOil('');
+        setIsReminderEnabled(false);
+        setReminderMonths('');
+        setReminderKM('');
+        setIsFiltersEnabled(false);
+        setIsOilFilterChecked(false);
+        setOilFilterPrice('');
+        setIsFuelFilterChecked(false);
+        setFuelFilterPrice('');
+        setIsAirFilterChecked(false);
+        setAirFilterPrice('');
+        setIsOilBrandEnabled(false);
+        setOilBrand('');
+
+        if (selectVehicleRef) {
+            selectVehicleRef.current?.reset();
+        }
+    }
+    
     //pressionado Cancelar do Header, volta o velocimetro
     goBack = () => {
-        props.navigation.goBack(null);
+        EditExpenseController.currentExpense = null;
+        clearStates();
+        props.navigation.goBack();
     };
 
 
@@ -204,8 +221,37 @@ function OilExpense(props): JSX.Element {
 
                 <ContentContainer >
                     <ScrollView>
-                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}
-                        <SelectVehicle selectedId={idVehicle} setSelected={setSelectedVehicle} />
+                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}                        
+                        <SelectDropdown
+                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
+                            search={true}
+                            showsVerticalScrollIndicator={true}                            
+                            data={vehicles}
+                            defaultValue={selectedVehicle}
+                            renderButton={(selectedItem, isOpened) => {
+                                return (
+                                    <View>
+                                        <TextInput
+                                            {...DefaultProps.textInput}
+                                            style={DefaultStyles.textInput}
+                                            label='Veículo'
+                                            value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
+                                            pointerEvents="none"
+                                            readOnly
+                                        />
+                                    </View>
+                                );
+                            }}
+                            renderItem={(item, index, isSelected) => {
+                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                        <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate }</Text>
+                                </View>);
+                            }}
+                            onSelect={(selectedItem, index) => {
+                                setSelectedVehicle(selectedItem);
+                            }}
+                            ref={selectVehicleRef}
+                        />
 
                         {/* DATE INPUT */}
                         <DateComponent date={date} setDate={setDate} />

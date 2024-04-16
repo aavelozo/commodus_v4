@@ -27,11 +27,12 @@ class Brands /*extends Realm.Object */{
     static async loadDBData(){     
         console.log('INIT Brands.loadDBData');   
         console.log('loading data Brands from db');
-        this.#dbData = await firestore().collection('Brands').get();
-        this.#dbData?.forEach(async docSnap=>{
-            docSnap.models = await docSnap.ref.collection('models').get();
-            console.log('loaded models from db',docSnap.models);
-        })
+        this.#dbData = await firestore().collection('Brands').get();        
+        for(let k in this.#dbData.docs) {
+            this.#dbData.docs[k].models = await this.#dbData.docs[k].ref.collection('models').get();
+            console.log('loaded models from db',this.#dbData.docs[k].models);
+        }
+        this.#singleData = [];
         console.log(`loading data Brands from db ok, size ${this.#dbData?.size}`);
         console.log('END Brands.loadDBData');   
     }

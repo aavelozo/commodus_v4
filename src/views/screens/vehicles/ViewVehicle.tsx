@@ -24,11 +24,13 @@ function setCurrentViewVehicle(newCurrentViewVehicle) {
     currentViewVehicle = newCurrentViewVehicle;
 }
 
-function ViewVehicle(props: React.PropsWithChildren): JSX.Element {
+function ViewVehicle(props): JSX.Element {
     const navigation = useNavigation();    
-    const [vehicle,setVehicle] = useState(currentViewVehicle);
+    const [vehicle,setVehicle] = useState(null);
 
-   
+    useFocusEffect(useCallback(()=>{
+        setVehicle(currentViewVehicle);
+    },[props.navigation]));
 
     return (
         <View style={style.container}>

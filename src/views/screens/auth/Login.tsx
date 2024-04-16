@@ -1,18 +1,20 @@
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, Dimensions, TouchableWithoutFeedback, Text, TouchableOpacity } from "react-native";
-import { TextInput } from "react-native-paper";
+import { ActivityIndicator, TextInput } from "react-native-paper";
 import { DefaultStyles } from '../../DefaultStyles';
 import { DefaultProps } from '../../DefaultProps';
 import AuthController from '../../../controllers/AuthController';
 import { RFValue } from 'react-native-responsive-fontsize';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import Vehicles from '../../../database/models/Vehicles';
 
 
 function Login(props: Object): JSX.Element {
     const [login, setLogin] = useState((props.user || {}).email)
-    const [senha, setSenha] = useState('')
+    const [senha, setSenha] = useState('');
+    const [loading,setLoading] = useState(false);
     const [logged, setLogged] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const navigation = useNavigation();
@@ -78,29 +80,32 @@ function Login(props: Object): JSX.Element {
 
                 <TouchableOpacity
                     activeOpacity={0.9}
-                    onPress={async () => {
-                        var loggedUser;
+                    disabled={loading}
+                    onPress={async () => {                        
+                        setLoading(true);
                         auth().signInWithEmailAndPassword(login, senha).then((loginResult) => {
-                            // console.log('user logged!',loginResult);
+                            console.log('user logged!',loginResult);
+                            let nextRouteName = 'StackVehicle';
                             (async () => {
                                 try {
-                                    loggedUser = await firestore().collection('Users').where('authUserId', '==', loginResult.user.uid).get();
-                                    // console.log('loggedUser',loggedUser?.data());
-                                    if (loggedUser) {
-                                        AuthController.setLoggedUser({
-                                            id: loggedUser._docs[0]._ref._documentPath._parts[1],
-                                            ...loggedUser._docs[0]._data
-                                        });
-                                    }
-
+                                    let loggedUser = await firestore().collection('Users').where('authUserId','==',loginResult.user.uid).get();
+                                    console.log('getting user of collection... ok');
+                                    if (loggedUser && loggedUser.docs && loggedUser.docs.length > 0) {
+                                        console.log('loggedUser',loggedUser);
+                                        AuthController.setLoggedUser(loggedUser.docs[0]);
+                                        console.log('loggedUser setted');
+                                        if ((await Vehicles.getDBData())?.size > 0) {
+                                            nextRouteName = 'ViewExpense';
+                                        }
+                                    }   
                                 } catch (e) {
                                     console.log(e);
                                 } finally {
-                                    const newVehiclesCollection = await firestore().collection('Vehicles').where('idUser', '==', loggedUser._docs[0]._ref._documentPath._parts[1]).get();
+                                    setLoading(false);
                                     navigation.dispatch(
                                         CommonActions.reset({
                                             index: 0,
-                                            routes: [{ name: 'Tab', params: { route: newVehiclesCollection._docs[0]?._exists ? 'ViewExpense' : 'StackVehicle' } }]
+                                            routes: [{ name: 'Tab', params: { route: nextRouteName } }]
 
                                         })
                                     );
@@ -108,6 +113,7 @@ function Login(props: Object): JSX.Element {
                             })();
                         }).catch(err => {
                             console.log(err);
+                            setLoading(false);
                             setLogged(false);
                             if (err.code === 'auth/invalid-credential') {
                                 setErrorMessage('email ou senha inválido(s)');
@@ -120,7 +126,10 @@ function Login(props: Object): JSX.Element {
                     style={style.button}
                 >
                     <Text style={style.textButton}>
-                        Entrar
+                        {loading 
+                            ? <ActivityIndicator />
+                            : 'Entrar'
+                        }
                     </Text>
                 </TouchableOpacity>
 
