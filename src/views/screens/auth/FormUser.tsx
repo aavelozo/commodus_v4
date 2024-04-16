@@ -107,7 +107,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                             <TextInput
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
-                                disable={saving}
+                                disabled={saving}
                                 label='Nome Completo'
                                 autoComplete='name'
                                 onBlur={onBlur}
@@ -137,7 +137,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
-                                disable={saving}
+                                disabled={saving}
                             />
                         )}
                         name="email"
@@ -160,7 +160,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
-                                disable={saving}
+                                disabled={saving}
                             />
                         )}
                         name="senha"
@@ -182,7 +182,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
-                                disable={saving}
+                                disabled={saving}
                             />
                         )}
                         name="confirmeSenha"

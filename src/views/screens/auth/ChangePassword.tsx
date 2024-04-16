@@ -9,6 +9,9 @@ import Header from '../../components/Header'
 import { TextInput } from 'react-native-paper'
 import { DefaultStyles } from '../../DefaultStyles'
 import { DefaultProps } from '../../DefaultProps'
+import Utils from '../../../controllers/Utils'
+import auth from '@react-native-firebase/auth';
+import AuthController from '../../../controllers/AuthController'
 
 function ChangePassword(props): JSX.Element {
     const [saving,setSaving] = useState(false);
@@ -22,30 +25,33 @@ function ChangePassword(props): JSX.Element {
         ToastAndroid.showWithGravity(msg, ToastAndroid.LONG, ToastAndroid.CENTER, 25, 50);
     };
 
-    const editPassword = () => {
+    const editPassword = async () => {
         try {
             if (newPassword != newPasswordConfirm) {
                 setDivergent(true)
             } else {
                 setSaving(true);
-                Alert.alert("do implement");
-                /*let user = realm.objects('Users')
-                if (passwordActual == user[0].password) {
-                    realm.write(() => {
-                        user[0].password = newPassword;
+                auth().signInWithEmailAndPassword(auth().currentUser.email, passwordActual).then((loginResult) => {
+                    console.log(loginResult);
+                    auth().currentUser?.updatePassword(newPassword).then(async updateResult=>{
+                        console.log(updateResult);
+                        await auth().currentUser?.reload();
+                        setSaving(false);
+                        Alert.alert("Senha alterada com sucesso");
+                    }).catch(updateError=>{
+                        setSaving(false);
+                        Utils.showError(updateError);
                     });
-                    showToast("Senha alterada com sucesso")
-                    setPasswordActual("")
-                    setNewPassword("")
-                    setNewPasswordConfirm("")
-                }*/
+                }).catch(loginResultError=>{
+                    setSaving(false);
+                    console.log(loginResultError);
+                    Utils.showError("Senha atual não confere");
+                })                
             }
         } catch (error) {
-            console.log(error)
-        } finally {
             setSaving(false);
-        }
-
+            Utils.showError(error);
+        } 
     }
 
     const goBack = () => {
@@ -75,6 +81,7 @@ function ChangePassword(props): JSX.Element {
                             onChangeText={text => setPasswordActual(text)}
                             value={passwordActual}
                             secureTextEntry
+                            disabled={saving}
 
                         />
                         <TextInput
@@ -88,6 +95,7 @@ function ChangePassword(props): JSX.Element {
                             }}
                             value={newPassword}
                             secureTextEntry
+                            disabled={saving}
                         />
                         {divergent ? <Text style={{ paddingLeft: RFValue(30) }}>*Senhas informadas são divergentes</Text> : false}
                         <TextInput
@@ -100,6 +108,7 @@ function ChangePassword(props): JSX.Element {
                             }}
                             value={newPasswordConfirm}
                             secureTextEntry={true}
+                            disabled={saving}
                         />
                         {divergent ? <Text style={{ paddingLeft: RFValue(30) }}>*Senhas informadas são divergentes</Text> : false}
                     </View>
