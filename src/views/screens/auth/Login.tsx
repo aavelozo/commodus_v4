@@ -45,6 +45,7 @@ function Login(props: Object): JSX.Element {
                         setLogged(false)
                     }}
                     value={login}
+                    disabled={loading}
                 />
                 {
                     !logged && errorMessage != '' ?
@@ -64,6 +65,7 @@ function Login(props: Object): JSX.Element {
                     value={senha}
                     secureTextEntry={true}
                     autoComplete='email'
+                    disabled={loading}
                 />
 
                 <TouchableWithoutFeedback

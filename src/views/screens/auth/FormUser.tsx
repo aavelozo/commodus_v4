@@ -8,7 +8,7 @@ import { CommonActions } from '@react-navigation/native'
 import { DefaultStyles } from '../../DefaultStyles'
 import Dados from '../../../controllers/Dados'
 import Usuarios from '../../../database/models/Users'
-import { TextInput } from 'react-native-paper'
+import { ActivityIndicator, TextInput } from 'react-native-paper'
 import { DefaultProps } from '../../DefaultProps'
 import { RFValue } from 'react-native-responsive-fontsize'
 import Utils from '../../../controllers/Utils'
@@ -25,6 +25,7 @@ const schema = yup.object({
 
 
 function FormUser(props: React.PropsWithChildren): JSX.Element {
+    const [ saving,setSaving] = useState(false);
     const { control, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema)
     })
@@ -45,6 +46,8 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                 return;
             }
 
+            setSaving(true);
+
 
             Dados.user = data;
 
@@ -64,6 +67,8 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                     console.log(err);
                 });
 
+                setSaving(false);
+
                 props.navigation.dispatch(
                     CommonActions.reset({
                         index: 0,
@@ -71,6 +76,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                     })
                 );
             }).catch(error => {
+                setSaving(false);
                 if (error.code === 'auth/email-already-in-use') {
                     Alert.alert('este email já está registrado!');
                 }
@@ -85,9 +91,10 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
 
             
         } catch (e) {
+            setSaving(false);
             console.log(e);
             Utils.showError(e);
-        }
+        } 
     }
 
     return (
@@ -100,6 +107,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                             <TextInput
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
+                                disable={saving}
                                 label='Nome Completo'
                                 autoComplete='name'
                                 onBlur={onBlur}
@@ -129,6 +137,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
+                                disable={saving}
                             />
                         )}
                         name="email"
@@ -151,6 +160,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
+                                disable={saving}
                             />
                         )}
                         name="senha"
@@ -172,6 +182,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
+                                disable={saving}
                             />
                         )}
                         name="confirmeSenha"
@@ -186,7 +197,15 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                         activeOpacity={0.9}
                         onPress={handleSubmit(onSubmit)}
                         style={style.button}
-                    ><Text style={style.textButton}>Confirmar</Text></TouchableOpacity>
+                        disabled={saving}
+                    >
+                        <Text style={style.textButton}>                            
+                            {saving 
+                                ? <ActivityIndicator />
+                                : 'Confirmar'
+                            }
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </View>
