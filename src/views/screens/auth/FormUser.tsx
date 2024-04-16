@@ -52,14 +52,14 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
             Dados.user = data;
 
             //firebase user registration
-            auth().createUserWithEmailAndPassword(data.email, data.senha).then((responseUserData) => {
+            auth().createUserWithEmailAndPassword(data.email.trim().toLowerCase(), data.senha).then((responseUserData) => {
                 console.log(responseUserData);
                 console.log('User account created & signed in!');
 
                 //save user register on user collections (<> auth.user)
                 const user = firestore().collection('Users').add({
                     name: data.nomeCompleto,
-                    email: data.email,
+                    email: data.email.trim().toLowerCase(),
                     authUserId: responseUserData.user.uid
                 }).then(succ=>{
                     console.log(succ);

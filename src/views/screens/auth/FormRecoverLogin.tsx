@@ -1,38 +1,54 @@
 import { CommonActions } from '@react-navigation/native'
 import React, { useState } from 'react'
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native'
-import { TextInput } from 'react-native-paper'
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Image, TouchableWithoutFeedback, Alert } from 'react-native'
+import { ActivityIndicator, TextInput } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native';
 import AuthController from '../../../controllers/AuthController';
 import { DefaultProps } from '../../DefaultProps';
 import { DefaultStyles } from '../../DefaultStyles';
 import { RFValue } from 'react-native-responsive-fontsize';
-
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import Utils from '../../../controllers/Utils';
 
 
 function FormRecoverLogin(props): JSX.Element {
+    const [loading,setLoading] = useState(false);
     const [email, setEmail] = useState((props.user || {}).email)
     const [errorMessage, setErrorMessage] = useState('');
     const navigation = useNavigation();
 
 
-    function recoverPassword(email: string) {
+    async function recoverPassword(email: string) {
         try {
-            let user = AuthController.getUser(email);
+            if (email != null && email.length) {
+                setLoading(true);
 
-            if (user != null && user.length) {
-                AuthController.sendRecoverPasswordEmail(email).then(result => {
+                //check if user exists
+                let userDoc = await firestore().collection('Users').where('email','==',email.trim().toLowerCase()).get();            
+                if (userDoc && userDoc.size > 0) {
+
+                    //firebase function to send user recover link
+                    let result = await auth().sendPasswordResetEmail(email);                
                     console.log(result);
-                }).catch(error => {
-                    console.log(error);
-                    setErrorMessage(error.message || error);
-                });
+                    if (result) {
+                        console.log(result);
+                        setErrorMessage(result);
+                    } else {
+                        setErrorMessage('');
+                        Alert.alert("Verifique o email recebido para poder aterar sua senha, depois tente logar novamente com a nova senha");
+                    }
+                } else {
+                    setErrorMessage("email não cadastrado");
+                }
             } else {
-                setErrorMessage("usuário não encontrado");
+                setErrorMessage("email em branco");
             }
         } catch (e) {
             console.log(e);
             setErrorMessage(e.message || e);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -53,6 +69,7 @@ function FormRecoverLogin(props): JSX.Element {
                     label='E-mail'
                     onChangeText={text => setEmail(text)}
                     value={email}
+                    disabled={loading}
                 />
 
 
@@ -67,7 +84,15 @@ function FormRecoverLogin(props): JSX.Element {
                     activeOpacity={0.9}
                     onPress={() => recoverPassword(email)}
                     style={style.button}
-                ><Text style={style.textButton}>Confirmar</Text></TouchableOpacity>
+                    disabled={loading}
+                >
+                    {loading
+                        ? <ActivityIndicator />
+                        : <Text style={style.textButton}>
+                            Confirmar
+                        </Text>
+                    }
+                </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => navigation.navigate('UserRegistration')}>
                     <>
