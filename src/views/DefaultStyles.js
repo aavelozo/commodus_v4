@@ -123,7 +123,7 @@ class DefaultStyles {
 
     static buttonConclude = {
         position: 'absolute',
-        right: RFValue(10),
+        right: RFValue(10)
     }
     static buttonCancel = {
         position: 'absolute',

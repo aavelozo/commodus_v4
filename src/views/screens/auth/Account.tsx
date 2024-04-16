@@ -17,6 +17,7 @@ import AuthController from '../../../controllers/AuthController'
 
 
 function Account(props): JSX.Element {
+    const [saving,setSaving] = useState(false);
     const navigation = useNavigation();
     const [loading,setLoading] = useState(false);
     const [loaded,setLoaded] = useState(false);   
@@ -113,6 +114,7 @@ function Account(props): JSX.Element {
         try {
             const currentAuthUser = auth().currentUser;
             if (currentAuthUser) {
+                setSaving(true);
                 console.log('currentAuthUser',currentAuthUser);
                 let userData = await firestore().collection('Users').where('authUserId','==',currentAuthUser.uid).get();
                 if (userData && userData.docs && userData.docs.length) {
@@ -126,6 +128,8 @@ function Account(props): JSX.Element {
             }
         } catch (e) {
             console.log(e);
+        } finally {
+            setSaving(false);
         }
     }
 
@@ -137,7 +141,12 @@ function Account(props): JSX.Element {
 
     return (
         <View style={style.container}>
-            <Header withButtons={true} onPressConclude={saveUser} onPressCancel={goBack} />
+            <Header 
+                withButtons={true} 
+                onPressConclude={saveUser} 
+                onPressCancel={goBack} 
+                saving={saving}
+            />
             <View style={style.title}>
                 <TitleView title='Usuário'></TitleView>
                 <View style={style.espacoCentral}>

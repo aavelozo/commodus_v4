@@ -27,6 +27,7 @@ function TyreExpense(props): JSX.Element {
     const selectVehicleRef = useRef();
     const [loading,setLoading] = useState(false);    
     const [loaded,setLoaded] = useState(false); 
+    const [saving,setSaving] = useState(false);
 
     //default properties
     const [currentExpense, setCurrentExpense] = useState(null);
@@ -101,6 +102,7 @@ function TyreExpense(props): JSX.Element {
     async function saveExpense() {
         try {
             if (totalValue && date && selectedVehicle) {
+                setSaving(true);
                 console.log('idVehicle',selectedVehicle.id);
                 let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);
                 if (currentExpense) {
@@ -140,6 +142,8 @@ function TyreExpense(props): JSX.Element {
             }
         } catch (e) {
             Utils.showError(e);
+        } finally {
+            setSaving(false);
         }
     }
 
@@ -181,8 +185,12 @@ function TyreExpense(props): JSX.Element {
     //render
     return (
         <View style={style.container}>
-
-            <Header withButtons={true} onPressConclude={saveExpense} onPressCancel={goBack} />
+            <Header 
+                withButtons={true} 
+                onPressConclude={saveExpense} 
+                onPressCancel={goBack} 
+                saving={saving}
+            />
             <View style={style.espacoCentral}>
                 <TitleView title=' Despesa Borracharia' />
 

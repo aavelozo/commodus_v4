@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import FeatherIcon from 'react-native-vector-icons/Feather'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import { useNavigation } from '@react-navigation/native'
+import { ActivityIndicator } from 'react-native-paper'
 
 
 
@@ -56,8 +57,11 @@ function Header(props): JSX.Element {
             </View>
 
             <View style={{ width: '25%', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                {props.withButtons ?
-                    <ButtonConclude onPress={() => props.onPressConclude()} />
+                {props.withButtons 
+                    ? <ButtonConclude 
+                            loading={props.saving || props.loading || false}
+                            onPress={() => props.onPressConclude()} 
+                        />
                     : false
                 }
             </View>

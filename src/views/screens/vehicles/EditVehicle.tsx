@@ -43,6 +43,7 @@ function setCurrentVehicle(newCurrentVehicle) {
 function EditVehicle(props: React.PropsWithChildren): JSX.Element {
     const [loading,setLoading] = useState(false);
     const [loaded,setLoaded] = useState(false);
+    const [saving,setSaving] = useState(false);
     const [vehicle,setVehicle] = useState(currentVehicle);
     const [brands, setBrands] = useState([]);
     const [showAlert, setShowAlert] = useState(false);
@@ -125,6 +126,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
             if (!selectedModel || !selectedBrand || !selectedYear || !km || !plate) {
                 setShowAlert(true)
             } else {
+                setSaving(true);
                 let dbBrands = await Brands.getDBData();
                 let dbBrand = dbBrands?.docs.find(el=>el.id == selectedBrand.id);
                 let dbModel = await dbBrand?.models.docs.find(el=>el.id == selectedModel.id);
@@ -166,6 +168,8 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
         } catch (e) {
             console.log(e);
             Utils.showError(e);
+        } finally {
+            setSaving(false);
         }
     }
 
@@ -237,7 +241,12 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                 />
                 : false
             }
-            <Header withButtons={true} onPressConclude={saveVehicle} onPressCancel={() => navigation.goBack()} />
+            <Header 
+                withButtons={true} 
+                onPressConclude={saveVehicle} 
+                saving={saving}
+                onPressCancel={() => navigation.goBack()} 
+            />
             <View style={style.title}>
                 <TitleView title={vehicle ? 'Edição de veículo' : 'Cadastro de veículo'} />
                 <ContentContainer  >

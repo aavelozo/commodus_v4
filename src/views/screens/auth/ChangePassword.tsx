@@ -11,6 +11,7 @@ import { DefaultStyles } from '../../DefaultStyles'
 import { DefaultProps } from '../../DefaultProps'
 
 function ChangePassword(props): JSX.Element {
+    const [saving,setSaving] = useState(false);
     const navigation = useNavigation()
     const [passwordActual, setPasswordActual] = useState('')
     const [newPassword, setNewPassword] = useState('')
@@ -26,6 +27,8 @@ function ChangePassword(props): JSX.Element {
             if (newPassword != newPasswordConfirm) {
                 setDivergent(true)
             } else {
+                setSaving(true);
+                Alert.alert("do implement");
                 /*let user = realm.objects('Users')
                 if (passwordActual == user[0].password) {
                     realm.write(() => {
@@ -39,6 +42,8 @@ function ChangePassword(props): JSX.Element {
             }
         } catch (error) {
             console.log(error)
+        } finally {
+            setSaving(false);
         }
 
     }
@@ -49,7 +54,12 @@ function ChangePassword(props): JSX.Element {
 
     return (
         <View style={style.container}>
-            <Header withButtons={true} onPressConclude={editPassword} onPressCancel={goBack} />
+            <Header 
+                withButtons={true} 
+                onPressConclude={editPassword} 
+                onPressCancel={goBack} 
+                saving={saving}
+            />
             <View style={style.title}>
                 <TitleView title='Alteração de senha'></TitleView>
                 <View style={style.espacoCentral}>
