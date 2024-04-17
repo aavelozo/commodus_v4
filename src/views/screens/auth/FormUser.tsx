@@ -1,18 +1,16 @@
 
 import React, { useState } from 'react'
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, KeyboardAvoidingView, Alert, ScrollView } from 'react-native'
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Alert, ScrollView } from 'react-native'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { CommonActions } from '@react-navigation/native'
 import { DefaultStyles } from '../../DefaultStyles'
 import Dados from '../../../controllers/Dados'
-import Usuarios from '../../../database/models/Users'
 import { ActivityIndicator, TextInput } from 'react-native-paper'
 import { DefaultProps } from '../../DefaultProps'
 import { RFValue } from 'react-native-responsive-fontsize'
 import Utils from '../../../controllers/Utils'
-import Users from '../../../database/models/Users';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 

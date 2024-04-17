@@ -1,16 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Dimensions, View } from 'react-native';
-import { RFValue } from "react-native-responsive-fontsize";
+import { View } from 'react-native';
 import { Text, TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../DefaultProps';
 import { DefaultStyles } from '../../DefaultStyles';
 import SelectDropdown from 'react-native-select-dropdown';
 import Vehicles from '../../../database/models/Vehicles';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import Models from '../../../database/models/Models';
 import _ from "lodash";
-import AuthController from '../../../controllers/AuthController';
 
 
 //SELECT VEICULO

@@ -1,19 +1,14 @@
 import React, { useState } from 'react'
 import { Text, View, StyleSheet, FlatList, Dimensions, TouchableWithoutFeedback, TouchableOpacity, ScrollView } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect } from '@react-navigation/native'
 import Swiper from 'react-native-swiper'
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import TitleView from '../../components/TitleView'
 import Vehicles from '../../../database/models/Vehicles'
-import Models from '../../../database/models/Models'
-import Expenses from '../../../database/models/Expenses'
 import { DefaultStyles } from '../../DefaultStyles'
 import Header from '../../components/Header'
 import ButtonCardExpense from '../../components/ButtonCardExpense'
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import AuthController from '../../../controllers/AuthController'
 import Utils from '../../../controllers/Utils';
 import _ from "lodash";
 import EditExpenseController from '../../../controllers/EditExpenseController'

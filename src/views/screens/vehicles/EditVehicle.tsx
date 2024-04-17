@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react'
-import { View, StyleSheet, Dimensions, TouchableOpacity, Alert, ToastAndroid, Image } from 'react-native'
+import { View, StyleSheet, Dimensions, TouchableOpacity, Alert, ToastAndroid } from 'react-native'
 import { RFValue } from "react-native-responsive-fontsize";
 import { DefaultStyles } from '../../DefaultStyles';
 import ModalAlert from '../../components/ModalAlert';
@@ -13,7 +13,6 @@ import TitleView from '../../components/TitleView';
 import ContentContainer from '../../components/ContentContainer';
 import FormLayout from '../../components/FormLayout';
 import Radio from '../../components/Radio';
-import { Icon, TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../DefaultProps';
 import SelectDropdown from 'react-native-select-dropdown';
 import { Switch } from 'react-native';
@@ -21,13 +20,9 @@ import { TouchableWithoutFeedback } from 'react-native';
 import { Text } from 'react-native';
 import Camera from '../../assets/iconSvg/camera.svg'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { Svg } from 'react-native-svg';
-import SvgImage from 'react-native-svg/lib/typescript/elements/Image';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import Brands from '../../../database/models/Brands';
-import Models from '../../../database/models/Models';
 import { setCurrentViewVehicle } from './ViewVehicle';
+import { TextInput } from 'react-native-paper';
 const { width, height } = Dimensions.get('window');
 
 

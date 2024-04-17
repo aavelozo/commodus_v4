@@ -29,7 +29,6 @@ class InitController{
             //load brands of server in "singleton" request
             await Brands.getDBData();
             
-
             const currentUser = auth().currentUser;
             if (currentUser) {
 

@@ -1,17 +1,14 @@
 import React, { useState } from 'react'
-import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid } from 'react-native'
+import { Text, View, StyleSheet, Alert, ToastAndroid } from 'react-native'
 import TitleView from '../../components/TitleView'
 import { RFValue } from 'react-native-responsive-fontsize'
-import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { useNavigation } from '@react-navigation/native'
 import Header from '../../components/Header'
 import { TextInput } from 'react-native-paper'
 import { DefaultStyles } from '../../DefaultStyles'
 import { DefaultProps } from '../../DefaultProps'
 import Utils from '../../../controllers/Utils'
 import auth from '@react-native-firebase/auth';
-import AuthController from '../../../controllers/AuthController'
 
 function ChangePassword(props): JSX.Element {
     const [saving,setSaving] = useState(false);

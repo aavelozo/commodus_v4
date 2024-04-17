@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { View, Text, Image, Dimensions, StyleSheet, TouchableWithoutFeedback, Modal } from 'react-native'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { DefaultStyles } from '../DefaultStyles'
@@ -8,8 +8,9 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import FeatherIcon from 'react-native-vector-icons/Feather'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import { useNavigation } from '@react-navigation/native'
-import { ActivityIndicator } from 'react-native-paper'
-
+import auth from '@react-native-firebase/auth';
+import Brands from '../../database/models/Brands'
+import Vehicles from '../../database/models/Vehicles'
 
 
 function Header(props): JSX.Element {
@@ -17,26 +18,25 @@ function Header(props): JSX.Element {
     const [visible, setVisible] = useState(false)
     const [user, setUser] = useState('')
     const showModal = () => setVisible(true)
-    const hideModal = () => setVisible(false)
+    const hideModal = () => setVisible(false);
+    
     const styles = props.withButtons ? {
         width: RFValue(RFValue(35)),
         height: RFValue(RFValue(35)),
     } : false
 
 
-    const unloggingUser = () => {
-        /*let u = realm.objects('Users').filtered(`logged == true`)
-        realm.write(() => {
-            u[0].logged = false;
-        });*/
-        navigation.navigate('Login')
+    const unloggingUser = async () => {   
+        try {     
+            await auth().signOut();
+            Brands.setDBData(null);
+            Vehicles.setDBData(null);
+        } catch (e) {
+            console.log(e);
+        } finally {
+            navigation.navigate('Login');
+        }
     }
-
-    useEffect(() => {
-        /*const usuario = realm.objects('Users').filtered(`logged == true`)
-        setUser(usuario[0])*/
-    }, [])
-
 
     return (
         <View style={style.container}>

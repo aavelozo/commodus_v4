@@ -5,7 +5,6 @@ import Fontisto from 'react-native-vector-icons/Fontisto'
 import Icon from 'react-native-vector-icons/Fontisto'
 import { RFValue } from "react-native-responsive-fontsize";
 import { DefaultStyles } from '../DefaultStyles'
-import Models from '../../database/models/Models'
 import { setCurrentViewVehicle } from '../screens/vehicles/ViewVehicle'
 const { width, height } = Dimensions.get('window')
 

@@ -1,27 +1,13 @@
-import Utils from "../../controllers/Utils";
-import Models from "./Models";
 import firestore from '@react-native-firebase/firestore';
 
 /**
  * Classe Brands, representa o model da tabela Brands
  * @created 2022-10-14
  */
-class Brands /*extends Realm.Object */{
+class Brands {
     
-    brand! : string;
-    models! : Array<Models>//Realm.List<Models>;
-
     static #dbData : Array<any> | null = null;
     static #singleData: Array<any> | null = null;
-
-
-    static schema = {
-        name: "Brands",
-        properties: {
-            "brand"   : "string",
-            "models" : "Models[]" // Brands contem modelos
-        }
-    };
 
     //"singleton" request to server, store on local cache with app is running
     static async loadDBData(){     
@@ -35,6 +21,11 @@ class Brands /*extends Realm.Object */{
         this.#singleData = [];
         console.log(`loading data Brands from db ok, size ${this.#dbData?.size}`);
         console.log('END Brands.loadDBData');   
+    }
+
+    static setDBData(newDBData){
+        this.#dbData = newDBData;
+        this.#singleData = null;
     }
 
     static async getDBData(){
