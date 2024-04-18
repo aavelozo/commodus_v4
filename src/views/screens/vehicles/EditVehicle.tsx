@@ -293,7 +293,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                             dropdownStyle={DefaultStyles.dropdownMenuStyle}
                             search={true}
                             showsVerticalScrollIndicator={true} 
-                            data={selectedBrand?.models}
+                            data={selectedBrand?.models||[]}
                             defaultValue={selectedModel}
                             renderButton={(selectedItem, isOpened) => {
                                 return (
