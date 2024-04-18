@@ -14,15 +14,4 @@ export default class AuthController{
         AuthController.#loggedUser = loggedUser;
     }
 
-    static sendRecoverPasswordEmail(email) {
-        return new Promise((resolve,reject)=>{
-            try {
-                resolve(true);
-            } catch (e) {
-                reject(e);
-            }
-        });
-    }
-
-
 }

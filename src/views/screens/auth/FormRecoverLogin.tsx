@@ -28,7 +28,7 @@ function FormRecoverLogin(props): JSX.Element {
                 let userDoc = await firestore().collection('Users').where('email','==',email.trim().toLowerCase()).get();            
                 if (userDoc && userDoc.size > 0) {
 
-                    //firebase function to send user recover link
+                    //firebase function to send user recover link                
                     let result = await auth().sendPasswordResetEmail(email);                
                     console.log(result);
                     if (result) {
