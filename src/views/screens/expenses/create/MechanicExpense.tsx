@@ -28,13 +28,13 @@ const { width, height } = Dimensions.get('window')
 function MechanicsExpense(props): JSX.Element {
     const selectVehicleRef = useRef();
     const selectServiceRef = useRef();
-    const [loading,setLoading] = useState(false);    
-    const [loaded,setLoaded] = useState(false);  
-    const [saving,setSaving] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [loaded, setLoaded] = useState(false);
+    const [saving, setSaving] = useState(false);
 
     //default properties
-    const [currentExpense,setCurrentExpense] = useState(null);    
-    const [vehicles, setVehicles] = useState([]);   
+    const [currentExpense, setCurrentExpense] = useState(null);
+    const [vehicles, setVehicles] = useState([]);
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [date, setDate] = useState(new Date());
     const [km, setKM] = useState(null);
@@ -45,8 +45,8 @@ function MechanicsExpense(props): JSX.Element {
     const [totalValue, setTotalValue] = useState(0);
 
     //specific properties
-    const [serviceList, setServiceList] = useState(['1', '2', '3', '4', '5', '6']);
-    const [service, setService] = useState('Serviço realizado'); 
+    const [serviceList, setServiceList] = useState(['Manutenção de freios', 'Alinhamento e balanceamento', 'Troca de correias e tensores', 'Troca de velas', 'Diagnóstico', 'Reparo de suspensão', 'Troca de bateria', 'Troca de sistema de escape', 'Serviço de ar condicionado']);
+    const [service, setService] = useState('Serviço realizado');
     const [isEnabled, setIsEnabled] = useState(false);
     const [dateReminder, setDateReminder] = useState(null);
 
@@ -55,40 +55,40 @@ function MechanicsExpense(props): JSX.Element {
         console.log('INIT MechanicExpense.useFocusEffect.useCallBack', props.navigation);
         if (!loading && !loaded) {
             setLoading(true);
-            (async()=>{
+            (async () => {
                 try {
                     console.log('loading expense...');
                     let newVehicles = await Vehicles.getSingleData();
-                    setVehicles(newVehicles);  
-                    console.log('EditExpenseController.currentExpense',EditExpenseController.currentExpense);
-                    if (EditExpenseController.currentExpense) { 
-                        console.log('loading states...'); 
+                    setVehicles(newVehicles);
+                    console.log('EditExpenseController.currentExpense', EditExpenseController.currentExpense);
+                    if (EditExpenseController.currentExpense) {
+                        console.log('loading states...');
 
                         //default properties    
-                        setCurrentExpense(EditExpenseController.currentExpense); 
+                        setCurrentExpense(EditExpenseController.currentExpense);
                         let vehicleId = EditExpenseController.currentExpense.ref.parent.parent.id;
-                        setSelectedVehicle(newVehicles.find(el=>el.id == vehicleId));
+                        setSelectedVehicle(newVehicles.find(el => el.id == vehicleId));
                         //date in firestore is object {"nanoseconds": 743000000, "seconds": 1713185626}
                         let dataExpense = EditExpenseController.currentExpense.data();
                         if (dataExpense.date) {
                             setDate(new Date(dataExpense.date.seconds * 1000 + dataExpense.date.nanoseconds / 1000000));
                         } else {
                             setDate(new Date());
-                        }                        
-                        setKM(dataExpense.actualkm||'');
-                        setEstablishment(dataExpense.establishment||'');
-                        setIsEnabledEstablishment(dataExpense.establishment?true:false);
-                        setObservations(dataExpense.observations||'');
-                        setIsEnabledObservations(dataExpense.observations?true:false);
-                        setTotalValue(dataExpense.totalValue||0);
-                    
+                        }
+                        setKM(dataExpense.actualkm || '');
+                        setEstablishment(dataExpense.establishment || '');
+                        setIsEnabledEstablishment(dataExpense.establishment ? true : false);
+                        setObservations(dataExpense.observations || '');
+                        setIsEnabledObservations(dataExpense.observations ? true : false);
+                        setTotalValue(dataExpense.totalValue || 0);
+
                         //specific properties             
-                        setService(dataExpense.othersdatas.service||null);
+                        setService(dataExpense.othersdatas.service || null);
                         if (dataExpense.othersdatas.dateReminder) {
                             setDateReminder(new Date(dataExpense.othersdatas.dateReminder.seconds * 1000 + dataExpense.othersdatas.dateReminder.nanoseconds / 1000000));
                         } else {
                             setDateReminder(null);
-                        }     
+                        }
                         setIsEnabled(dataExpense.othersdatas.dateReminder ? true : false);
                     } else {
                         clearStates();
@@ -96,10 +96,10 @@ function MechanicsExpense(props): JSX.Element {
 
                     console.log('loading expense... ok');
                 } catch (e) {
-                    console.log(e);                    
+                    console.log(e);
                 } finally {
                     setLoaded(true);
-                    setLoading(false);                    
+                    setLoading(false);
                 }
             })();
         }
@@ -108,7 +108,7 @@ function MechanicsExpense(props): JSX.Element {
 
     function clearStates() {
         console.log('clearing states ...');
-        setCurrentExpense(null);                
+        setCurrentExpense(null);
         setSelectedVehicle(null);
         setDate(new Date());
         setKM('');
@@ -130,13 +130,13 @@ function MechanicsExpense(props): JSX.Element {
             selectServiceRef.current?.reset();
         }
     }
-    
+
     async function saveExpense() {
         try {
-            if (totalValue && date && selectedVehicle) {    
-                setSaving(true);       
-                console.log('idVehicle',selectedVehicle.id);
-                let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);
+            if (totalValue && date && selectedVehicle) {
+                setSaving(true);
+                console.log('idVehicle', selectedVehicle.id);
+                let vehicle = (await Vehicles.getDBData())?.docs.find(el => el.id == selectedVehicle.id);
                 if (currentExpense) {
                     //update                    
                     await currentExpense.ref.update({
@@ -150,7 +150,7 @@ function MechanicsExpense(props): JSX.Element {
                             service: service,
                             dateReminder: isEnabled ? dateReminder : false
                         }
-                    });                    
+                    });
                 } else {
                     //create
                     let newExpense = await vehicle.ref.collection('expenses').add({
@@ -164,7 +164,7 @@ function MechanicsExpense(props): JSX.Element {
                             service: service,
                             dateReminder: isEnabled ? dateReminder : false
                         }
-                    });                    
+                    });
                 }
                 Alert.alert("Salvo", "Dados Salvos com Sucesso", [{ "text": "OK", onPress: () => goBack(), style: "ok" }]);
             } else {
@@ -177,7 +177,7 @@ function MechanicsExpense(props): JSX.Element {
         }
     }
 
-    
+
     //pressionado Cancelar do Header, volta o velocimetro
     goBack = () => {
         EditExpenseController.currentExpense = null;
@@ -193,10 +193,10 @@ function MechanicsExpense(props): JSX.Element {
     //render
     return (
         <View style={style.container}>
-            <Header 
-                withButtons={true} 
-                onPressConclude={saveExpense} 
-                onPressCancel={goBack} 
+            <Header
+                withButtons={true}
+                onPressConclude={saveExpense}
+                onPressCancel={goBack}
                 saving={saving}
             />
             <View style={style.espacoCentral}>
@@ -204,11 +204,11 @@ function MechanicsExpense(props): JSX.Element {
 
                 <ContentContainer >
                     <ScrollView>
-                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}                        
+                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}
                         <SelectDropdown
                             dropdownStyle={DefaultStyles.dropdownMenuStyle}
                             search={true}
-                            showsVerticalScrollIndicator={true}                            
+                            showsVerticalScrollIndicator={true}
                             data={vehicles}
                             defaultValue={selectedVehicle}
                             renderButton={(selectedItem, isOpened) => {
@@ -226,12 +226,13 @@ function MechanicsExpense(props): JSX.Element {
                                 );
                             }}
                             renderItem={(item, index, isSelected) => {
-                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
-                                        <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate }</Text>
+                                return (<View style={{ ...DefaultStyles.dropdownTextView, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                                    <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate}</Text>
                                 </View>);
                             }}
                             onSelect={(selectedItem, index) => {
                                 setSelectedVehicle(selectedItem);
+                                setKM(selectedItem.km)
                             }}
                             ref={selectVehicleRef}
                         />
@@ -241,12 +242,12 @@ function MechanicsExpense(props): JSX.Element {
 
                         {/* QUILOMETRAGEM ATUAL */}
                         <InputKM km={km} setKM={setKM} />
-                        
+
                         {/* dropdown: usado para selecionar o serviço e atualizar o txtinput */}
                         <SelectDropdown
                             dropdownStyle={DefaultStyles.dropdownMenuStyle}
                             search={true}
-                            showsVerticalScrollIndicator={true}                            
+                            showsVerticalScrollIndicator={true}
                             data={serviceList}
                             defaultValue={service}
                             renderButton={(selectedItem, isOpened) => {
@@ -264,8 +265,8 @@ function MechanicsExpense(props): JSX.Element {
                                 );
                             }}
                             renderItem={(item, index, isSelected) => {
-                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
-                                        <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                                return (<View style={{ ...DefaultStyles.dropdownTextView, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                                    <Text style={DefaultStyles.dropdownText}>{item}</Text>
                                 </View>);
                             }}
                             onSelect={(selectedItem, index) => {

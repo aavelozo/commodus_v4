@@ -117,6 +117,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
 
 
     const saveVehicle = async () => {
+        console.log(vehicle)
         try {
             if (!selectedModel || !selectedBrand || !selectedYear || !km || !plate) {
                 setShowAlert(true)
@@ -218,7 +219,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
     }
 
     const showToast = () => {
-        ToastAndroid.showWithGravity("Imagem salva com sucesso!", ToastAndroid.LONG, ToastAndroid.CENTER, 25, 50);
+        ToastAndroid.showWithGravity("Imagem inserida com sucesso!", ToastAndroid.LONG, ToastAndroid.CENTER, 25, 50);
     };
 
 

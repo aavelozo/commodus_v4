@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { Text, View, StyleSheet, FlatList, Dimensions, TouchableWithoutFeedback, ActivityIndicator, ScrollView, RefreshControl } from 'react-native'
-import {  useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect } from '@react-navigation/native'
 import Velo from '../../assets/iconSvg/velo.svg'
 import Oil from '../../assets/iconSvg/oil.svg'
 import Media from '../../assets/iconSvg/media.svg'
@@ -53,8 +53,8 @@ function Dashboard(props): JSX.Element {
                 setCarsThisUser(cars)
                 getDataForGraph(cars[changeCar])
                 getExpensesForMonth(cars[changeCar]);
-            } catch(e) {
-                console.log('error in Dashboard.useEffect -> async getExpenses',e);
+            } catch (e) {
+                console.log('error in Dashboard.useEffect -> async getExpenses', e);
             }
             console.log('END Dashboard.useEffect -> async getExpenses');
         }
@@ -76,10 +76,10 @@ function Dashboard(props): JSX.Element {
                 const cars = await getExpensesThisUser()
                 getDataForGraph(cars[changeCar])
                 getExpensesForMonth(cars[changeCar])
-                console.log('cars',cars[changeCar])
+                console.log('cars', cars[changeCar])
                 setLoading(false);
             } catch (e) {
-                console.log('error in Dashboard.useFocusEffect -> async getExpenses',e);
+                console.log('error in Dashboard.useFocusEffect -> async getExpenses', e);
             }
             console.log('END Dashboard.useFocusEffect -> async getExpenses');
         }
@@ -124,23 +124,23 @@ function Dashboard(props): JSX.Element {
 
     async function getExpensesThisUser() {
         let carros = [];
-        
-        
-        let newVehicles = await Vehicles.getDBData();  
-        for(let k in newVehicles.docs) {
+
+
+        let newVehicles = await Vehicles.getDBData();
+        for (let k in newVehicles.docs) {
             let newVehicle = {
-                id:newVehicles.docs[k].id,
-                plate:newVehicles.docs[k].data().plate,
-                idEngineType:newVehicles.docs[k].data().idEngineType,
-                km:newVehicles.docs[k].data().km,                    
-                model:newVehicles.docs[k].data().model.id,
-                brand:newVehicles.docs[k].data().model.parent.parent.id,
-                preferedFuel:newVehicles.docs[k].data().preferedFuel,
-                color:newVehicles.docs[k].data().color,
-                photo:newVehicles.docs[k].data().photo,
-                vehicleName : `${newVehicles.docs[k].data().model.id}-${newVehicles.docs[k].data().plate}`,
-                expenses : []
-            }; 
+                id: newVehicles.docs[k].id,
+                plate: newVehicles.docs[k].data().plate,
+                idEngineType: newVehicles.docs[k].data().idEngineType,
+                km: newVehicles.docs[k].data().km,
+                model: newVehicles.docs[k].data().model.id,
+                brand: newVehicles.docs[k].data().model.parent.parent.id,
+                preferedFuel: newVehicles.docs[k].data().preferedFuel,
+                color: newVehicles.docs[k].data().color,
+                photo: newVehicles.docs[k].data().photo,
+                vehicleName: `${newVehicles.docs[k].data().model.id}-${newVehicles.docs[k].data().plate}`,
+                expenses: []
+            };
             let despesas = []
             let completo = {}
             let newExpensesCollection = await newVehicles.docs[k].ref.collection('expenses').get();
@@ -154,7 +154,7 @@ function Dashboard(props): JSX.Element {
                 }
                 newExpense.totalValue = Utils.toNumber(newExpense.totalValue || null);
                 despesas.push(newExpense);
-                newVehicle.expenses.push(newExpense);                
+                newVehicle.expenses.push(newExpense);
             };
             completo.vehicle = newVehicle;
             completo.despesas = despesas;
@@ -206,7 +206,7 @@ function Dashboard(props): JSX.Element {
 
             car?.despesas?.map(despesa => {
                 var dateFormatted = moment(despesa.date).format('MM/YY');
-                console.log('dateFormatted',dateFormatted, despesa.date);
+                console.log('dateFormatted', dateFormatted, despesa.date);
                 // var dateFullYear = moment(desp.data).format('MM/YYYY')
                 var dateLastMonth = convertDate()
                 var dayExpense = moment(despesa.date).format('DD')
@@ -334,7 +334,7 @@ function Dashboard(props): JSX.Element {
         }
     }
 
-    
+
 
     const getItemLayout = (data, index) => {
         return {
@@ -364,7 +364,7 @@ function Dashboard(props): JSX.Element {
 
     }
 
-    console.log('carsThisUser',carsThisUser[changeCar]?.despesas[1])
+    console.log('carsThisUser', carsThisUser[changeCar]?.despesas[1])
     return (
         <>
             <Header />

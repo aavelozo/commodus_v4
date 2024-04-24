@@ -91,13 +91,17 @@ class DefaultStyles {
     static dropdownTextView = {
         backgroundColor: 'transparent', 
         width:'100%',
-        padding:4
+        padding: RFValue(4),
+        height: Dimensions.get('window').height / 15,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 
     static dropdownText = {
         backgroundColor: 'transparent', 
         fontSize: DefaultStyles.dimensions.defaultInputFontSize, 
-        fontFamily: 'verdana'
+        fontFamily: 'verdana',
+        color: 'black'
     }
 
     /*static selectDropdownWithTextInput = {

@@ -46,10 +46,8 @@ function AppearanceExpense(props): JSX.Element {
     //specific properties
     const [regularWashing, setRegularWashing] = useState(false);
     const [completeWashing, setCompleteWashing] = useState(false);
-    const [serviceList, setServiceList] = useState(['1', '2', '3', '4', '5', '6']);
+    const [serviceList, setServiceList] = useState(['Vitrificação de pintura', 'Polimento de faróis', 'Cristalização de pintura', 'Hidratação de couro', 'Limpeza de teto', 'Limpeza de carpete','Limpeza dos bancos','Limpeza das áreas plásticas','Revitalização de pintura','Pintura','Martelinho de ouro','Recuperação de sinistro']);
     const [service, setService] = useState('Outros Serviços');
-
-
 
     useFocusEffect(useCallback(() => {
         console.log('INIT AppearanceExpense.useFocusEffect.useCallBack');
@@ -227,6 +225,7 @@ function AppearanceExpense(props): JSX.Element {
                             }}
                             onSelect={(selectedItem, index) => {
                                 setSelectedVehicle(selectedItem);
+                                setKM(selectedItem.km)
                             }}
                             ref={selectVehicleRef}
                         />
