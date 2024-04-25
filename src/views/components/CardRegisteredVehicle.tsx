@@ -92,7 +92,7 @@ const style = StyleSheet.create({
         fontSize: RFValue(14),
         color: DefaultStyles.colors.tabBar,
         fontFamily: 'verdana',
-        marginVertical: RFValue(1)
+        marginBottom: RFValue(1)
     }
 });
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, Image, Dimensions, StyleSheet, TouchableWithoutFeedback, Modal } from 'react-native'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { DefaultStyles } from '../DefaultStyles'
@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native'
 import auth from '@react-native-firebase/auth';
 import Brands from '../../database/models/Brands'
 import Vehicles from '../../database/models/Vehicles'
+import AuthController from '../../controllers/AuthController'
 
 
 function Header(props): JSX.Element {
@@ -19,15 +20,40 @@ function Header(props): JSX.Element {
     const [user, setUser] = useState('')
     const showModal = () => setVisible(true)
     const hideModal = () => setVisible(false);
-    
+
     const styles = props.withButtons ? {
         width: RFValue(RFValue(35)),
         height: RFValue(RFValue(35)),
     } : false
 
+    useEffect(() => {
+        (async () => {
+            try {
+                console.log('loading user...');
 
-    const unloggingUser = async () => {   
-        try {     
+                const currentAuthUser = auth().currentUser;
+                if (currentAuthUser) {
+                    console.log('currentAuthUser', currentAuthUser);
+                    let userData = AuthController.getLoggedUser();//await firestore().collection('Users').where('authUserId','==',currentAuthUser.uid).get();
+                    if (userData) {
+                        setUser(userData.data())
+                        console.log(userData.data())
+                    }
+                }
+
+                console.log('loading user... ok');
+            } catch (e) {
+                console.log(e);
+            } finally {
+            }
+        })();
+
+
+    });
+
+
+    const unloggingUser = async () => {
+        try {
             await auth().signOut();
             Brands.setDBData(null);
             Vehicles.setDBData(null);
@@ -57,11 +83,11 @@ function Header(props): JSX.Element {
             </View>
 
             <View style={{ width: '25%', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                {props.withButtons 
-                    ? <ButtonConclude 
-                            loading={props.saving || props.loading || false}
-                            onPress={() => props.onPressConclude()} 
-                        />
+                {props.withButtons
+                    ? <ButtonConclude
+                        loading={props.saving || props.loading || false}
+                        onPress={() => props.onPressConclude()}
+                    />
                     : false
                 }
             </View>
@@ -84,7 +110,7 @@ function Header(props): JSX.Element {
                                     />
                             }
                             <Text adjustsFontSizeToFit style={{ color: '#F4F4F4', fontSize: RFValue(18), marginTop: RFValue(5), fontFamily: 'verdana', }}>{user?.name}</Text>
-                            <Text adjustsFontSizeToFit style={{ color: '#F4F4F4', fontFamily: 'verdana', }}>{user?.mail}</Text>
+                            <Text adjustsFontSizeToFit style={{ color: '#F4F4F4', fontFamily: 'verdana', }}>{user?.email}</Text>
 
                         </View>
 
