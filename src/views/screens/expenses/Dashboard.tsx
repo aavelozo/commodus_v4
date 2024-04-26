@@ -43,12 +43,9 @@ function Dashboard(props): JSX.Element {
 
 
     useEffect(() => {
-        console.log('INIT Dashboard.useEffect');
         async function getExpenses() {
-            console.log('INIT Dashboard.useEffect -> async getExpenses');
             try {
                 setLoading(true)
-                montaMeses("01/23")
                 const cars = await getExpensesThisUser()
                 setCarsThisUser(cars)
                 getDataForGraph(cars[changeCar])
@@ -56,23 +53,18 @@ function Dashboard(props): JSX.Element {
             } catch (e) {
                 console.log('error in Dashboard.useEffect -> async getExpenses', e);
             }
-            console.log('END Dashboard.useEffect -> async getExpenses');
         }
         getExpenses()
         setLoading(false)
-        console.log('END Dashboard.useEffect');
     }, [date, changeCar])
 
 
 
     useFocusEffect(useCallback(() => {
-        console.log('INIT Dashboard.useFocusEffect');
         EditExpenseController.currentExpense = null;
         async function getExpenses() {
-            console.log('INIT Dashboard.useFocusEffect -> async getExpenses');
             try {
                 setLoading(true)
-                montaMeses("01/23")
                 const cars = await getExpensesThisUser()
                 getDataForGraph(cars[changeCar])
                 getExpensesForMonth(cars[changeCar])
@@ -81,20 +73,18 @@ function Dashboard(props): JSX.Element {
             } catch (e) {
                 console.log('error in Dashboard.useFocusEffect -> async getExpenses', e);
             }
-            console.log('END Dashboard.useFocusEffect -> async getExpenses');
         }
         getExpenses();
-        console.log('END Dashboard.useFocusEffect');
     }, []))
 
-    const montaMeses = (inicio: String) => {
+    const montaMeses = (datamenor: Number, datamaior: Number) => {
+        var quantidade = (Math.ceil((Number(datamaior) - Number(datamenor)) / 1000 / 60 / 60 / 24 / 30))
+        if (quantidade < 3) quantidade = 3
         const mesesNomes = [
             "jan", "fev", "mar", "abr", "mai", "jun",
             "jul", "ago", "set", "out", "nov", "dez"
         ];
-        let parte = inicio.split('/')
-        const quantidade = Number(anoatual) - parte[1] + 36
-
+        let inicio = moment(datamenor).format('MM/YY')
         let meses = []
         for (let i = 0; i < quantidade; i++) {
             let [mes, ano] = inicio.split('/')
@@ -115,7 +105,6 @@ function Dashboard(props): JSX.Element {
             inicio = mes.toString().padStart(2, '0') + '/' + ano
         }
         setMonths(meses)
-        return meses
     }
 
     const getFirstAndLastExpense = () => {
@@ -124,7 +113,8 @@ function Dashboard(props): JSX.Element {
 
     async function getExpensesThisUser() {
         let carros = [];
-
+        let maior = 0;
+        let menor = 9999999999999;
 
         let newVehicles = await Vehicles.getDBData();
         for (let k in newVehicles.docs) {
@@ -144,13 +134,22 @@ function Dashboard(props): JSX.Element {
             let despesas = []
             let completo = {}
             let newExpensesCollection = await newVehicles.docs[k].ref.collection('expenses').get();
+
             for (let j in newExpensesCollection.docs) {
                 let newExpense = {
                     id: newExpensesCollection.docs[j].id,
                     ...newExpensesCollection.docs[j].data()
                 }
+                var miliseg = newExpense.date.seconds * 1000 + newExpense.date.nanoseconds / 1000000
+                console.log(miliseg)
+                if (maior < miliseg) {
+                    maior = miliseg;
+                }
+                if (menor > miliseg) {
+                    menor = miliseg;
+                }
                 if (newExpense.date && typeof newExpense.date == 'object' && newExpense.date.seconds) {
-                    newExpense.date = new Date(newExpense.date.seconds * 1000 + newExpense.date.nanoseconds / 1000000);
+                    newExpense.date = new Date(miliseg);
                 }
                 newExpense.totalValue = Utils.toNumber(newExpense.totalValue || null);
                 despesas.push(newExpense);
@@ -160,9 +159,7 @@ function Dashboard(props): JSX.Element {
             completo.despesas = despesas;
             carros.push(completo)
         };
-
-        console.log('returning cars', JSON.stringify(carros));
-
+        montaMeses(menor, maior)
         return carros;
     }
 
@@ -206,8 +203,6 @@ function Dashboard(props): JSX.Element {
 
             car?.despesas?.map(despesa => {
                 var dateFormatted = moment(despesa.date).format('MM/YY');
-                console.log('dateFormatted', dateFormatted, despesa.date);
-                // var dateFullYear = moment(desp.data).format('MM/YYYY')
                 var dateLastMonth = convertDate()
                 var dayExpense = moment(despesa.date).format('DD')
                 if (dateFormatted == date) {
@@ -364,7 +359,6 @@ function Dashboard(props): JSX.Element {
 
     }
 
-    console.log('carsThisUser', carsThisUser[changeCar]?.despesas[1])
     return (
         <>
             <Header />
