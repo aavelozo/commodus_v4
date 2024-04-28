@@ -1,6 +1,6 @@
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import React, { useState, useCallback } from 'react'
-import { View, StyleSheet, TouchableOpacity, Dimensions, FlatList, Text } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Dimensions, FlatList, Text, Image } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { DefaultStyles } from '../../DefaultStyles';
 import Vehicles from '../../../database/models/Vehicles';
@@ -9,6 +9,7 @@ import CardRegisteredVehicle from '../../components/CardRegisteredVehicle';
 import TitleView from '../../components/TitleView';
 import { RFValue } from 'react-native-responsive-fontsize';
 import _ from "lodash";
+import Wash from '../../assets/iconSvg/car-wash.svg'
 import { ActivityIndicator } from 'react-native-paper'
 import { setCurrentVehicle } from './EditVehicle'
 import EditExpenseController from '../../../controllers/EditExpenseController'
@@ -27,11 +28,11 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
             setLoading(true);
             (async () => {
                 try {
-                    console.log('loading vehicles...');                    
+                    console.log('loading vehicles...');
                     const newVehiclesCollection = await Vehicles.getDBData();
                     newVehicles = newVehiclesCollection.docs;
                     setVehicles(newVehicles);
-                    console.log('loading vehicles... ok size',newVehicles.length); 
+                    console.log('loading vehicles... ok size', newVehicles.length);
                 } catch (e) {
                     console.log(e);
                 } finally {
@@ -54,16 +55,16 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
                 <View style={style.espacoCentral}>
                     <View style={{ flex: 1, alignItems: 'center', paddingTop: RFValue(30) }}>
                         {/* Lista com os veículos cadastrados */}
-                        {loading 
-                            ? <View 
-                                style={{ 
-                                    width:'100%', 
-                                    height:'100%',                
-                                    alignItems: 'center', 
+                        {loading
+                            ? <View
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    alignItems: 'center',
                                     justifyContent: 'center',
                                     flex: 1
                                 }} >
-                                <ActivityIndicator size={'large'}/>
+                                <ActivityIndicator size={'large'} />
                             </View>
                             : vehicles?.length > 0 ?
                                 <FlatList
@@ -72,11 +73,25 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
                                     renderItem={getCars}
                                     showsVerticalScrollIndicator={false}
                                 />
-                                : <View style={{ height: '100%', justifyContent: 'center', alignItems: 'center', width: '100%', paddingHorizontal: RFValue(30) }}>
-                                    {/* <Empty width={RFValue(150)} height={RFValue(150)} fill={DefaultStyles.colors.tabBar} /> */}
-                                    <Text style={style.info}>Não há veículo cadastrado. </Text>
-                                    <Text style={style.info}>Clique em adicionar e cadastre seu primeiro veículo.</Text>
+                                :
+                                <View style={{ justifyContent: 'center', width: '90%' }}>
+                                    <View style={{ flexDirection: 'row', height: '50%', width: '100%', alignItems: 'flex-end' }}>
+                                        <Wash width={RFValue(70)} height={RFValue(70)} fill={DefaultStyles.colors.tabBar} />
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <Text style={style.info}>Para cadastrar seu primeiro</Text>
+                                            <Text style={style.info}>veículo basta clicar no mais </Text>
+                                            <Text style={style.info}>indicado pela flecha abaixo.</Text>
+                                        </View>
+
+
+                                    </View>
+                                    <Image
+                                        style={{ height: RFValue(220), width: RFValue(220), alignSelf: 'flex-end' }}
+                                        resizeMode="contain"
+                                        source={require('../../assets/arrow.png')}
+                                    />
                                 </View>
+
                         }
                     </View>
 
@@ -122,9 +137,10 @@ const style = StyleSheet.create({
     },
     info: {
         fontFamily: 'verdana',
-        fontSize: RFValue(16),
-        textAlign: 'center',
-        color: '#000'
+        fontSize: RFValue(18),
+        color: '#000',
+        marginLeft: RFValue(15),
+        textAlign: 'left'
     }
 });
 

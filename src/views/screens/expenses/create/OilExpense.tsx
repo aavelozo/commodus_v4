@@ -257,6 +257,7 @@ function OilExpense(props): JSX.Element {
                                 </View>);
                             }}
                             onSelect={(selectedItem, index) => {
+                                setKM(selectedItem.km)
                                 setSelectedVehicle(selectedItem);
                             }}
                             ref={selectVehicleRef}

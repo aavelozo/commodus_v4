@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Text, View, StyleSheet, FlatList, Dimensions, TouchableWithoutFeedback, TouchableOpacity, ScrollView } from 'react-native'
+import { Text, View, StyleSheet, FlatList, Dimensions, TouchableWithoutFeedback, TouchableOpacity, ScrollView, Image } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { useFocusEffect } from '@react-navigation/native'
 import Swiper from 'react-native-swiper'
@@ -11,22 +11,21 @@ import Header from '../../components/Header'
 import ButtonCardExpense from '../../components/ButtonCardExpense'
 import Utils from '../../../controllers/Utils';
 import _ from "lodash";
+import New from '../../assets/iconSvg/newExpense.svg'
 import EditExpenseController from '../../../controllers/EditExpenseController'
 import { ActivityIndicator } from 'react-native-paper'
 const { height, width } = Dimensions.get('window');
 
 function ViewExpense(props): JSX.Element {
-    const [loading,setLoading] = useState(false);
-    const [loaded,setLoaded] = useState(false); 
+    const [loading, setLoading] = useState(false);
+    const [loaded, setLoaded] = useState(false);
     const [allVehicle, setAllVehicle] = useState(true)
-    //const navigation = useNavigation();
     const [vehicles, setVehicles] = useState([]);
     const [expenses, setExpenses] = useState([])
     const [totalValue, setTotalValue] = useState(0)
-    
-    // const [expensesByCars, setExpensesByCar] = useState([])
 
-    useFocusEffect(React.useCallback(() => {        
+
+    useFocusEffect(React.useCallback(() => {
         setLoading(true);
         EditExpenseController.currentExpense = null;
         (async () => {
@@ -36,12 +35,12 @@ function ViewExpense(props): JSX.Element {
                 let newAllExpenses = [];
                 let newTotalValue = 0;
                 let newVehiclesCollection = await Vehicles.getDBData();
-                console.log('newVehiclesCollection',newVehiclesCollection.size);
+                console.log('newVehiclesCollection', newVehiclesCollection.size);
                 //newVehiclesCollection.forEach(async (docSnap)=>{                    
-                for(let k in newVehiclesCollection.docs) {
-                    console.log('vehicle',newVehiclesCollection.docs[k].id);
+                for (let k in newVehiclesCollection.docs) {
+                    console.log('vehicle', newVehiclesCollection.docs[k].id);
                     let expensesCollection = await newVehiclesCollection.docs[k].ref.collection('expenses').get();
-                    console.log('expenses of vehicle size',expensesCollection.size);
+                    console.log('expenses of vehicle size', expensesCollection.size);
                     newVehiclesCollection.docs[k].expenses = expensesCollection.docs || [];
                     newVehiclesCollection.docs[k].vehicleName = `${newVehiclesCollection.docs[k].data().model.id}-${newVehiclesCollection.docs[k].data().plate}`;
                     newVehiclesCollection.docs[k].totalValue = 0;
@@ -49,24 +48,24 @@ function ViewExpense(props): JSX.Element {
                         newVehiclesCollection.docs[k].totalValue += Utils.toNumber(newVehiclesCollection.docs[k].expenses[i].data().totalValue);
                         newVehiclesCollection.docs[k].expenses[i].vehicleName = newVehiclesCollection.docs[k].vehicleName;
                     }
-                    newTotalValue += newVehiclesCollection.docs[k].totalValue; 
+                    newTotalValue += newVehiclesCollection.docs[k].totalValue;
                     newVehicles.push(newVehiclesCollection.docs[k]);
                     newAllExpenses = newAllExpenses.concat(newVehiclesCollection.docs[k].expenses);
-                    console.log('vehicle',newVehiclesCollection.docs[k].id,'end');
+                    console.log('vehicle', newVehiclesCollection.docs[k].id, 'end');
                 };
 
-                console.log('newVehicles',newVehicles);
-                console.log('newAllExpenses',newAllExpenses);
-                console.log('newTotalValue',newTotalValue);
+                console.log('newVehicles', newVehicles);
+                console.log('newAllExpenses', newAllExpenses);
+                console.log('newTotalValue', newTotalValue);
                 setVehicles(newVehicles);
                 setExpenses(newAllExpenses);
                 setTotalValue(newTotalValue);
-                console.log('loading expenses... ok,size',newAllExpenses.length);
+                console.log('loading expenses... ok,size', newAllExpenses.length);
             } catch (e) {
-                console.log(e);                    
+                console.log(e);
             } finally {
                 setLoaded(true);
-                setLoading(false);                
+                setLoading(false);
             }
         })();
     }, []))
@@ -79,19 +78,19 @@ function ViewExpense(props): JSX.Element {
                 <View style={style.espacoCentral}>
 
                     {loading
-                        ? <View 
-                            style={{ 
-                                width:'100%', 
-                                height:'100%',                
-                                alignItems: 'center', 
+                        ? <View
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                alignItems: 'center',
                                 justifyContent: 'center',
                                 flex: 1
                             }} >
-                            <ActivityIndicator size={'large'}/>
+                            <ActivityIndicator size={'large'} />
                         </View>
                         : <>
-                            {expenses.length > 0 
-                                ? <View style={{ flex: 1, paddingTop: RFValue(20) }}>
+                            {expenses.length > 0
+                                ? <><View style={{ flex: 1, paddingTop: RFValue(20) }}>
                                     {/* BOTão MOSTRAR TODAS DESPESAS OU VEICULO POR VEICULO */}
                                     <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center' }}>
                                         <TouchableWithoutFeedback onPress={() => setAllVehicle(true)}>
@@ -123,7 +122,7 @@ function ViewExpense(props): JSX.Element {
                                                 renderItem={({ item }) => {
                                                     return (
                                                         <>
-                                                            <ButtonCardExpense data={item} navigate={props.navigation.navigate}/>
+                                                            <ButtonCardExpense data={item} navigate={props.navigation.navigate} />
                                                         </>
                                                     )
                                                 }}
@@ -161,34 +160,37 @@ function ViewExpense(props): JSX.Element {
                                         </Swiper>
                                     }
                                 </View>
-                                : <View style={{ height: '100%', justifyContent: 'center', alignItems: 'center', width: '100%', paddingHorizontal: RFValue(30) }}>                        
-                                    <Text style={style.info}>Não há despesa cadastrada. </Text>
-                                    <View style={[style.info, { flexDirection: 'row' }]}>
-                                        <Text style={style.info}>Clique</Text>
-                                        <TouchableWithoutFeedback onPress={() => {
+                                    <View style={style.button} >
+                                        <TouchableOpacity onPress={() => {
                                             EditExpenseController.currentExpense = null;
                                             props.navigation.navigate('StackIncludeExpense');
                                         }}>
-                                            <View>
-                                                <Text style={[style.info, { fontWeight: 'bold', color: 'blue' }]}> aqui </Text>
-                                            </View>
-                                        </TouchableWithoutFeedback>
-                                        <Text style={style.info}>para cadastrar</Text>
+                                            <Icon name='plus' size={RFValue(35)} color={DefaultStyles.colors.botao} />
+                                        </TouchableOpacity>
                                     </View>
-                                    <Text style={style.info}>sua primeira despesa</Text>
-                                    <Text style={style.info}>ou no botão de adicionar.</Text>
+                                </>
+                                :
+                                <View style={{ justifyContent: 'center', width: '90%' }}>
+                                    <View style={{ flexDirection: 'row', height: '50%', width: '100%', alignItems: 'flex-end',marginLeft: RFValue(10) }}>
+                                        <New width={RFValue(70)} height={RFValue(70)} fill={DefaultStyles.colors.tabBar} />
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <Text style={style.info}>Para cadastrar sua primeira</Text>
+                                            <Text style={style.info}>despesa basta clicar no ícone</Text>
+                                            <Text style={style.info}>indicado pela flecha abaixo.</Text>
+                                        </View>
+
+                                    </View>
+                                    <Image
+                                        style={{ height: RFValue(260), width: RFValue(260), alignSelf: 'center', marginTop: RFValue(10) }}
+                                        resizeMode="contain"
+                                        source={require('../../assets/arrowdown2.png')}
+                                    />
                                 </View>
+
                             }
 
-                            {/* BOTÃO ACRESCENTAR DESPESA -> Abre modal velocimetro */}
-                            <View style={style.button} >
-                                <TouchableOpacity onPress={() => {
-                                    EditExpenseController.currentExpense = null;
-                                    props.navigation.navigate('StackIncludeExpense');
-                                }}>
-                                    <Icon name='plus' size={RFValue(35)} color={DefaultStyles.colors.botao} />
-                                </TouchableOpacity>
-                            </View>
+
+
                         </>}
                 </View>
             </View >
@@ -271,9 +273,10 @@ const style = StyleSheet.create({
     },
     info: {
         fontFamily: 'verdana',
-        fontSize: RFValue(16),
-        textAlign: 'center',
-        color: '#000'
+        fontSize: RFValue(18),
+        color: '#000',
+        marginLeft: RFValue(15),
+        textAlign: 'left'
     }
 })
 

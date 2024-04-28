@@ -59,7 +59,6 @@ function Dashboard(props): JSX.Element {
     }, [date, changeCar])
 
 
-
     useFocusEffect(useCallback(() => {
         EditExpenseController.currentExpense = null;
         async function getExpenses() {
@@ -84,7 +83,7 @@ function Dashboard(props): JSX.Element {
             "jan", "fev", "mar", "abr", "mai", "jun",
             "jul", "ago", "set", "out", "nov", "dez"
         ];
-        let inicio = moment(datamenor).format('MM/YY')
+        let inicio = moment(Number(datamenor)).format('MM/YY')
         let meses = []
         for (let i = 0; i < quantidade; i++) {
             let [mes, ano] = inicio.split('/')
@@ -105,10 +104,6 @@ function Dashboard(props): JSX.Element {
             inicio = mes.toString().padStart(2, '0') + '/' + ano
         }
         setMonths(meses)
-    }
-
-    const getFirstAndLastExpense = () => {
-
     }
 
     async function getExpensesThisUser() {
@@ -327,17 +322,8 @@ function Dashboard(props): JSX.Element {
         } catch (e) {
             console.log('e2', e);
         }
-    }
 
-
-
-    const getItemLayout = (data, index) => {
-        return {
-            length: 50,
-            offset: 50 * data.length,
-            index,
-        };
-    };
+    }   
 
     const handlePreviousCar = () => {
         if (changeCar == 0) {

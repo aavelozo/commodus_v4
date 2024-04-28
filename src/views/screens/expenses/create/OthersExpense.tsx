@@ -97,7 +97,7 @@ function OthersExpense(props): JSX.Element {
 
     async function saveExpense() {
         try {
-            if (totalValue && date && selectedVehicle) {
+            if (totalValue && date && selectedVehicle && description) {
                 setSaving(true);
                 console.log('idVehicle',selectedVehicle.id);
                 let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);
@@ -188,8 +188,7 @@ function OthersExpense(props): JSX.Element {
                 <TitleView title=' Outra Despesa' />
 
                 <ContentContainer >
-                    <ScrollView>
-                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}                        
+                    <ScrollView>                   
                         <SelectDropdown
                             dropdownStyle={DefaultStyles.dropdownMenuStyle}
                             search={true}
@@ -216,17 +215,16 @@ function OthersExpense(props): JSX.Element {
                                 </View>);
                             }}
                             onSelect={(selectedItem, index) => {
+                                setKM(selectedItem.km)
                                 setSelectedVehicle(selectedItem);
                             }}
                             ref={selectVehicleRef}
                         />
-                        {/* DATE INPUT */}
+                 
                         <DateComponent date={date} setDate={setDate} />
-
-                        {/* QUILOMETRAGEM ATUAL */}
+                  
                         <InputKM km={km} setKM={setKM} />
-
-                        {/* DOCUMENT */}
+             
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
@@ -234,9 +232,9 @@ function OthersExpense(props): JSX.Element {
                             label='Descrição da despesa'
                             onChangeText={value => setDescription(value)}
                             value={description}
+                            maxLength={20}
                         />
 
-                        {/* PREÇO TOTAL */}
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
