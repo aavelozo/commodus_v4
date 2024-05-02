@@ -17,10 +17,10 @@ class Vehicles {
     ];
     
     static getDBCollection(){
-        if (!this.#dbCollection) {
+        if (!this.#dbCollection) { //"singleton" property
             this.#dbCollection = AuthController.getLoggedUser().ref.collection('vehicles');
             this.#dbCollection.onSnapshot(function(querySnapshot){
-                console.log('documentos atualizados na base, recarregando');
+                console.log('documentos atualizados na nuvem, recarregando');
                 Vehicles.loadDBData();
             });
         }

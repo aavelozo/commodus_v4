@@ -32,7 +32,8 @@ function Tab(props: React.PropsWithChildren): JSX.Element {
                     borderTopLeftRadius: 25,
                     height: height / 14,
                 },
-            }}>
+            }}
+            backBehavior='history'>
             <Tabs.Screen
                 name='Dashboard'
                 component={Dashboard}
