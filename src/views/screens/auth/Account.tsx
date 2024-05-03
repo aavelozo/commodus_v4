@@ -60,7 +60,7 @@ function Account(props): JSX.Element {
             })();
 
         }
-    }); 
+    },[navigation]); 
 
 
     // mostra alert para selecionar camera ou galeria

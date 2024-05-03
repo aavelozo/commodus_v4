@@ -17,7 +17,7 @@ import AuthController from '../../controllers/AuthController'
 function Header(props): JSX.Element {
     const navigation = useNavigation()
     const [visible, setVisible] = useState(false)
-    const [user, setUser] = useState('')
+    const [user, setUser] = useState(null)
     const showModal = () => setVisible(true)
     const hideModal = () => setVisible(false);
 
@@ -27,10 +27,9 @@ function Header(props): JSX.Element {
     } : false
 
     useEffect(() => {
-        (async () => {
-            try {
+        try {
+            if (!user) {
                 console.log('loading user...');
-
                 const currentAuthUser = auth().currentUser;
                 if (currentAuthUser) {
                     console.log('currentAuthUser', currentAuthUser);
@@ -40,16 +39,12 @@ function Header(props): JSX.Element {
                         console.log(userData.data())
                     }
                 }
-
                 console.log('loading user... ok');
-            } catch (e) {
-                console.log(e);
-            } finally {
             }
-        })();
-
-
-    });
+        } catch (e) {
+            console.log(e);
+        } 
+    },[navigation]);
 
 
     const unloggingUser = async () => {
