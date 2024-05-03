@@ -5,6 +5,7 @@ import { Login } from '../auth/Login';
 import UserRegistration from '../auth/UserRegistration';
 import Tab from './Tab';
 import RecoverLogin from '../auth/RecoverLogin';
+import StackEditExpense from './StackEditExpense';
 
 const StackNative = createNativeStackNavigator()
 
@@ -20,8 +21,8 @@ function Stack(props:Object) : JSX.Element {
             <StackNative.Screen name='Loading' component={Loading} />
             <StackNative.Screen name='UserRegistration' component={UserRegistration} />
             <StackNative.Screen name='Login' component={Login} />     
-            <StackNative.Screen name='RecoverLogin' component={RecoverLogin} />       
-            <StackNative.Screen name='Tab' component={Tab} />
+            <StackNative.Screen name='RecoverLogin' component={RecoverLogin} />                   
+            <StackNative.Screen name='Tab' component={Tab} />            
         </StackNative.Navigator>
     )
 }

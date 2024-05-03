@@ -9,6 +9,7 @@ import StackVehicle from './StackVehicle'
 import ViewExpense from '../expenses/ViewExpense'
 import StackUser from './StackUser'
 import Dashboard from '../expenses/Dashboard'
+import StackEditExpense from './StackEditExpense'
 
 
 const Tabs = createBottomTabNavigator()
@@ -77,6 +78,13 @@ function Tab(props: React.PropsWithChildren): JSX.Element {
                     tabBarIcon: ({ focused, size, color }) => (
                         <FeatherIcon name="user" size={focused ? 30 : size} color={DefaultStyles.colors.fundoInput} />
                     )
+                }}
+            />
+            <Tabs.Screen 
+                name='StackEditExpense'                 
+                component={StackEditExpense} 
+                options={{
+                    tabBarButton: (props2) => false
                 }}
             />
         </Tabs.Navigator>

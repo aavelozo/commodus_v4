@@ -56,7 +56,7 @@ function ButtonCardExpense(props): JSX.Element {
         <TouchableWithoutFeedback
             onPress={() => {
                 EditExpenseController.currentExpense = item;
-                props.navigate('StackIncludeExpense', {
+                props.navigate('StackEditExpense', {
                     screen: routeName
                 });
             }}
