@@ -86,7 +86,7 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
 
                                     </View>
                                     <Image
-                                        style={{ height: RFValue(220), width: RFValue(220), alignSelf: 'flex-end' }}
+                                        style={{ height: RFValue(200), width: RFValue(220), alignSelf: 'flex-end' }}
                                         resizeMode="contain"
                                         source={require('../../assets/arrow.png')}
                                     />
