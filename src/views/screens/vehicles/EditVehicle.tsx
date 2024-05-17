@@ -241,7 +241,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                 withButtons={true} 
                 onPressConclude={saveVehicle} 
                 saving={saving}
-                onPressCancel={() => navigation.goBack()} 
+                onPressCancel={() => navigation.navigate('ListVehicle')} 
             />
             <View style={style.title}>
                 <TitleView title={vehicle ? 'Edição de veículo' : 'Cadastro de veículo'} />

@@ -53,7 +53,7 @@ function MechanicsExpense(props): JSX.Element {
 
     useFocusEffect(useCallback(() => {
         console.log('INIT MechanicExpense.useFocusEffect.useCallBack', props.navigation);
-        if (!loading && !loaded) {
+        if (!loading || !loaded) {
             setLoading(true);
             (async () => {
                 try {
@@ -102,8 +102,8 @@ function MechanicsExpense(props): JSX.Element {
                     setLoading(false);
                 }
             })();
-        }
-    }, [props.navigation]));
+        }        
+    }, []));
 
 
     function clearStates() {
@@ -182,7 +182,7 @@ function MechanicsExpense(props): JSX.Element {
     goBack = () => {
         EditExpenseController.currentExpense = null;
         clearStates();
-        props.navigation.goBack();
+        props.navigation.navigate('ViewExpense')
     };
 
     /**

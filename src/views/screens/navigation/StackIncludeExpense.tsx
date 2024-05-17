@@ -1,7 +1,7 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import SpeedometerModal from '../expenses/create/SpeedometerModal';
-import {FuelExpense} from '../expenses/create/FuelExpense';
+import { FuelExpense } from '../expenses/create/FuelExpense';
 import OilExpense from '../expenses/create/OilExpense';
 import DocumentationExpense from '../expenses/create/DocumentationExpense';
 import OthersExpense from '../expenses/create/OthersExpense';
@@ -11,10 +11,10 @@ import AppearanceExpense from '../expenses/create/AppearanceExpense';
 
 const Stack = createNativeStackNavigator()
 
-function StackIncludeExpense(props: React.PropsWithChildren) : JSX.Element {
+function StackIncludeExpense(props: React.PropsWithChildren): JSX.Element {
 
     return (
-        <Stack.Navigator {...props} initialRouteName={'SpeedometerModal'} screenOptions={{ headerShown: false }}>
+        <Stack.Navigator {...props} initialRouteName={'SpeedometerModal'} screenOptions={{ headerShown: false }} detachInactiveScreens={false}>
             <Stack.Screen name='SpeedometerModal' component={SpeedometerModal} />
             <Stack.Screen name='FuelExpense' component={FuelExpense} />
             <Stack.Screen name='OilExpense' component={OilExpense} />

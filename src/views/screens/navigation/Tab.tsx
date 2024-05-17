@@ -20,6 +20,7 @@ function Tab(props: React.PropsWithChildren): JSX.Element {
 
     return (
         <Tabs.Navigator initialRouteName={`${view}`} {...props}
+            // backBehavior='firstRoute'
             screenOptions={{
                 headerShown: false,
                 tabBarHideOnKeyboard: true,
@@ -34,7 +35,7 @@ function Tab(props: React.PropsWithChildren): JSX.Element {
                     height: height / 14,
                 },
             }}
-            backBehavior='history'>
+        >
             <Tabs.Screen
                 name='Dashboard'
                 component={Dashboard}
@@ -80,9 +81,9 @@ function Tab(props: React.PropsWithChildren): JSX.Element {
                     )
                 }}
             />
-            <Tabs.Screen 
-                name='StackEditExpense'                 
-                component={StackEditExpense} 
+            <Tabs.Screen
+                name='StackEditExpense'
+                component={StackEditExpense}
                 options={{
                     tabBarButton: (props2) => false
                 }}

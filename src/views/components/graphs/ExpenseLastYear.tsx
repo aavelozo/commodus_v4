@@ -8,8 +8,8 @@ import { VictoryLine, VictoryChart, VictoryTheme, VictoryPie, VictoryLabel, Vict
 
 function ExpenseLastYear({ data }): JSX.Element {
     return (
-        <View style={{ borderBottomWidth: 1, marginTop: RFValue(10), alignItems: "flex-start" }}>
-            <Text style={style.titleGraph}>Gastos dos últimos 365 dias</Text>
+        <View style={{ borderBottomWidth: 1, marginTop: RFValue(10), alignItems: "flex-start", paddingLeft: RFValue(10) }}>
+            <Text style={[style.titleGraph, {paddingLeft: RFValue(-10)}]}>Gastos dos últimos 365 dias</Text>
 
             <VictoryChart
                 // theme={VictoryTheme.material}
@@ -20,11 +20,10 @@ function ExpenseLastYear({ data }): JSX.Element {
                     data={data.reverse()}
                     alignment="middle"
                     sortOrder="descending"
-
                 />
                 <VictoryAxis
                     tickFormat={data.x}
-                    tickLabelComponent={<VictoryLabel angle={-30} textAnchor="end" style={{ fontSize: RFValue(9) }} />}
+                    tickLabelComponent={<VictoryLabel angle={-30} textAnchor="end" style={{ fontSize: RFValue(11) }} />}
                 />
                 <VictoryAxis
                     dependentAxis
