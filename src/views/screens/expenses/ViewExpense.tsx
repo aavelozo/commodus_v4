@@ -116,7 +116,7 @@ function ViewExpense(props): JSX.Element {
                                             </View>
                                             <Text style={{ fontWeight: 'bold', fontSize: RFValue(20), marginLeft: RFValue(15), color: DefaultStyles.colors.tabBar, marginTop: RFValue(10) }}>Detalhe dos gastos:</Text>
                                             <FlatList
-                                                ListFooterComponent={() => <View style={{ height: height * 0.1 }} />}
+                                                ListFooterComponent={() => <View style={{ height: height * 0.108 }} />}
                                                 keyExtractor={expenses.id}
                                                 data={expenses}
                                                 renderItem={({ item }) => {
@@ -150,7 +150,7 @@ function ViewExpense(props): JSX.Element {
                                                                         )
                                                                     }) : false
                                                                 }
-                                                                <View style={{ height: height * 0.12 }} />
+                                                                <View style={{ height: height * 0.131 }} />
                                                             </ScrollView>
 
                                                         </View>
@@ -171,7 +171,7 @@ function ViewExpense(props): JSX.Element {
                                 </>
                                 :
                                 <View style={{ justifyContent: 'center', width: '90%' }}>
-                                    <View style={{ flexDirection: 'row', height: '50%', width: '100%', alignItems: 'flex-end',marginLeft: RFValue(10) }}>
+                                    <View style={{ flexDirection: 'row', height: '50%', width: '100%', alignItems: 'flex-end', marginLeft: RFValue(10) }}>
                                         <New width={RFValue(70)} height={RFValue(70)} fill={DefaultStyles.colors.tabBar} />
                                         <View style={{ flexDirection: 'column' }}>
                                             <Text style={style.info}>Para cadastrar sua primeira</Text>

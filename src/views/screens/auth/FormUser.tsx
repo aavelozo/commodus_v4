@@ -70,7 +70,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                 props.navigation.dispatch(
                     CommonActions.reset({
                         index: 0,
-                        routes: [{ name: 'Login', params: data }]
+                        routes: [{ name: 'Terms', params: data }]
                     })
                 );
             }).catch(error => {

@@ -2,19 +2,17 @@ import { StyleSheet, Text, View } from "react-native"
 import { DefaultStyles } from "../../DefaultStyles"
 import Header from "../../components/Header"
 import FormUser from "./FormUser"
+import { RFValue } from "react-native-responsive-fontsize"
 
 function UserRegistration(props: React.PropsWithChildren) : JSX.Element {
-
     return (
         <View style={style.container}>
             <Header noBars/>
             <View style={style.espacoCentral}>
-            <Text style={{fontSize: 25, color: DefaultStyles.colors.botao}}>Cadastro de usuário</Text>
+            <Text style={{fontSize: RFValue(25), color: DefaultStyles.colors.botao}}>Cadastro de usuário</Text>
                 <FormUser navigation={props.navigation}/>
-            </View>
-           
-        </View>
-        
+            </View>           
+        </View>        
     )
 }
 
