@@ -9,11 +9,16 @@ import StackVehicle from './StackVehicle'
 import ViewExpense from '../expenses/ViewExpense'
 import StackUser from './StackUser'
 import Dashboard from '../expenses/Dashboard'
-import StackEditExpense from './StackEditExpense'
+import StackEditExpense from './StackEditExpense';
+import FontAwsomeIcon from 'react-native-vector-icons/FontAwesome';
+import FontAwsomeIcon5 from 'react-native-vector-icons/FontAwesome5';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+
 
 
 const Tabs = createBottomTabNavigator()
-const { height } = Dimensions.get('window')
+const { height } = Dimensions.get('window');
+const focusedIconIncSize = 3;
 
 function Tab(props: React.PropsWithChildren): JSX.Element {
     const view = props.route?.params?.route
@@ -40,18 +45,23 @@ function Tab(props: React.PropsWithChildren): JSX.Element {
                 name='Dashboard'
                 component={Dashboard}
                 options={{
-                    tabBarIcon: ({ focused, size, color }) => (
-                        <FeatherIcon name="pie-chart" size={focused ? 30 : size} color={DefaultStyles.colors.fundoInput} />
-                    )
+                    tabBarIcon: ({ focused, size, color }) => 
+                        //<Icon name="pie-chart" color={DefaultStyles.colors.fundoInput} size={focused ? 30 : size}/>
+                        focused
+                            ?<Fontisto name="pie-chart-1" size={focused ? size + focusedIconIncSize : size} color={DefaultStyles.colors.fundoInput}/>
+                            : <FeatherIcon name="pie-chart" size={focused ? size + focusedIconIncSize : size} color={DefaultStyles.colors.fundoInput}/>
+                    
                 }}
             />
             <Tabs.Screen
                 name='ViewExpense'
                 component={ViewExpense}
                 options={{
-                    tabBarIcon: ({ focused, size, color }) => (
-                        <FeatherIcon name="file-text" size={focused ? 30 : size} color={DefaultStyles.colors.fundoInput} />
-                    )
+                    tabBarIcon: ({ focused, size, color }) => 
+                        focused 
+                            ? <FontAwsomeIcon name="file-text" size={focused ? size + focusedIconIncSize : size} color={DefaultStyles.colors.fundoInput}/>
+                            : <FeatherIcon name="file-text" size={focused ? size + focusedIconIncSize : size} color={DefaultStyles.colors.fundoInput}/>
+                    
                 }}
             />
             <Tabs.Screen
@@ -59,7 +69,7 @@ function Tab(props: React.PropsWithChildren): JSX.Element {
                 component={StackIncludeExpense}
                 options={{
                     tabBarIcon: ({ focused, size, color }) => (
-                        <Image source={require('../../assets/iconDespesa.png')} style={focused ? { height: 45, width: 45 } : { height: 35, width: 35 }} />
+                        <Image source={require('../../assets/iconDespesa.png')} style={focused ? { height: 45, width: 45 } : { height: 35, width: 35 }}/>
                     )
                 }}
             />
@@ -67,18 +77,21 @@ function Tab(props: React.PropsWithChildren): JSX.Element {
                 name='StackVehicle'
                 component={StackVehicle}
                 options={{
-                    tabBarIcon: ({ focused, size }) => (
-                        <Fontisto name="automobile" size={focused ? 45 : 35} color={DefaultStyles.colors.fundoInput} />
-                    )
+                    tabBarIcon: ({ focused, size }) => 
+                        focused
+                            ? <IonIcon name="car-sharp" size={focused ? size + focusedIconIncSize + 10 : size + 5} color={DefaultStyles.colors.fundoInput}/>
+                            : <IonIcon name="car-outline" size={focused ? size + focusedIconIncSize + 10 : size + 5} color={DefaultStyles.colors.fundoInput}/>
                 }}
             />
             <Tabs.Screen
                 name='StackUser'
                 component={StackUser}
                 options={{
-                    tabBarIcon: ({ focused, size, color }) => (
-                        <FeatherIcon name="user" size={focused ? 30 : size} color={DefaultStyles.colors.fundoInput} />
-                    )
+                    tabBarIcon: ({ focused, size, color }) => 
+                        focused
+                            ? <FontAwsomeIcon5 name="user-alt" size={focused ? size + focusedIconIncSize - 2 : size} color={DefaultStyles.colors.fundoInput}/>
+                            : <FeatherIcon name="user" size={focused ? size + focusedIconIncSize - 2: size} color={DefaultStyles.colors.fundoInput}/>
+                    
                 }}
             />
             <Tabs.Screen
