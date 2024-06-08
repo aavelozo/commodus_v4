@@ -25,7 +25,7 @@ function Tab(props: React.PropsWithChildren): JSX.Element {
 
     return (
         <Tabs.Navigator initialRouteName={`${view}`} {...props}
-            // backBehavior='firstRoute'
+            backBehavior='history'
             screenOptions={{
                 headerShown: false,
                 tabBarHideOnKeyboard: true,

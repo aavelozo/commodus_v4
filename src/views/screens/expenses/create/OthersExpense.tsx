@@ -167,7 +167,8 @@ function OthersExpense(props): JSX.Element {
     goBack = () => {
         EditExpenseController.currentExpense = null;
         clearStates();
-        props.navigation.navigate('ViewExpense');
+        //props.navigation.navigate('ViewExpense');
+        props.navigation.goBack();
     };
 
     /**
