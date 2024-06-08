@@ -24,7 +24,8 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                 visible={visibleModal}
                 onRequestClose={() => {
                     setVisibleModal(false)
-                    navigation.navigate('ViewExpense')
+                    //navigation.navigate('ViewExpense')
+                    navigation.goBack();
                 }}
             >
                 <View style={{ flex: 1, backgroundColor: 'black' }}>
@@ -32,7 +33,8 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                         {/* Clicado na parte central (LOGO), vai para tela Dashboard */}
                         <TouchableWithoutFeedback onPress={() => {
                             setVisibleModal(false)
-                            navigation.navigate('ViewExpense')
+                            //navigation.navigate('ViewExpense');
+                            navigation.goBack();
                         }}>
                             <Image
                                 resizeMode="contain"
@@ -105,7 +107,8 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                         <View style={{ alignItems: 'center', justifyContent: 'flex-end', width: '100%', height: '100%', paddingBottom: RFValue(20) }}>
                             <TouchableWithoutFeedback onPress={() => {  //Botao velocimentro para voltar
                                 setVisibleModal(false)
-                                navigation.navigate('ViewExpense')
+                                //navigation.navigate('ViewExpense');
+                                navigation.goBack();
 
                             }}>
                                 <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#630303', width: RFValue(60), height: RFValue(60), borderRadius: RFValue(30), }}>
