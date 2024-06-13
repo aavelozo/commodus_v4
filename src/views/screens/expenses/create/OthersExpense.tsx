@@ -25,6 +25,7 @@ function OthersExpense(props): JSX.Element {
     const [loading,setLoading] = useState(false);    
     const [loaded,setLoaded] = useState(false); 
     const [saving,setSaving] = useState(false);
+    const [missingData, setMissingData] = useState(false);
 
     //default properties
     const [currentExpense, setCurrentExpense] = useState(null);
@@ -130,9 +131,11 @@ function OthersExpense(props): JSX.Element {
                         }
                     });                    
                 }                  
-                Alert.alert("Salvo", "Dados Salvos com Sucesso", [{ "text": "OK", onPress: () => goBack(), style: "ok" }]);
+                goBack();
+                Utils.toast("success", "Dados Salvos com Sucesso");
             } else {
-                Alert.alert("Faltam dados essenciais");
+                setMissingData(true);
+                Utils.toast("error","faltam dados");
             }
         } catch (e) {
             Utils.showError(e);
@@ -202,7 +205,8 @@ function OthersExpense(props): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            label='Veículo'
+                                            error={missingData && !selectedVehicle}
+                                            label='* Veículo'
                                             value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
                                             pointerEvents="none"
                                             readOnly
@@ -222,15 +226,16 @@ function OthersExpense(props): JSX.Element {
                             ref={selectVehicleRef}
                         />
                  
-                        <DateComponent date={date} setDate={setDate} />
+                        <DateComponent date={date} setDate={setDate} error={missingData && !date} />
                   
                         <InputKM km={km} setKM={setKM} />
              
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
+                            error={missingData && !description}
                             keyboardType='default'
-                            label='Descrição da despesa'
+                            label='* Descrição da despesa'
                             onChangeText={value => setDescription(value)}
                             value={description}
                             maxLength={20}
@@ -239,8 +244,9 @@ function OthersExpense(props): JSX.Element {
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
+                            error={missingData && !totalValue}
                             keyboardType='numeric'
-                            label='Valor Total'
+                            label='* Valor Total'
                             onChangeText={value => setTotalValue(Utils.toNumber(value))}
                             value={totalValue.toString()}
                         />

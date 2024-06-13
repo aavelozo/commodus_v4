@@ -28,6 +28,7 @@ function TyreExpense(props): JSX.Element {
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [missingData, setMissingData] = useState(false);
 
     //default properties
     const [currentExpense, setCurrentExpense] = useState(null);
@@ -140,9 +141,11 @@ function TyreExpense(props): JSX.Element {
                         }
                     });
                 }
-                Alert.alert("Salvo", "Dados Salvos com Sucesso", [{ "text": "OK", onPress: () => goBack(), style: "ok" }]);
+                goBack();
+                Utils.toast("success", "Dados Salvos com Sucesso");
             } else {
-                Alert.alert("Faltam dados essenciais");
+                setMissingData(true);
+                Utils.toast("error","faltam dados");
             }
         } catch (e) {
             Utils.showError(e);
@@ -214,7 +217,8 @@ function TyreExpense(props): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            label='Veículo'
+                                            error={missingData && !selectedVehicle}
+                                            label='* Veículo'
                                             value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
                                             pointerEvents="none"
                                             readOnly
@@ -235,7 +239,7 @@ function TyreExpense(props): JSX.Element {
                         />
 
                         {/* DATE INPUT */}
-                        <DateComponent date={date} setDate={setDate} />
+                        <DateComponent date={date} setDate={setDate} error={missingData && !date} />
 
                         {/* QUILOMETRAGEM ATUAL */}
                         <InputKM km={km} setKM={setKM} />
@@ -254,8 +258,9 @@ function TyreExpense(props): JSX.Element {
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
+                            error={missingData && !totalValue}
                             keyboardType='numeric'
-                            label='Valor Total'
+                            label='* Valor Total'
                             onChangeText={value => setTotalValue(Utils.toNumber(value))}
                             value={totalValue.toString()}
                         />

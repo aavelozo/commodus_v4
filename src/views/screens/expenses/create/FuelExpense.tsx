@@ -30,6 +30,7 @@ function FuelExpense(props): JSX.Element {
     const [loading,setLoading] = useState(false);    
     const [loaded,setLoaded] = useState(false);   
     const [saving,setSaving] = useState(false); 
+    const [missingData, setMissingData] = useState(false);
 
     //default properties
     const [currentExpense,setCurrentExpense] = useState(null); 
@@ -141,9 +142,11 @@ function FuelExpense(props): JSX.Element {
                         }
                     });                    
                 }
-                Alert.alert("Salvo", "Dados Salvos com Sucesso", [{ "text": "OK", onPress: () => goBack(), style: "ok" }]);
+                goBack();
+                Utils.toast("success", "Dados Salvos com Sucesso");
             } else {
-                Alert.alert("Faltam dados essenciais");
+                setMissingData(true);
+                Utils.toast("error","faltam dados");
             }
         } catch (e) {
             Utils.showError(e);
@@ -212,7 +215,8 @@ function FuelExpense(props): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            label='Veículo'
+                                            error={missingData && !selectedVehicle}
+                                            label='* Veículo'
                                             value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
                                             pointerEvents="none"
                                             readOnly
@@ -233,7 +237,7 @@ function FuelExpense(props): JSX.Element {
                         />
 
                         {/* DATE INPUT */}
-                        <DateComponent date={date} setDate={setDate} />
+                        <DateComponent date={date} setDate={setDate} error={missingData && !date} />
 
                         {/* QUILOMETRAGEM ATUAL */}
                         <InputKM km={km} setKM={setKM} />
@@ -252,7 +256,8 @@ function FuelExpense(props): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            label='Combustível'
+                                            error={missingData && !selectedFuel}
+                                            label='* Combustível'
                                             value={selectedItem}
                                             pointerEvents="none"
                                             readOnly
@@ -329,8 +334,9 @@ function FuelExpense(props): JSX.Element {
                             <TextInput
                                 {...DefaultProps.textInput}
                                 style={[DefaultStyles.textInput, { marginLeft: RFValue(15), width: width * 0.27, marginTop: RFValue(12) }]}
+                                error={missingData && !totalValue}
                                 keyboardType='numeric'
-                                label='Valor'
+                                label='* Valor'
                                 placeholder='R$'
 
                                 placeholderTextColor='#666'
