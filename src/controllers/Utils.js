@@ -1,4 +1,5 @@
 import { Alert } from "react-native";
+import { ToasterHelper } from "react-native-customizable-toast";
 
 /**
  * utilitis javascripts
@@ -43,6 +44,20 @@ export default class Utils{
     }
     static logf(objName, methodName) {
         Utils.log(`END  ${objName}.${methodName}`);
+    }
+
+    static typeOf(value) {
+        let r = typeof value;
+        if (typeof NodeList != 'undefined') {
+            if (Array.isArray(value) || value instanceof NodeList || value instanceof Array) {
+                r = "array";
+            }
+        } else {
+            if (Array.isArray(value) || value instanceof Array) {
+                r = "array";
+            }
+        }
+        return r;
     }
 
     static toNumber(v) {
@@ -102,5 +117,38 @@ export default class Utils{
             }
         }
         return result;
+    }    
+
+    static hasValue(pValue){
+        let result = false;
+        let tpof = Utils.typeOf(pValue);
+        if (tpof !== "undefined" && pValue != null) {
+            if (tpof == "object") {
+                if (Object.keys(pValue).length > 0 
+                    || ['DATE'].indexOf(pValue?.constructor?.name?.toUpperCase()) > - 1
+                ) {
+                    result = true;
+                } 
+            } else if (tpof == "array") {
+                if (pValue.length > 0) {
+                    result = true;
+                }
+            } else if (tpof == "string") {
+                if (pValue.trim().length > 0) {
+                    result = true;
+                }
+            } else {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    static toast(type,message,timer) {
+        ToasterHelper.show({            
+            type: type,
+            text: message,            
+            timeout: timer            
+          });
     }
 }

@@ -12,6 +12,8 @@ import Stack from './src/views/screens/navigation/Stack';
 import { ThemeProvider, createTheme } from '@rneui/themed';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Toaster } from 'react-native-customizable-toast';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function App(): React.JSX.Element {
   const scheme = useColorScheme();
@@ -28,20 +30,23 @@ function App(): React.JSX.Element {
   });
 
 
-  return (    
-      <ThemeProvider theme={theme}>
-        <SafeAreaProvider>
-          <SafeAreaView style={backgroundStyle}>
-            <StatusBar
-              barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-              backgroundColor={backgroundStyle.backgroundColor}
-            />
-            <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme }>
-              <Stack />
-            </NavigationContainer>
-          </SafeAreaView>
-        </SafeAreaProvider>
-      </ThemeProvider>
+  return (   
+    <GestureHandlerRootView style={{ flex: 1 }}>   
+        <ThemeProvider theme={theme}>
+          <SafeAreaProvider>
+            <SafeAreaView style={backgroundStyle}>
+              <StatusBar
+                barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+                backgroundColor={backgroundStyle.backgroundColor}
+              />
+              <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme }>
+                <Stack />
+              </NavigationContainer>
+              <Toaster useSafeArea={true} displayFromBottom={true} />
+            </SafeAreaView>
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </GestureHandlerRootView>
   );
 }
 

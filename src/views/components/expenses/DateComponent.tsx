@@ -10,6 +10,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 interface DateComponentProps {
     setDate : (date:any)=>void,
     date ? : any,
+    error ? : boolean,
     ref ? : React.RefObject<HTMLElement>
 }
 
@@ -41,7 +42,8 @@ function DateComponent(props : DateComponentProps) : JSX.Element {
             />                               
             <TextInput            
                 {...DefaultProps.textInput}
-                style={[DefaultStyles.textInput]}                
+                style={[DefaultStyles.textInput]}    
+                error={props.error||false}           
                 label='Data'
                 keyboardType='default'
                 showSoftInputOnFocus={false}

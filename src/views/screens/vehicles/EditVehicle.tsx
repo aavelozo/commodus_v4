@@ -22,7 +22,7 @@ import Camera from '../../assets/iconSvg/camera.svg'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Brands from '../../../database/models/Brands';
 import { setCurrentViewVehicle } from './ViewVehicle';
-import { TextInput } from 'react-native-paper';
+import { TextInput, useTheme } from 'react-native-paper';
 const { width, height } = Dimensions.get('window');
 
 
@@ -36,12 +36,14 @@ function setCurrentVehicle(newCurrentVehicle) {
  *                                      TELA EDITVEICULO
  **********************************************************************************************************/
 function EditVehicle(props: React.PropsWithChildren): JSX.Element {
+    const theme = useTheme();
     const [loading,setLoading] = useState(false);
     const [loaded,setLoaded] = useState(false);
     const [saving,setSaving] = useState(false);
     const [vehicle,setVehicle] = useState(currentVehicle);
     const [brands, setBrands] = useState([]);
     const [showAlert, setShowAlert] = useState(false);
+    const [missingData, setMissingData] = useState(false);
     const [selectedBrand, setSelectedBrand] = useState(null);
     const [selectedModel, setSelectedModel] = useState(null);
     const [selectedYear, setSelectedYear] = useState(null);
@@ -120,8 +122,11 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
         console.log(vehicle)
         try {
             if (!selectedModel || !selectedBrand || !selectedYear || !km || !plate) {
-                setShowAlert(true)
+                setMissingData(true);
+                //setShowAlert(true);                
+                Utils.toast("error","faltam dados");
             } else {
+                setMissingData(false);
                 setSaving(true);
                 let dbBrands = await Brands.getDBData();
                 let dbBrand = dbBrands?.docs.find(el=>el.id == selectedBrand.id);
@@ -233,7 +238,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                     message='Preecha todos os campos obrigatórios'
                     textConfirm='Confirmar'
                     textCancel="Cancelar"
-                    updateShowAlert={pBool => setShowAlert(pBool)}
+                    updateShowAlert={pBool => setShowAlert(false)}
                 />
                 : false
             }
@@ -270,9 +275,10 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            label='Marca'
+                                            error={missingData && !selectedBrand}
+                                            label='* Marca'
                                             value={selectedItem?.id}
-                                            pointerEvents="none"
+                                            pointerEvents="none"                                            
                                             readOnly
                                         />
                                     </View>
@@ -302,7 +308,8 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            label='Modelo'
+                                            error={missingData && !selectedModel}
+                                            label='* Modelo'
                                             value={selectedItem?.id}
                                             pointerEvents="none"
                                             readOnly
@@ -334,7 +341,8 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            label='Ano Modelo'
+                                            error={missingData && !selectedYear}
+                                            label='* Ano Modelo'
                                             value={selectedItem ? selectedItem.toString() : ''}
                                             pointerEvents="none"
                                             readOnly
@@ -388,8 +396,9 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
+                            error={missingData && !Utils.hasValue(km)}
                             keyboardType='numeric'
-                            label='Quilometragem atual'
+                            label='* Quilometragem atual'
                             onChangeText={km => {
                                 if (km.includes('.')) return
                                 if (km.includes(',')) return
@@ -405,7 +414,8 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         <TextInput
                             {...DefaultProps.textInput}
                             style={[DefaultStyles.textInput, { marginTop: RFValue(7) }]}
-                            label='Placa do veículo'
+                            error={missingData && !Utils.hasValue(plate)}                    
+                            label='* Placa do veículo'
                             value={plate}
                             onChangeText={plate => setPlate(plate)}
                             maxLength={7}

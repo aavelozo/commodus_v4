@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react'
 import { Text, View, StyleSheet, TouchableWithoutFeedback, Alert, Dimensions, ScrollView } from 'react-native'
-import { Checkbox, TextInput } from 'react-native-paper';
+import { Checkbox, TextInput, useTheme } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Header from '../../../components/Header';
 import TitleView from '../../../components/TitleView';
@@ -25,11 +25,13 @@ const { width, height } = Dimensions.get('window')
 ** COMPONENTE PRINCIPAL                             **
 ******************************************************/
 function AppearanceExpense(props): JSX.Element {
+    const theme = useTheme();
     const selectVehicleRef = useRef();
     const selectServiceRef = useRef();
     const [loading,setLoading] = useState(false);    
     const [loaded,setLoaded] = useState(false); 
     const [saving,setSaving] = useState(false);
+    const [missingData, setMissingData] = useState(false);
 
     //default properties
     const [currentExpense,setCurrentExpense] = useState(null);    
@@ -103,6 +105,7 @@ function AppearanceExpense(props): JSX.Element {
     async function saveExpense() {
         try {
             if (totalValue && date && selectedVehicle && regularWashing || completeWashing  ) {
+                setMissingData(false);
                 setSaving(true);
                 console.log('idVehicle',selectedVehicle.id);
                 let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);
@@ -136,10 +139,12 @@ function AppearanceExpense(props): JSX.Element {
                             othersServices: service
                         }
                     });                    
-                }                               
-                Alert.alert("Salvo", "Dados Salvos com Sucesso", [{ "text": "OK", onPress: () => goBack(), style: "ok" }]);
+                }                                               
+                goBack();
+                Utils.toast("success", "Dados Salvos com Sucesso");
             } else {
-                Alert.alert("Faltam dados essenciais");
+                setMissingData(true);
+                Utils.toast("error","faltam dados");
             }
         } catch (e) {
             Utils.showError(e);
@@ -211,7 +216,8 @@ function AppearanceExpense(props): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            label='Veículo'
+                                            error={missingData && !selectedVehicle}
+                                            label='* Veículo'
                                             value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
                                             pointerEvents="none"
                                             readOnly
@@ -232,7 +238,7 @@ function AppearanceExpense(props): JSX.Element {
                         />
 
                         {/* DATE INPUT */}
-                        <DateComponent date={date} setDate={setDate} />
+                        <DateComponent date={date} setDate={setDate} error={missingData && !date} />
 
                         {/* QUILOMETRAGEM ATUAL */}
                         <InputKM km={km} setKM={setKM} />
@@ -242,7 +248,8 @@ function AppearanceExpense(props): JSX.Element {
                                 status={regularWashing ? 'checked' : 'unchecked'}
                                 onPress={() => {
                                     setRegularWashing(!regularWashing);
-                                }}
+                                }} 
+                                uncheckedColor={missingData && !(regularWashing || completeWashing) ? theme.colors.error : undefined}                               
                             />
                             <TouchableWithoutFeedback onPress={() => setRegularWashing(!regularWashing)}>
                                 <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Lavagem Normal</Text>
@@ -256,6 +263,7 @@ function AppearanceExpense(props): JSX.Element {
                                 onPress={() => {
                                     setCompleteWashing(!completeWashing);
                                 }}
+                                uncheckedColor={missingData && !(regularWashing || completeWashing) ? theme.colors.error : undefined}
                             />
                             <TouchableWithoutFeedback onPress={() => setCompleteWashing(!completeWashing)}>
                                 <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Lavagem Completa</Text>
@@ -302,8 +310,9 @@ function AppearanceExpense(props): JSX.Element {
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
+                            error={missingData && !totalValue}
                             keyboardType='numeric'
-                            label='Preço Total'
+                            label='* Preço Total'
                             onChangeText={value => setTotalValue(Utils.toNumber(value))}
                             value={totalValue.toString()}
                         />

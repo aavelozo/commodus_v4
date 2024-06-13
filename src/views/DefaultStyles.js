@@ -9,6 +9,7 @@ class DefaultStyles {
     
 
     static colors = {
+        black: '#000',
         fundo: '#DDDDDD',
         tabBar: '#0E0D13',
         botao: '#F4FF00',
