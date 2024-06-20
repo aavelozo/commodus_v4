@@ -144,6 +144,38 @@ export default class Utils{
         return result;
     }
 
+    static firstValid(arr_valores,check_null) {
+        try {
+            if (typeof arr_valores !== "undefined") {
+                check_null = check_null === false ? false : true;
+                if (arr_valores !== null) {            
+                    if (Utils.typeOf(arr_valores) === "array") {
+                        let q = arr_valores.length;                
+                        if (check_null) {
+                            for (let i = 0; i < q; i++) {
+                                if (typeof arr_valores[i] !== "undefined" && arr_valores[i] !== null) {
+                                    return arr_valores[i];
+                                };
+                            }
+                        } else {
+                            for (let i = 0; i < q; i++) {
+                                if (typeof arr_valores[i] !== "undefined") {
+                                    return arr_valores[i];
+                                }
+                            }
+                        }
+                    } else {
+                        throw new Error("tipo nao esperado: " + Utils.typeOf(arr_valores));
+                    }
+                } 
+            }            
+            return null;
+        }catch(e){
+            console.log(e);          
+            return null;
+        } 
+    };
+
     static toast(type,message,timer) {
         ToasterHelper.show({            
             type: type,
