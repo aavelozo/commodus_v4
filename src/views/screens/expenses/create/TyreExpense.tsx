@@ -16,7 +16,10 @@ import SelectDropdown from 'react-native-select-dropdown';
 import Establishment from '../../../components/expenses/Establishment';
 import { useFocusEffect } from '@react-navigation/native';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
-const { width, height } = Dimensions.get('window')
+import Trans from '../../../../controllers/internatiolization/Trans';
+const { width, height } = Dimensions.get('window');
+import _ from 'lodash';
+import { BaseExpense } from './BaseExpense';
 
 
 
@@ -32,56 +35,31 @@ function TyreExpense(props): JSX.Element {
 
     //default properties
     const [currentExpense, setCurrentExpense] = useState(null);
-    const [vehicles, setVehicles] = useState([]);
-    const [selectedVehicle, setSelectedVehicle] = useState(null);
-    const [date, setDate] = useState(null);
-    const [km, setKM] = useState(null);
-    const [establishment, setEstablishment] = useState(null);
-    const [isEnabledEstablishment, setIsEnabledEstablishment] = useState(false);
-    const [observations, setObservations] = useState(null);
-    const [isEnabledObservations, setIsEnabledObservations] = useState(false);
     const [totalValue, setTotalValue] = useState(0);
+
+    //specific properties
+    const [tyreService, setTyreService] = useState(null);
     const [isReminderAlignmentEnabled, setIsReminderAlignmentEnabled] = useState(false);
     const [isReminderBalancingEnabled, setIsReminderBalancingEnabled] = useState(false);
     const [dateReminderAlignment, setDateReminderAlignment] = useState(null);
     const [dateReminderBalancing, setDateReminderBalancing] = useState(null);
 
-    //specific properties
-    const [tyreService, setTyreService] = useState(null);
 
     useFocusEffect(useCallback(() => {
         console.log('INIT TyreExpense.useFocusEffect.useCallBack');
-        if (!loading || !loaded) {
-            setLoading(true);
+        if (!loaded) {
+            if (!loading) setLoading(true);
 
             //load expense data
             (async () => {
                 try {
                     console.log('loading expense...');
-                    let newVehicles = await Vehicles.getSingleData();
-                    setVehicles(newVehicles);
                     console.log('EditExpenseController.currentExpense', EditExpenseController.currentExpense);
                     if (EditExpenseController.currentExpense) {
                         console.log('loading states...');
                         //default properties    
                         setCurrentExpense(EditExpenseController.currentExpense);
-                        let vehicleId = EditExpenseController.currentExpense.ref.parent.parent.id;
-                        setSelectedVehicle(newVehicles.find(el => el.id == vehicleId));
-                        console.log('loading states...2');
                         let dataExpense = EditExpenseController.currentExpense.data();
-                        //date in firestore is object {"nanoseconds": 743000000, "seconds": 1713185626}
-                        if (EditExpenseController.currentExpense.data().date) {
-                            setDate(new Date(dataExpense.date.seconds * 1000 + dataExpense.date.nanoseconds / 1000000));
-                        } else {
-                            setDate(new Date());
-                        }
-                        console.log('dataExpense')
-                        console.log(new Date(dataExpense.othersdatas.dateReminderAlignment.seconds * 1000 + dataExpense.othersdatas.dateReminderAlignment.nanoseconds / 1000000))
-                        setKM(dataExpense.actualkm || '');
-                        setEstablishment(dataExpense.establishment || '');
-                        setIsEnabledEstablishment(dataExpense.establishment ? true : false);
-                        setObservations(dataExpense.observations || '');
-                        setIsEnabledObservations(dataExpense.observations ? true : false);
                         setTotalValue(dataExpense.totalValue || 0);
 
                         //specific properties
@@ -104,227 +82,114 @@ function TyreExpense(props): JSX.Element {
     }, [props.navigation]));
 
 
-    async function saveExpense() {
-        try {
-            if (totalValue && date && selectedVehicle) {
-                setSaving(true);
-                console.log('idVehicle', selectedVehicle.id);
-                let vehicle = (await Vehicles.getDBData())?.docs.find(el => el.id == selectedVehicle.id);
-                if (currentExpense) {
-                    //update                    
-                    await currentExpense.ref.update({
-                        type: 'TYRE',
-                        date: date,
-                        actualkm: km,
-                        totalValue: totalValue,
-                        establishment: establishment,
-                        observations: observations,
-                        othersdatas: {
-                            typeService: tyreService,
-                            dateReminderAlignment: dateReminderAlignment,
-                            dateReminderBalancing: dateReminderBalancing
-                        }
-                    });
-                } else {
-                    //create
-                    let newExpense = await vehicle.ref.collection('expenses').add({
-                        type: 'TYRE',
-                        date: date,
-                        actualkm: km,
-                        totalValue: totalValue,
-                        establishment: establishment,
-                        observations: observations,
-                        othersdatas: {
-                            typeService: tyreService,
-                            dateReminderAlignment: dateReminderAlignment,
-                            dateReminderBalancing: dateReminderBalancing
-                        }
-                    });
-                }
-                goBack();
-                Utils.toast("success", "Dados Salvos com Sucesso");
-            } else {
-                setMissingData(true);
-                Utils.toast("error","faltam dados");
-            }
-        } catch (e) {
-            Utils.showError(e);
-        } finally {
-            setSaving(false);
+    function isMissingData() {
+        let result = false;
+        if (!totalValue) {
+            result = true;
+        } 
+        setMissingData(result);
+        return result;
+    }
+
+    function getOthersDatas() {
+        return {
+            typeService: tyreService,
+            dateReminderAlignment: dateReminderAlignment,
+            dateReminderBalancing: dateReminderBalancing
         }
     }
 
     function clearStates() {
-        console.log('clearing states...');
         setCurrentExpense(null);
-        setSelectedVehicle(null);
-        setDate(new Date());
-        setKM('');
-        setEstablishment('');
-        setIsEnabledEstablishment(false);
-        setObservations('');
-        setIsEnabledObservations(false);
         setTotalValue(0);
 
         //specific properties
         setTyreService(null);
         setDateReminderAlignment(null)
         setDateReminderBalancing(null)
-
-        if (selectVehicleRef) {
-            selectVehicleRef.current?.reset();
-        }
     }
 
-
-    //pressionado Cancelar do Header, volta o velocimetro
-    goBack = () => {
-        EditExpenseController.currentExpense = null;
-        clearStates();
-        //props.navigation.navigate('ViewExpense');
-        props.navigation.goBack();
-    };
-
-    /**
-     * renderiza os componentes auxiliares da view principal
-     */
-
-
-    //render
     return (
-        <View style={style.container}>
-            <Header
-                withButtons={true}
-                onPressConclude={saveExpense}
-                onPressCancel={goBack}
-                saving={saving}
+        <BaseExpense
+            title='tyre expense'
+            type='TYRE'
+            loading={loading}
+            setLoading={setLoading}
+            loaded={loaded}
+            setLoaded={setLoaded}
+            saving={saving}
+            setSaving={setSaving}
+            currentExpense={currentExpense}
+            setCurrentExpense={setCurrentExpense}
+            clearStates={clearStates}
+            isMissingData={isMissingData}
+            getOthersDatas={getOthersDatas}
+            totalValue={totalValue}
+        >
+        
+            <TextInput
+                {...DefaultProps.textInput}
+                style={DefaultStyles.textInput}
+                keyboardType='default'
+                label='Descrição do serviço'
+                onChangeText={value => setTyreService(value)}
+                value={tyreService}
             />
-            <View style={style.espacoCentral}>
-                <TitleView title=' Despesa Borracharia' />
 
-                <ContentContainer >
-                    <ScrollView>
-                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}
-                        <SelectDropdown
-                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
-                            search={true}
-                            showsVerticalScrollIndicator={true}
-                            data={vehicles}
-                            defaultValue={selectedVehicle}
-                            renderButton={(selectedItem, isOpened) => {
-                                return (
-                                    <View>
-                                        <TextInput
-                                            {...DefaultProps.textInput}
-                                            style={DefaultStyles.textInput}
-                                            error={missingData && !selectedVehicle}
-                                            label='* Veículo'
-                                            value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
-                                            pointerEvents="none"
-                                            readOnly
-                                        />
-                                    </View>
-                                );
-                            }}
-                            renderItem={(item, index, isSelected) => {
-                                return (<View style={{ ...DefaultStyles.dropdownTextView, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                                    <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate}</Text>
-                                </View>);
-                            }}
-                            onSelect={(selectedItem, index) => {
-                                setKM(selectedItem.km)
-                                setSelectedVehicle(selectedItem);
-                            }}
-                            ref={selectVehicleRef}
-                        />
+            {/* PREÇO TOTAL */}
+            <TextInput
+                {...DefaultProps.textInput}
+                style={DefaultStyles.textInput}
+                error={missingData && !totalValue}
+                keyboardType='numeric'
+                label='* Valor Total'
+                onChangeText={value => setTotalValue(Utils.toNumber(value))}
+                value={totalValue.toString()}
+            />
 
-                        {/* DATE INPUT */}
-                        <DateComponent date={date} setDate={setDate} error={missingData && !date} />
+            <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
+                <Switch
+                    trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
+                    thumbColor={isReminderAlignmentEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={enabled => setIsReminderAlignmentEnabled(enabled)}
+                    value={isReminderAlignmentEnabled}
+                />
+                <TouchableWithoutFeedback
+                    onPress={() => setIsReminderAlignmentEnabled(!isReminderAlignmentEnabled)}
+                >
+                    <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
+                        Lembrete próximo alinhamento
+                    </Text>
+                </TouchableWithoutFeedback>
+            </View>
 
-                        {/* QUILOMETRAGEM ATUAL */}
-                        <InputKM km={km} setKM={setKM} />
+            {
+                isReminderAlignmentEnabled ? <DateComponent date={dateReminderAlignment} setDate={setDateReminderAlignment} /> : false
+            }
 
-                        {/* DOCUMENT */}
-                        <TextInput
-                            {...DefaultProps.textInput}
-                            style={DefaultStyles.textInput}
-                            keyboardType='default'
-                            label='Descrição do serviço'
-                            onChangeText={value => setTyreService(value)}
-                            value={tyreService}
-                        />
+            <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
+                <Switch
+                    trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
+                    thumbColor={isReminderBalancingEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={enabled => setIsReminderBalancingEnabled(enabled)}
+                    value={isReminderBalancingEnabled}
+                />
+                <TouchableWithoutFeedback
+                    onPress={() => setIsReminderBalancingEnabled(!isReminderBalancingEnabled)}
+                >
+                    <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
+                        Lembrete próximo balanceamento
+                    </Text>
+                </TouchableWithoutFeedback>
+            </View>
 
-                        {/* PREÇO TOTAL */}
-                        <TextInput
-                            {...DefaultProps.textInput}
-                            style={DefaultStyles.textInput}
-                            error={missingData && !totalValue}
-                            keyboardType='numeric'
-                            label='* Valor Total'
-                            onChangeText={value => setTotalValue(Utils.toNumber(value))}
-                            value={totalValue.toString()}
-                        />
+            {
+                isReminderBalancingEnabled ? <DateComponent date={dateReminderBalancing} setDate={setDateReminderBalancing} /> : false
+            }
 
-                        <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
-                            <Switch
-                                trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
-                                thumbColor={isReminderAlignmentEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
-                                ios_backgroundColor="#3e3e3e"
-                                onValueChange={enabled => setIsReminderAlignmentEnabled(enabled)}
-                                value={isReminderAlignmentEnabled}
-                            />
-                            <TouchableWithoutFeedback
-                                onPress={() => setIsReminderAlignmentEnabled(!isReminderAlignmentEnabled)}
-                            >
-                                <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                                    Lembrete próximo alinhamento
-                                </Text>
-                            </TouchableWithoutFeedback>
-                        </View>
-
-                        {
-                            isReminderAlignmentEnabled ? <DateComponent date={dateReminderAlignment} setDate={setDateReminderAlignment} /> : false
-                        }
-
-                        <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
-                            <Switch
-                                trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
-                                thumbColor={isReminderBalancingEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
-                                ios_backgroundColor="#3e3e3e"
-                                onValueChange={enabled => setIsReminderBalancingEnabled(enabled)}
-                                value={isReminderBalancingEnabled}
-                            />
-                            <TouchableWithoutFeedback
-                                onPress={() => setIsReminderBalancingEnabled(!isReminderBalancingEnabled)}
-                            >
-                                <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                                    Lembrete próximo balanceamento
-                                </Text>
-                            </TouchableWithoutFeedback>
-                        </View>
-
-                        {
-                            isReminderBalancingEnabled ? <DateComponent date={dateReminderBalancing} setDate={setDateReminderBalancing} /> : false
-                        }
-
-                        <Establishment
-                            isEnabled={isEnabledEstablishment}
-                            establishment={establishment}
-                            setIsEnabled={setIsEnabledEstablishment}
-                            setEstablishment={setEstablishment}
-                        />
-
-                        <Observations
-                            isEnabled={isEnabledObservations}
-                            observations={observations}
-                            setIsEnabled={setIsEnabledObservations}
-                            setObservations={setObservations}
-                        />
-                    </ScrollView>
-                </ContentContainer>
-            </View >
-
-        </View>
+        </BaseExpense>
     );
 };
 

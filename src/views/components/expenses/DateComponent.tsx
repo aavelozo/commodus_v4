@@ -6,6 +6,8 @@ import { TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../DefaultProps';
 import { DefaultStyles } from '../../DefaultStyles';
 import { RFValue } from 'react-native-responsive-fontsize';
+import Trans from '../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
 
 interface DateComponentProps {
     setDate : (date:any)=>void,
@@ -30,7 +32,7 @@ function DateComponent(props : DateComponentProps) : JSX.Element {
         <>
             {/* DATE MODAL */}
             <DatePicker
-                title={'Informe a data'} 
+                title={`${_.capitalize(Trans.t('inform the date'))}`} 
                 modal mode="date" 
                 open={opened} 
                 date={date} 
@@ -44,7 +46,7 @@ function DateComponent(props : DateComponentProps) : JSX.Element {
                 {...DefaultProps.textInput}
                 style={[DefaultStyles.textInput]}    
                 error={props.error||false}           
-                label='Data'
+                label={`${_.capitalize(Trans.t('date'))}`} 
                 keyboardType='default'
                 showSoftInputOnFocus={false}
                 onPressIn={()=>{

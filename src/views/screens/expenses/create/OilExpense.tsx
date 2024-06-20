@@ -18,6 +18,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
 import SelectDropdown from 'react-native-select-dropdown';
 import Vehicles from '../../../../database/models/Vehicles';
+import { BaseExpense } from './BaseExpense';
 const { width, height } = Dimensions.get('window')
 
 
@@ -35,14 +36,6 @@ function OilExpense(props): JSX.Element {
 
     //default properties
     const [currentExpense, setCurrentExpense] = useState(null);
-    const [vehicles, setVehicles] = useState([]);   
-    const [selectedVehicle, setSelectedVehicle] = useState(null);
-    const [date, setDate] = useState(null);
-    const [km, setKM] = useState(null);
-    const [establishment, setEstablishment] = useState(null);
-    const [isEnabledEstablishment, setIsEnabledEstablishment] = useState(false);
-    const [observations, setObservations] = useState(null);
-    const [isEnabledObservations, setIsEnabledObservations] = useState(false);
     const [totalValue, setTotalValue] = useState(0);
 
     //specific properties
@@ -63,32 +56,18 @@ function OilExpense(props): JSX.Element {
 
     useFocusEffect(useCallback(() => {
         console.log('INIT OilExpense.useFocusEffect.useCallBack');
-        if (!loading && !loaded) {
-            setLoading(true);
+        if (!loaded) {
+            if (!loading) setLoading(true);
             (async()=>{
                 try {
                     console.log('loading expense...');
-                    let newVehicles = await Vehicles.getSingleData();
-                    setVehicles(newVehicles);                      
                     console.log('EditExpenseController.currentExpense',EditExpenseController.currentExpense);
                     if (EditExpenseController.currentExpense) { 
                         console.log('loading states...');             
                         //default properties    
                         setCurrentExpense(EditExpenseController.currentExpense);  
-                        let vehicleId = EditExpenseController.currentExpense.ref.parent.parent.id;
-                        setSelectedVehicle(newVehicles.find(el=>el.id == vehicleId));
                         let dataExpense = EditExpenseController.currentExpense.data();
                         //date in firestore is object {"nanoseconds": 743000000, "seconds": 1713185626}
-                        if (dataExpense.date) {
-                            setDate(new Date(dataExpense.date.seconds * 1000 + dataExpense.date.nanoseconds / 1000000));
-                        } else {
-                            setDate(new Date());
-                        }                        
-                        setKM(dataExpense.actualkm||'');
-                        setEstablishment(dataExpense.establishment||'');
-                        setIsEnabledEstablishment(dataExpense.establishment?true:false);
-                        setObservations(dataExpense.observations||'');
-                        setIsEnabledObservations(dataExpense.observations?true:false);
                         setTotalValue(dataExpense.totalValue||0);
                     
                         //specific properties
@@ -121,75 +100,29 @@ function OilExpense(props): JSX.Element {
     }, [props.navigation]));
 
 
+    function isMissingData() {
+        let result = false;
+        if (!totalValue || !codOil) {
+            result = true;
+        } 
+        setMissingData(result);
+        return result;
+    }
 
-    async function saveExpense() {
-        try {
-            if (totalValue && date && selectedVehicle && codOil) {        
-                setSaving(true);   
-                console.log('idVehicle',selectedVehicle.id);
-                let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);
-                if (currentExpense) {
-                    //update                    
-                    await currentExpense.ref.update({
-                        type: 'OIL',
-                        date: date,
-                        actualkm: km,
-                        totalValue: totalValue,
-                        establishment: establishment,
-                        observations: observations,
-                        othersdatas: {
-                            codOil: codOil,
-                            reminderMonths: reminderMonths,
-                            reminderKM: reminderKM,
-                            oilFilterPrice: oilFilterPrice,
-                            fuelFilterPrice: fuelFilterPrice,
-                            airFilterPrice: airFilterPrice,
-                            oilBrand: oilBrand
-                        }
-                    });                    
-                } else {
-                    //create
-                    let newExpense = await vehicle.ref.collection('expenses').add({
-                        type: 'OIL',
-                        date: date,
-                        actualkm: km,
-                        totalValue: totalValue,
-                        establishment: establishment,
-                        observations: observations,
-                        othersdatas: {
-                            codOil: codOil,
-                            reminderMonths: reminderMonths,
-                            reminderKM: reminderKM,
-                            oilFilterPrice: oilFilterPrice,
-                            fuelFilterPrice: fuelFilterPrice,
-                            airFilterPrice: airFilterPrice,
-                            oilBrand: oilBrand
-                        }
-                    });                    
-                }
-                goBack();
-                Utils.toast("success", "Dados Salvos com Sucesso");
-            } else {
-                setMissingData(true);
-                Utils.toast("error","faltam dados");
-            }
-        } catch (e) {
-            Utils.showError(e);
-        } finally {
-            setSaving(false);
+    function getOthersDatas() {
+        return {
+            codOil: codOil,
+            reminderMonths: reminderMonths,
+            reminderKM: reminderKM,
+            oilFilterPrice: oilFilterPrice,
+            fuelFilterPrice: fuelFilterPrice,
+            airFilterPrice: airFilterPrice,
+            oilBrand: oilBrand
         }
     }
 
     function clearStates(){
-        console.log('clearing states ...');
         setCurrentExpense(null);                
-        setSelectedVehicle(null);
-        setDate(new Date());
-        setKM('');
-        setEstablishment('');
-        setIsEnabledEstablishment(false);
-        setObservations('');
-        setIsEnabledObservations(false);
         setTotalValue(0);
 
         //specific properties
@@ -206,260 +139,195 @@ function OilExpense(props): JSX.Element {
         setAirFilterPrice('');
         setIsOilBrandEnabled(false);
         setOilBrand('');
-
-        if (selectVehicleRef) {
-            selectVehicleRef.current?.reset();
-        }
     }
-    
-    //pressionado Cancelar do Header, volta o velocimetro
-    goBack = () => {
-        EditExpenseController.currentExpense = null;
-        clearStates();
-        //props.navigation.navigate('ViewExpense');
-        props.navigation.goBack();
-    };
-
+  
 
     return (
-        <View style={style.container}>
-            <Header 
-                withButtons={true} 
-                onPressConclude={saveExpense} 
-                onPressCancel={goBack} 
-                saving={saving}
+        <BaseExpense
+            title='oil expense'
+            type='OIL'
+            loading={loading}
+            setLoading={setLoading}
+            loaded={loaded}
+            setLoaded={setLoaded}
+            saving={saving}
+            setSaving={setSaving}
+            currentExpense={currentExpense}
+            setCurrentExpense={setCurrentExpense}
+            clearStates={clearStates}
+            isMissingData={isMissingData}
+            getOthersDatas={getOthersDatas}
+            totalValue={totalValue}
+        >
+        
+            {/* CÓDIGO DO ÓLEO */}
+            <TextInput
+                {...DefaultProps.textInput}
+                style={DefaultStyles.textInput}
+                error={missingData && !codOil}
+                keyboardType='default'
+                label='* Código do óleo'
+                onChangeText={value => setCodOil(value)}
+                value={codOil}
             />
-            <View style={style.espacoCentral}>
-                <TitleView title='Despesa Óleo' />
 
-                <ContentContainer >
-                    <ScrollView>
-                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}                        
-                        <SelectDropdown
-                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
-                            search={true}
-                            showsVerticalScrollIndicator={true}                            
-                            data={vehicles}
-                            defaultValue={selectedVehicle}
-                            renderButton={(selectedItem, isOpened) => {
-                                return (
-                                    <View>
-                                        <TextInput
-                                            {...DefaultProps.textInput}
-                                            style={DefaultStyles.textInput}
-                                            error={missingData && !selectedVehicle}
-                                            label='Veículo'
-                                            value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
-                                            pointerEvents="none"
-                                            readOnly
-                                        />
-                                    </View>
-                                );
-                            }}
-                            renderItem={(item, index, isSelected) => {
-                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
-                                        <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate }</Text>
-                                </View>);
-                            }}
-                            onSelect={(selectedItem, index) => {
-                                setKM(selectedItem.km)
-                                setSelectedVehicle(selectedItem);
-                            }}
-                            ref={selectVehicleRef}
-                        />
+            {/* PREÇO TOTAL */}
+            <TextInput
+                {...DefaultProps.textInput}
+                style={DefaultStyles.textInput}
+                error={missingData && !totalValue}
+                keyboardType='numeric'
+                label='* Valor Total'
+                onChangeText={value => setTotalValue(Utils.toNumber(value))}
+                value={totalValue.toString()}
+            />
 
-                        {/* DATE INPUT */}
-                        <DateComponent date={date} setDate={setDate} error={missingData && !date} />
+            {/*LEMBRETE*/}
+            <View style={style.viewSwitch}>
+                <Switch
+                    trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
+                    thumbColor={isReminderEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={enabled => setIsReminderEnabled(enabled)}
+                    value={isReminderEnabled}
+                />
+                <TouchableWithoutFeedback onPress={() => setIsReminderEnabled(!isReminderEnabled)}>
+                    <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
+                        Lembrete próxima troca
+                    </Text>
+                </TouchableWithoutFeedback>
 
-                        {/* QUILOMETRAGEM ATUAL */}
-                        <InputKM km={km} setKM={setKM} />
+            </View>
+            {isReminderEnabled ? <>
+                <TextInput
+                    {...DefaultProps.textInput}
+                    style={DefaultStyles.textInput}
+                    label='Validade do óleo (Meses)'
+                    value={reminderMonths ? reminderMonths.toString() : null}
+                    onChangeText={lembreteMeses => setReminderMonths(lembreteMeses)}
+                />
+                <TextInput
+                    {...DefaultProps.textInput}
+                    style={DefaultStyles.textInput}
+                    label='Próxima troca (KM)'
+                    value={reminderKM ? reminderKM.toString() : null}
+                    onChangeText={lembreteKm => setReminderKM(lembreteKm)}
+                />
+            </> : false}
 
-                        {/* CÓDIGO DO ÓLEO */}
-                        <TextInput
-                            {...DefaultProps.textInput}
-                            style={DefaultStyles.textInput}
-                            error={missingData && !codOil}
-                            keyboardType='default'
-                            label='* Código do óleo'
-                            onChangeText={value => setCodOil(value)}
-                            value={codOil}
-                        />
+            {/*FILTRO*/}
+            <View style={style.viewSwitch}>
+                <Switch
+                    trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
+                    thumbColor={isFiltersEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={enabled => setIsFiltersEnabled(enabled)}
+                    value={isFiltersEnabled}
+                />
+                <TouchableWithoutFeedback onPress={() => setIsFiltersEnabled(!isFiltersEnabled)}>
+                    <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
+                        Troquei o filtro
+                    </Text>
+                </TouchableWithoutFeedback>
+            </View>
+            {isFiltersEnabled ?
+                <View style={style.viewCheckBox}>
+                    <Checkbox
+                        status={isOilFilterChecked ? 'checked' : 'unchecked'}
+                        onPress={() => {
+                            setIsOilFilterChecked(!isOilFilterChecked);
+                        }}
+                    />
+                    <TouchableWithoutFeedback onPress={() => setIsOilFilterChecked(!isOilFilterChecked)}>
+                        <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Filtro de óleo</Text>
+                    </TouchableWithoutFeedback>
 
-                        {/* PREÇO TOTAL */}
-                        <TextInput
-                            {...DefaultProps.textInput}
-                            style={DefaultStyles.textInput}
-                            error={missingData && !totalValue}
-                            keyboardType='numeric'
-                            label='* Valor Total'
-                            onChangeText={value => setTotalValue(Utils.toNumber(value))}
-                            value={totalValue.toString()}
-                        />
+                </View> : false}
 
-                        {/*LEMBRETE*/}
-                        <View style={style.viewSwitch}>
-                            <Switch
-                                trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
-                                thumbColor={isReminderEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
-                                ios_backgroundColor="#3e3e3e"
-                                onValueChange={enabled => setIsReminderEnabled(enabled)}
-                                value={isReminderEnabled}
-                            />
-                            <TouchableWithoutFeedback onPress={() => setIsReminderEnabled(!isReminderEnabled)}>
-                                <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                                    Lembrete próxima troca
-                                </Text>
-                            </TouchableWithoutFeedback>
+            {isOilFilterChecked && isFiltersEnabled ?
+                <TextInput
+                    {...DefaultProps.textInput}
+                    style={DefaultStyles.textInput}
+                    label='Preço do filtro de óleo'
+                    value={oilFilterPrice ? oilFilterPrice.toString() : null}
+                    keyboardType='numeric'
+                    onChangeText={filtroOleo => setOilFilterPrice(Utils.toNumber(filtroOleo))}
+                /> : false}
 
-                        </View>
-                        {isReminderEnabled ? <>
-                            <TextInput
-                                {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                label='Validade do óleo (Meses)'
-                                value={reminderMonths ? reminderMonths.toString() : null}
-                                onChangeText={lembreteMeses => setReminderMonths(lembreteMeses)}
-                            />
-                            <TextInput
-                                {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                label='Próxima troca (KM)'
-                                value={reminderKM ? reminderKM.toString() : null}
-                                onChangeText={lembreteKm => setReminderKM(lembreteKm)}
-                            />
-                        </> : false}
+            {isFiltersEnabled ?
+                <View style={style.viewCheckBox}>
+                    <Checkbox
+                        status={isFuelFilterChecked ? 'checked' : 'unchecked'}
+                        onPress={() => {
+                            setIsFuelFilterChecked(!isFuelFilterChecked);
+                        }}
+                    />
+                    <TouchableWithoutFeedback onPress={() => setIsFuelFilterChecked(!isFuelFilterChecked)}>
+                        <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Filtro de combustível</Text>
+                    </TouchableWithoutFeedback>
+                </View> : false}
 
-                        {/*FILTRO*/}
-                        <View style={style.viewSwitch}>
-                            <Switch
-                                trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
-                                thumbColor={isFiltersEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
-                                ios_backgroundColor="#3e3e3e"
-                                onValueChange={enabled => setIsFiltersEnabled(enabled)}
-                                value={isFiltersEnabled}
-                            />
-                            <TouchableWithoutFeedback onPress={() => setIsFiltersEnabled(!isFiltersEnabled)}>
-                                <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                                    Troquei o filtro
-                                </Text>
-                            </TouchableWithoutFeedback>
-                        </View>
-                        {isFiltersEnabled ?
-                            <View style={style.viewCheckBox}>
-                                <Checkbox
-                                    status={isOilFilterChecked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                        setIsOilFilterChecked(!isOilFilterChecked);
-                                    }}
-                                />
-                                <TouchableWithoutFeedback onPress={() => setIsOilFilterChecked(!isOilFilterChecked)}>
-                                    <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Filtro de óleo</Text>
-                                </TouchableWithoutFeedback>
+            {isFuelFilterChecked && isFiltersEnabled ?
+                <TextInput
+                    {...DefaultProps.textInput}
+                    style={DefaultStyles.textInput}
+                    label='Preço do filtro de combustível'
+                    value={fuelFilterPrice ? fuelFilterPrice.toString() : null}
+                    keyboardType='numeric'
+                    onChangeText={filtroCombustivel => setFuelFilterPrice(Utils.toNumber(filtroCombustivel))}
+                /> : false}
 
-                            </View> : false}
+            {isFiltersEnabled ?
+                <View style={style.viewCheckBox}>
+                    <Checkbox
+                        status={isAirFilterChecked ? 'checked' : 'unchecked'}
+                        onPress={() => {
+                            setIsAirFilterChecked(!isAirFilterChecked);
+                        }}
+                    />
+                    <TouchableWithoutFeedback onPress={() => setIsAirFilterChecked(!isAirFilterChecked)}>
+                        <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Filtro de ar</Text>
+                    </TouchableWithoutFeedback>
+                </View> : false}
 
-                        {isOilFilterChecked && isFiltersEnabled ?
-                            <TextInput
-                                {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                label='Preço do filtro de óleo'
-                                value={oilFilterPrice ? oilFilterPrice.toString() : null}
-                                keyboardType='numeric'
-                                onChangeText={filtroOleo => setOilFilterPrice(Utils.toNumber(filtroOleo))}
-                            /> : false}
-
-                        {isFiltersEnabled ?
-                            <View style={style.viewCheckBox}>
-                                <Checkbox
-                                    status={isFuelFilterChecked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                        setIsFuelFilterChecked(!isFuelFilterChecked);
-                                    }}
-                                />
-                                <TouchableWithoutFeedback onPress={() => setIsFuelFilterChecked(!isFuelFilterChecked)}>
-                                    <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Filtro de combustível</Text>
-                                </TouchableWithoutFeedback>
-                            </View> : false}
-
-                        {isFuelFilterChecked && isFiltersEnabled ?
-                            <TextInput
-                                {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                label='Preço do filtro de combustível'
-                                value={fuelFilterPrice ? fuelFilterPrice.toString() : null}
-                                keyboardType='numeric'
-                                onChangeText={filtroCombustivel => setFuelFilterPrice(Utils.toNumber(filtroCombustivel))}
-                            /> : false}
-
-                        {isFiltersEnabled ?
-                            <View style={style.viewCheckBox}>
-                                <Checkbox
-                                    status={isAirFilterChecked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                        setIsAirFilterChecked(!isAirFilterChecked);
-                                    }}
-                                />
-                                <TouchableWithoutFeedback onPress={() => setIsAirFilterChecked(!isAirFilterChecked)}>
-                                    <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Filtro de ar</Text>
-                                </TouchableWithoutFeedback>
-                            </View> : false}
-
-                        {isAirFilterChecked && isFiltersEnabled ?
-                            <TextInput
-                                {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                label='Preço do filtro de ar'
-                                value={airFilterPrice ? airFilterPrice.toString() : null}
-                                keyboardType='numeric'
-                                onChangeText={filtroAr => setAirFilterPrice(Utils.toNumber(filtroAr))}
-                            /> : false}
+            {isAirFilterChecked && isFiltersEnabled ?
+                <TextInput
+                    {...DefaultProps.textInput}
+                    style={DefaultStyles.textInput}
+                    label='Preço do filtro de ar'
+                    value={airFilterPrice ? airFilterPrice.toString() : null}
+                    keyboardType='numeric'
+                    onChangeText={filtroAr => setAirFilterPrice(Utils.toNumber(filtroAr))}
+                /> : false}
 
 
+            <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
+                <Switch
+                    trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
+                    thumbColor={isOilBrandEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={enabled => setIsOilBrandEnabled(enabled)}
+                    value={isOilBrandEnabled}
+                />
+                <TouchableWithoutFeedback onPress={() => setIsOilBrandEnabled(!isOilBrandEnabled)}>
+                    <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
+                        Marca
+                    </Text>
+                </TouchableWithoutFeedback>
+            </View>
 
-                        <Establishment
-                            isEnabled={isEnabledEstablishment}
-                            establishment={establishment}
-                            setIsEnabled={setIsEnabledEstablishment}
-                            setEstablishment={setEstablishment}
-                        />
+            {
+                isOilBrandEnabled ? <TextInput
+                    {...DefaultProps.textInput}
+                    style={DefaultStyles.textInput}
+                    label='Marca do óleo'
+                    onChangeText={marcaOleo => setOilBrand(marcaOleo)}
+                    value={oilBrand}
+                /> : false
+            }
 
-                        <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
-                            <Switch
-                                trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
-                                thumbColor={isOilBrandEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
-                                ios_backgroundColor="#3e3e3e"
-                                onValueChange={enabled => setIsOilBrandEnabled(enabled)}
-                                value={isOilBrandEnabled}
-                            />
-                            <TouchableWithoutFeedback onPress={() => setIsOilBrandEnabled(!isOilBrandEnabled)}>
-                                <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                                    Marca
-                                </Text>
-                            </TouchableWithoutFeedback>
-                        </View>
-
-                        {
-                            isOilBrandEnabled ? <TextInput
-                                {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                label='Marca do óleo'
-                                onChangeText={marcaOleo => setOilBrand(marcaOleo)}
-                                value={oilBrand}
-                            /> : false
-                        }
-
-                        <Observations
-                            isEnabled={isEnabledObservations}
-                            observations={observations}
-                            setIsEnabled={setIsEnabledObservations}
-                            setObservations={setObservations}
-                        />
-
-                    </ScrollView>
-                </ContentContainer>
-            </View >
-
-        </View>
+            
+        </BaseExpense>
     );
 }
 
