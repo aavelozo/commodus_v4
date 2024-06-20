@@ -18,6 +18,7 @@ import AuthController from '../../../../controllers/AuthController';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
 import Vehicles from '../../../../database/models/Vehicles';
+import { BaseExpense } from './BaseExpense';
 
 const { width, height } = Dimensions.get('window')
 
@@ -26,7 +27,6 @@ const { width, height } = Dimensions.get('window')
 ** COMPONENTE DA VIEW PRINCIPAL                      **
 ******************************************************/
 function MechanicsExpense(props): JSX.Element {
-    const selectVehicleRef = useRef();
     const selectServiceRef = useRef();
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(false);
@@ -35,14 +35,6 @@ function MechanicsExpense(props): JSX.Element {
 
     //default properties
     const [currentExpense, setCurrentExpense] = useState(null);
-    const [vehicles, setVehicles] = useState([]);
-    const [selectedVehicle, setSelectedVehicle] = useState(null);
-    const [date, setDate] = useState(new Date());
-    const [km, setKM] = useState(null);
-    const [establishment, setEstablishment] = useState(null);
-    const [isEnabledEstablishment, setIsEnabledEstablishment] = useState(false);
-    const [observations, setObservations] = useState(null);
-    const [isEnabledObservations, setIsEnabledObservations] = useState(false);
     const [totalValue, setTotalValue] = useState(0);
 
     //specific properties
@@ -54,33 +46,18 @@ function MechanicsExpense(props): JSX.Element {
 
     useFocusEffect(useCallback(() => {
         console.log('INIT MechanicExpense.useFocusEffect.useCallBack', props.navigation);
-        if (!loading || !loaded) {
-            setLoading(true);
+        if (!loaded) {
+            if (!loading) setLoading(true);
             (async () => {
                 try {
                     console.log('loading expense...');
-                    let newVehicles = await Vehicles.getSingleData();
-                    setVehicles(newVehicles);
-                    console.log('EditExpenseController.currentExpense', EditExpenseController.currentExpense);
                     if (EditExpenseController.currentExpense) {
                         console.log('loading states...');
 
                         //default properties    
                         setCurrentExpense(EditExpenseController.currentExpense);
-                        let vehicleId = EditExpenseController.currentExpense.ref.parent.parent.id;
-                        setSelectedVehicle(newVehicles.find(el => el.id == vehicleId));
-                        //date in firestore is object {"nanoseconds": 743000000, "seconds": 1713185626}
                         let dataExpense = EditExpenseController.currentExpense.data();
-                        if (dataExpense.date) {
-                            setDate(new Date(dataExpense.date.seconds * 1000 + dataExpense.date.nanoseconds / 1000000));
-                        } else {
-                            setDate(new Date());
-                        }
-                        setKM(dataExpense.actualkm || '');
-                        setEstablishment(dataExpense.establishment || '');
-                        setIsEnabledEstablishment(dataExpense.establishment ? true : false);
-                        setObservations(dataExpense.observations || '');
-                        setIsEnabledObservations(dataExpense.observations ? true : false);
+
                         setTotalValue(dataExpense.totalValue || 0);
 
                         //specific properties             
@@ -110,230 +87,118 @@ function MechanicsExpense(props): JSX.Element {
     function clearStates() {
         console.log('clearing states ...');
         setCurrentExpense(null);
-        setSelectedVehicle(null);
-        setDate(new Date());
-        setKM('');
-        setEstablishment('');
-        setIsEnabledEstablishment(false);
-        setObservations('');
-        setIsEnabledObservations(false);
         setTotalValue(0);
 
         //specific properties
         setService(null);
         setDateReminder(null);
         setIsEnabled(false);
-
-        if (selectVehicleRef) {
-            selectVehicleRef.current?.reset();
-        }
         if (selectServiceRef) {
             selectServiceRef.current?.reset();
         }
     }
 
-    async function saveExpense() {
-        try {
-            if (totalValue && date && selectedVehicle) {
-                setSaving(true);
-                console.log('idVehicle', selectedVehicle.id);
-                let vehicle = (await Vehicles.getDBData())?.docs.find(el => el.id == selectedVehicle.id);
-                if (currentExpense) {
-                    //update                    
-                    await currentExpense.ref.update({
-                        type: 'MECHANIC',
-                        date: date,
-                        actualkm: km,
-                        totalValue: totalValue,
-                        establishment: establishment,
-                        observations: observations,
-                        othersdatas: {
-                            service: service,
-                            dateReminder: isEnabled ? dateReminder : false
-                        }
-                    });
-                } else {
-                    //create
-                    let newExpense = await vehicle.ref.collection('expenses').add({
-                        type: 'MECHANIC',
-                        date: date,
-                        actualkm: km,
-                        totalValue: totalValue,
-                        establishment: establishment,
-                        observations: observations,
-                        othersdatas: {
-                            service: service,
-                            dateReminder: isEnabled ? dateReminder : false
-                        }
-                    });
-                }
-                goBack();
-                Utils.toast("success", "Dados Salvos com Sucesso");
-            } else {
-                setMissingData(true);
-                Utils.toast("error","faltam dados");
-            }
-        } catch (e) {
-            Utils.showError(e);
-        } finally {
-            setSaving(false);
+
+    function isMissingData() {
+        let result = false;
+        if (!totalValue) {
+            result = true;
+        } 
+        setMissingData(result);
+        return result;
+    }
+
+    function getOthersDatas() {
+        return {
+            service: service,
+            dateReminder: isEnabled ? dateReminder : false
         }
     }
 
-
-    //pressionado Cancelar do Header, volta o velocimetro
-    goBack = () => {
-        EditExpenseController.currentExpense = null;
-        clearStates();
-        //props.navigation.navigate('ViewExpense')
-        props.navigation.goBack();
-    };
-
-    /**
-     * renderiza os componentes auxiliares da view principal
-     */
-
-
-    //render
     return (
-        <View style={style.container}>
-            <Header
-                withButtons={true}
-                onPressConclude={saveExpense}
-                onPressCancel={goBack}
-                saving={saving}
-            />
-            <View style={style.espacoCentral}>
-                <TitleView title=' Despesa Mecânica' />
-
-                <ContentContainer >
-                    <ScrollView>
-                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}
-                        <SelectDropdown
-                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
-                            search={true}
-                            showsVerticalScrollIndicator={true}
-                            data={vehicles}
-                            defaultValue={selectedVehicle}
-                            renderButton={(selectedItem, isOpened) => {
-                                return (
-                                    <View>
-                                        <TextInput
-                                            {...DefaultProps.textInput}
-                                            style={DefaultStyles.textInput}
-                                            error={missingData && !selectedVehicle}
-                                            label='* Veículo'
-                                            value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
-                                            pointerEvents="none"
-                                            readOnly
-                                        />
-                                    </View>
-                                );
-                            }}
-                            renderItem={(item, index, isSelected) => {
-                                return (<View style={{ ...DefaultStyles.dropdownTextView, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                                    <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate}</Text>
-                                </View>);
-                            }}
-                            onSelect={(selectedItem, index) => {
-                                setSelectedVehicle(selectedItem);
-                                setKM(selectedItem.km)
-                            }}
-                            ref={selectVehicleRef}
-                        />
-
-                        {/* DATE INPUT */}
-                        <DateComponent date={date} setDate={setDate} error={missingData && !date}  />
-
-                        {/* QUILOMETRAGEM ATUAL */}
-                        <InputKM km={km} setKM={setKM} />
-
-                        {/* dropdown: usado para selecionar o serviço e atualizar o txtinput */}
-                        <SelectDropdown
-                            dropdownStyle={DefaultStyles.dropdownMenuStyle}
-                            search={true}
-                            showsVerticalScrollIndicator={true}
-                            data={serviceList}
-                            defaultValue={service}
-                            renderButton={(selectedItem, isOpened) => {
-                                return (
-                                    <View>
-                                        <TextInput
-                                            {...DefaultProps.textInput}
-                                            style={DefaultStyles.textInput}
-                                            label='Serviço'
-                                            value={selectedItem}
-                                            pointerEvents="none"
-                                            readOnly
-                                        />
-                                    </View>
-                                );
-                            }}
-                            renderItem={(item, index, isSelected) => {
-                                return (<View style={{ ...DefaultStyles.dropdownTextView, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                                    <Text style={DefaultStyles.dropdownText}>{item}</Text>
-                                </View>);
-                            }}
-                            onSelect={(selectedItem, index) => {
-                                setService(selectedItem);
-                            }}
-                            ref={selectServiceRef}
-                        />
-
-
-                        {/* PREÇO TOTAL */}
-                        <TextInput
-                            {...DefaultProps.textInput}
-                            style={DefaultStyles.textInput}
-                            error={missingData && !totalValue}
-                            keyboardType='numeric'
-                            label='* Preço Total'
-                            onChangeText={value => setTotalValue(Utils.toNumber(value))}
-                            value={totalValue.toString()}
-                        />
-
-                        <Establishment
-                            isEnabled={isEnabledEstablishment}
-                            establishment={establishment}
-                            setIsEnabled={setIsEnabledEstablishment}
-                            setEstablishment={setEstablishment}
-                        />
-
-                        <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
-                            <Switch
-                                trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
-                                thumbColor={isEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
-                                ios_backgroundColor="#3e3e3e"
-                                onValueChange={enabled => setIsEnabled(enabled)}
-                                value={isEnabled}
+        <BaseExpense
+            title='mechanic expense'
+            type='MECHANIC'
+            loading={loading}
+            setLoading={setLoading}
+            loaded={loaded}
+            setLoaded={setLoaded}
+            saving={saving}
+            setSaving={setSaving}
+            currentExpense={currentExpense}
+            setCurrentExpense={setCurrentExpense}
+            clearStates={clearStates}
+            isMissingData={isMissingData}
+            getOthersDatas={getOthersDatas}
+            totalValue={totalValue}
+        >
+        
+            {/* dropdown: usado para selecionar o serviço e atualizar o txtinput */}
+            <SelectDropdown
+                dropdownStyle={DefaultStyles.dropdownMenuStyle}
+                search={true}
+                showsVerticalScrollIndicator={true}
+                data={serviceList}
+                defaultValue={service}
+                renderButton={(selectedItem, isOpened) => {
+                    return (
+                        <View>
+                            <TextInput
+                                {...DefaultProps.textInput}
+                                style={DefaultStyles.textInput}
+                                label='Serviço'
+                                value={selectedItem}
+                                pointerEvents="none"
+                                readOnly
                             />
-                            <TouchableWithoutFeedback
-                                onPress={() => setIsEnabled(!isEnabled)}
-                            >
-                                <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                                    Lembrete revisão do serviço
-                                </Text>
-                            </TouchableWithoutFeedback>
                         </View>
+                    );
+                }}
+                renderItem={(item, index, isSelected) => {
+                    return (<View style={{ ...DefaultStyles.dropdownTextView, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                        <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                    </View>);
+                }}
+                onSelect={(selectedItem, index) => {
+                    setService(selectedItem);
+                }}
+                ref={selectServiceRef}
+            />
 
-                        {
-                            isEnabled ? <DateComponent date={dateReminder} setDate={setDateReminder} /> : false
-                        }
 
+            {/* PREÇO TOTAL */}
+            <TextInput
+                {...DefaultProps.textInput}
+                style={DefaultStyles.textInput}
+                error={missingData && !totalValue}
+                keyboardType='numeric'
+                label='* Preço Total'
+                onChangeText={value => setTotalValue(Utils.toNumber(value))}
+                value={totalValue.toString()}
+            />
 
+            <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
+                <Switch
+                    trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
+                    thumbColor={isEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={enabled => setIsEnabled(enabled)}
+                    value={isEnabled}
+                />
+                <TouchableWithoutFeedback
+                    onPress={() => setIsEnabled(!isEnabled)}
+                >
+                    <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
+                        Lembrete revisão do serviço
+                    </Text>
+                </TouchableWithoutFeedback>
+            </View>
 
-                        <Observations
-                            isEnabled={isEnabledObservations}
-                            observations={observations}
-                            setIsEnabled={setIsEnabledObservations}
-                            setObservations={setObservations}
-                        />
+            {
+                isEnabled ? <DateComponent date={dateReminder} setDate={setDateReminder} /> : false
+            }
 
-                    </ScrollView>
-                </ContentContainer>
-            </View >
-
-        </View>
+        </BaseExpense>
     );
 };
 
