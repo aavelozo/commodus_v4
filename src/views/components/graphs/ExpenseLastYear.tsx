@@ -3,13 +3,14 @@ import { View, Text, Image, Dimensions, StyleSheet, TouchableWithoutFeedback, Mo
 import { RFValue } from 'react-native-responsive-fontsize'
 import { DefaultStyles } from '../../DefaultStyles'
 import { VictoryLine, VictoryChart, VictoryTheme, VictoryPie, VictoryLabel, VictoryAxis, VictoryBar } from "victory-native";
-
+import Trans from '../../../controllers/internatiolization/Trans';
+import _ from 'lodash'
 
 
 function ExpenseLastYear({ data }): JSX.Element {
     return (
         <View style={{ borderBottomWidth: 1, marginTop: RFValue(10), alignItems: "flex-start", paddingLeft: RFValue(10) }}>
-            <Text style={[style.titleGraph, {paddingLeft: RFValue(-10)}]}>Gastos dos últimos 365 dias</Text>
+            <Text style={[style.titleGraph, {paddingLeft: RFValue(-10)}]}>{_.capitalize(Trans.t('spending from the last 365 days'))}</Text>
 
             <VictoryChart
                 // theme={VictoryTheme.material}
@@ -27,7 +28,7 @@ function ExpenseLastYear({ data }): JSX.Element {
                 />
                 <VictoryAxis
                     dependentAxis
-                    tickFormat={(x) => (`R$${x}`)}
+                    tickFormat={(x) => (x||0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}
                 />
             </VictoryChart>
 

@@ -1,6 +1,6 @@
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import React, { useState, useCallback } from 'react'
-import { View, StyleSheet, TouchableOpacity, Dimensions, FlatList, Text, Image } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Dimensions, FlatList, Image } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { DefaultStyles } from '../../DefaultStyles';
 import Vehicles from '../../../database/models/Vehicles';
@@ -10,9 +10,10 @@ import TitleView from '../../components/TitleView';
 import { RFValue } from 'react-native-responsive-fontsize';
 import _ from "lodash";
 import Wash from '../../assets/iconSvg/car-wash.svg'
-import { ActivityIndicator } from 'react-native-paper'
+import { ActivityIndicator, Text } from 'react-native-paper'
 import { setCurrentVehicle } from './EditVehicle'
 import EditExpenseController from '../../../controllers/EditExpenseController'
+import Trans from '../../../controllers/internatiolization/Trans';
 const { height } = Dimensions.get('window');
 
 function ListVehicle(props: React.PropsWithChildren): JSX.Element {
@@ -51,7 +52,7 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
         <>
             <Header />
             <View style={style.title}>
-                <TitleView title='Veículos' />
+                <TitleView title={_.capitalize(Trans.t('vehicles'))} />
                 <View style={style.espacoCentral}>
                     <View style={{ flex: 1, alignItems: 'center', paddingTop: RFValue(30) }}>
                         {/* Lista com os veículos cadastrados */}
@@ -78,9 +79,7 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
                                     <View style={{ flexDirection: 'row', height: '50%', width: '100%', alignItems: 'flex-end' }}>
                                         <Wash width={RFValue(70)} height={RFValue(70)} fill={DefaultStyles.colors.tabBar} />
                                         <View style={{ flexDirection: 'column' }}>
-                                            <Text style={style.info}>Para cadastrar seu primeiro</Text>
-                                            <Text style={style.info}>veículo basta clicar no mais </Text>
-                                            <Text style={style.info}>indicado pela flecha abaixo.</Text>
+                                            <Text style={style.info}>{Trans.t('info_first_vehicle_register')}</Text>
                                         </View>
 
 
@@ -140,6 +139,7 @@ const style = StyleSheet.create({
         fontSize: RFValue(18),
         color: '#000',
         marginLeft: RFValue(15),
+        maxWidth:'78%',
         textAlign: 'left'
     }
 });

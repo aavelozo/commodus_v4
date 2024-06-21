@@ -14,6 +14,8 @@ import Exit from '../../assets/iconSvg/exit.svg';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import AuthController from '../../../controllers/AuthController'
+import Trans from '../../../controllers/internatiolization/Trans'
+import _ from 'lodash';
 
 
 function Account(props): JSX.Element {
@@ -65,14 +67,14 @@ function Account(props): JSX.Element {
 
     // mostra alert para selecionar camera ou galeria
     const handleImageUser = () => {
-        Alert.alert("IMAGEM", "Selecione o local em que está a sua foto:", [
+        Alert.alert(_.upper(Trans.t('image')), `${_.capitalize(Trans.t('select the location where your photo is'))}:`, [
             {
-                text: 'Galeria',
+                text: _.capitalize(Trans.t('galery')),
                 onPress: () => pickImageGalery(),
                 style: 'default'
             },
             {
-                text: 'Câmera',
+                text: _.capitalize(Trans.t('camera')),
                 onPress: () => pickImageCamera(),
                 style: 'default'
             }
@@ -122,7 +124,7 @@ function Account(props): JSX.Element {
                         name: name||null,
                         photo: foto||null
                     });
-                    showToast('Dados alterados com sucesso.'); 
+                    showToast(`${_.capitalize(Trans.t('successfull updated data'))}.`); 
                 }
                                
             }
@@ -148,7 +150,7 @@ function Account(props): JSX.Element {
                 saving={saving}
             />
             <View style={style.title}>
-                <TitleView title='Usuário'></TitleView>
+                <TitleView title={_.capitalize(Trans.t('user'))}></TitleView>
                 <View style={style.espacoCentral}>
                     <View style={{ height: '30%', justifyContent: 'flex-end', marginTop: RFValue(10), alignItems: 'center' }}>
                         <TouchableOpacity
@@ -175,7 +177,7 @@ function Account(props): JSX.Element {
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
                             keyboardType='default'
-                            label='Nome'
+                            label={_.capitalize(Trans.t('name'))}
                             onChangeText={name => setName(name)}
                             value={name}
                         />
@@ -183,7 +185,7 @@ function Account(props): JSX.Element {
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
                             keyboardType='default'
-                            label='E-mail'
+                            label={_.capitalize(Trans.t('e-mail'))}
                             onChangeText={email => setEmail(email)}
                             value={email}
                             disabled
@@ -192,7 +194,7 @@ function Account(props): JSX.Element {
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
-                            label='Senha'
+                            label={_.capitalize(Trans.t('password'))}
                             onChangeText={password => setPassword(password)}
                             value={password}
                             secureTextEntry={true}

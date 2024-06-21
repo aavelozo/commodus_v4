@@ -3,6 +3,8 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { DefaultStyles } from "../DefaultStyles";
 import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
 import { AndroidColor } from '@notifee/react-native';
+import Trans from "../../controllers/internatiolization/Trans";
+import _ from 'lodash';
 
 const createChannelId = async () => {
     const channelId = await notifee.createChannel({
@@ -21,8 +23,8 @@ export const showNotification = async (date) => {
     const channelId = await createChannelId() 
 
     await notifee.displayNotification({
-        title: '<strong>Lembrete de revisão</strong>',
-        body: `notificação`,
+        title: `<strong>${_.capitalize(Trans.t('revision reminder'))}</strong>`,
+        body: Trans.t('notification'),
         android: { channelId },
     });
 }
@@ -45,8 +47,8 @@ export const scheduleNotification = async () => {
     // Create a trigger notification
     await notifee.createTriggerNotification(
       {
-        title: 'Lembrete de revisão ⚠️',
-        body: 'Hoje é o dia para fazer o serviço novamente',
+        title: `${_.capitalize(Trans.t('revision reminder'))} ⚠️`,
+        body: _.capitalize(Trans.t(`today is the day to do the job again`)),
         android: {
             channelId,
             largeIcon: require('../assets/logoCommodusEscuro.png'),

@@ -14,6 +14,7 @@ import _ from "lodash";
 import New from '../../assets/iconSvg/newExpense.svg'
 import EditExpenseController from '../../../controllers/EditExpenseController'
 import { ActivityIndicator } from 'react-native-paper'
+import Trans from '../../../controllers/internatiolization/Trans'
 const { height, width } = Dimensions.get('window');
 
 function ViewExpense(props): JSX.Element {
@@ -25,12 +26,12 @@ function ViewExpense(props): JSX.Element {
     const [totalValue, setTotalValue] = useState(0)
 
 
-    useFocusEffect(React.useCallback(() => {
+    useFocusEffect(React.useCallback(() => {    
         setLoading(true);
         EditExpenseController.currentExpense = null;
         (async () => {
             try {
-                console.log('loading expenses...');
+                console.log('loading expenses...',Trans.getDeviceLocale(), Trans.getLocaleCurrency());
                 let newVehicles = [];
                 let newAllExpenses = [];
                 let newTotalValue = 0;
@@ -74,7 +75,7 @@ function ViewExpense(props): JSX.Element {
         <>
             <Header />
             <View style={style.title}>
-                <TitleView title="Despesa" />
+                <TitleView title={_.capitalize(Trans.t('expense'))} />
                 <View style={style.espacoCentral}>
 
                     {loading
@@ -95,13 +96,13 @@ function ViewExpense(props): JSX.Element {
                                     <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center' }}>
                                         <TouchableWithoutFeedback onPress={() => setAllVehicle(true)}>
                                             <View style={{ marginLeft: RFValue(10), borderBottomColor: allVehicle ? DefaultStyles.colors.botao : DefaultStyles.colors.tabBar, borderBottomWidth: allVehicle ? RFValue(4) : 1, width: '45%' }}>
-                                                <Text style={[style.textExpense, style.textButton]}>Todos os veículos</Text>
+                                                <Text style={[style.textExpense, style.textButton]}>{_.capitalize(Trans.t('all vehicles'))}</Text>
                                             </View>
                                         </TouchableWithoutFeedback>
 
                                         <TouchableWithoutFeedback onPress={() => setAllVehicle(false)}>
                                             <View style={{ marginRight: 10, borderBottomColor: !allVehicle ? DefaultStyles.colors.botao : DefaultStyles.colors.tabBar, borderBottomWidth: !allVehicle ? RFValue(4) : 1, width: '45%' }}>
-                                                <Text style={[style.textExpense, style.textButton]}>Escolher o veículo</Text>
+                                                <Text style={[style.textExpense, style.textButton]}>{_.capitalize(Trans.t('choice the vehicle'))}</Text>
                                             </View>
                                         </TouchableWithoutFeedback>
                                     </View>
@@ -111,10 +112,14 @@ function ViewExpense(props): JSX.Element {
                                         <>
                                             {/* Todos os Veiculo */}
                                             < View style={{ alignSelf: 'center', height: height * 0.06, marginTop: RFValue(20), justifyContent: 'center', alignItems: 'center' }}>
-                                                <Text style={style.textSummary}>{vehicles.length} veículo{vehicles.length > 1 ? 's' : ''}</Text>
-                                                <Text style={[style.textSummary, { fontSize: RFValue(18), paddingBottom: 2 }]}>Total de gastos: R${totalValue.toFixed(2)}</Text>
+                                                <Text style={style.textSummary}>{vehicles.length} {Trans.t(vehicles.length > 1 ? 'vehicles' : 'vehicle')}</Text>
+                                                <Text style={[style.textSummary, { fontSize: RFValue(18), paddingBottom: 2 }]}>
+                                                    {_.capitalize(Trans.t('total expenses'))}: {(totalValue || 0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}
+                                                </Text>
                                             </View>
-                                            <Text style={{ fontWeight: 'bold', fontSize: RFValue(20), marginLeft: RFValue(15), color: DefaultStyles.colors.tabBar, marginTop: RFValue(10) }}>Detalhe dos gastos:</Text>
+                                            <Text style={{ fontWeight: 'bold', fontSize: RFValue(20), marginLeft: RFValue(15), color: DefaultStyles.colors.tabBar, marginTop: RFValue(10) }}>
+                                                {_.capitalize(Trans.t('expenses details'))}:
+                                            </Text>
                                             <FlatList
                                                 ListFooterComponent={() => <View style={{ height: height * 0.108 }} />}
                                                 keyExtractor={expenses.id}
@@ -137,9 +142,13 @@ function ViewExpense(props): JSX.Element {
                                                         <View key={ind}>
                                                             < View style={{ alignSelf: 'center', borderBottomWidth: RFValue(0.5), borderBottomColor: DefaultStyles.colors.tabBar, height: height * 0.06, marginTop: RFValue(20), justifyContent: 'center', alignItems: 'center' }}>
                                                                 <Text style={style.textSummary}>{vehicle.vehicleName}</Text>
-                                                                <Text style={[style.textSummary, { fontSize: RFValue(17), paddingBottom: RFValue(5) }]}>Total de gastos: R${vehicle.totalValue.toFixed(2)}</Text>
+                                                                <Text style={[style.textSummary, { fontSize: RFValue(17), paddingBottom: RFValue(5) }]}>
+                                                                    {_.capitalize(Trans.t('total expenses'))}: {(vehicle?.totalValue||0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}
+                                                                </Text>
                                                             </View>
-                                                            <Text style={{ fontWeight: 'bold', fontSize: RFValue(20), marginLeft: RFValue(15), color: DefaultStyles.colors.tabBar, marginTop: RFValue(10) }}>Detalhe dos gastos:</Text>
+                                                            <Text style={{ fontWeight: 'bold', fontSize: RFValue(20), marginLeft: RFValue(15), color: DefaultStyles.colors.tabBar, marginTop: RFValue(10) }}>
+                                                                {_.capitalize(Trans.t('expenses details'))}:
+                                                            </Text>
                                                             <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: height * 0.12 }}>
                                                                 {
                                                                     vehicle.expenses ? vehicle.expenses.map((exp, ind) => {
@@ -174,9 +183,9 @@ function ViewExpense(props): JSX.Element {
                                     <View style={{ flexDirection: 'row', height: '50%', width: '100%', alignItems: 'flex-end', marginLeft: RFValue(10) }}>
                                         <New width={RFValue(70)} height={RFValue(70)} fill={DefaultStyles.colors.tabBar} />
                                         <View style={{ flexDirection: 'column' }}>
-                                            <Text style={style.info}>Para cadastrar sua primeira</Text>
-                                            <Text style={style.info}>despesa basta clicar no ícone</Text>
-                                            <Text style={style.info}>indicado pela flecha abaixo.</Text>
+                                            <Text style={style.info}>
+                                                {Trans.t('info_first_expense_register')}
+                                            </Text>
                                         </View>
 
                                     </View>
@@ -186,11 +195,7 @@ function ViewExpense(props): JSX.Element {
                                         source={require('../../assets/arrowdown2.png')}
                                     />
                                 </View>
-
                             }
-
-
-
                         </>}
                 </View>
             </View >
@@ -209,19 +214,7 @@ const style = StyleSheet.create({
         flex: 9,
         backgroundColor: DefaultStyles.colors.tabBar,
         alignItems: 'center',
-        justifyContent: 'center',
-
-    },
-    cardExpense: {
-        height: height * 0.14,
-        padding: RFValue(10),
-        flexDirection: 'row',
-        width: '100%'
-    },
-    icon: {
-        width: width * 0.128,
-        justifyContent: 'center',
-        alignItems: 'center'
+        justifyContent: 'center'
     },
     textExpense: {
         fontSize: RFValue(20),
@@ -263,13 +256,6 @@ const style = StyleSheet.create({
         position: 'absolute',
         left: RFValue(50),
         bottom: RFPercentage(height < 700 ? 25 : 28)
-    },
-    image: {
-        flex: 1,
-        justifyContent: "center",
-        width: width,
-        height: RFValue(400),
-        marginTop: RFValue(20)
     },
     info: {
         fontFamily: 'verdana',

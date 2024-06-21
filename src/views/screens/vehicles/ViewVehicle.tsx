@@ -15,6 +15,8 @@ import { DefaultStyles } from '../../DefaultStyles'
 import Header from '../../components/Header'
 import Vehicles from '../../../database/models/Vehicles';
 import { setCurrentVehicle } from './EditVehicle'
+import Trans from '../../../controllers/internatiolization/Trans'
+import _ from 'lodash'
 
 
 const { width, height } = Dimensions.get('window');
@@ -36,7 +38,7 @@ function ViewVehicle(props): JSX.Element {
         <View style={style.container}>
             <Header />
             <View style={style.title}>
-                <TitleView title={'Dados do veículo'} />
+                <TitleView title={_.capitalize(Trans.t('vehicle data'))} />
 
                 <View style={style.espacoCentral}>
                     {
@@ -58,7 +60,7 @@ function ViewVehicle(props): JSX.Element {
                                 <Engine width={RFValue(30)} height={RFValue(30)} fill={DefaultStyles.colors.tabBar} />
                             </View>
                             <Text style={[style.text, style.textBold]}>Motor: </Text>
-                            <Text style={style.text}>{Vehicles.ENGINES_TYPES[vehicle?.data().idEngineType || 0]}</Text>
+                            <Text style={style.text}>{_.capitalize(Trans.t(Vehicles.ENGINES_TYPES[vehicle?.data().idEngineType || 0]))}</Text>
                         </View>
                         {/* Km */}
                         <View style={style.viewEachInfo}>
@@ -66,7 +68,7 @@ function ViewVehicle(props): JSX.Element {
                                 <Velo width={RFValue(30)} height={RFValue(30)} fill={DefaultStyles.colors.tabBar} />
 
                             </View>
-                            <Text style={[style.text, style.textBold]}>Quilometragem: </Text>
+                            <Text style={[style.text, style.textBold]}>{_.capitalize(Trans.t('mileage'))}: </Text>
                             <Text style={style.text}>{vehicle?.data().km}</Text>
                         </View>
                         {/* Ano */}
@@ -74,7 +76,7 @@ function ViewVehicle(props): JSX.Element {
                             <View style={style.viewIcon}>
                                 <FontAwesome name='calendar' size={RFValue(22)} color={DefaultStyles.colors.tabBar} />
                             </View>
-                            <Text style={[style.text, style.textBold]}>Ano: </Text>
+                            <Text style={[style.text, style.textBold]}>{_.capitalize(Trans.t('year'))}: </Text>
                             <Text style={style.text}>{vehicle?.data().year}</Text>
                         </View>
                         {/* Combustivel */}
@@ -82,7 +84,7 @@ function ViewVehicle(props): JSX.Element {
                             <View style={style.viewIcon}>
                                 <Fuel width={RFValue(30)} height={RFValue(22)} fill={DefaultStyles.colors.tabBar} />
                             </View>
-                            <Text style={[style.text, style.textBold]}>Combustível: </Text>
+                            <Text style={[style.text, style.textBold]}>{_.capitalize(Trans.t('fuel'))}: </Text>
                             <Text adjustsFontSizeToFit numberOfLines={1} style={style.text}>{vehicle?.data().preferedFuel}</Text>
                         </View>
                         {/* Cor */}
@@ -91,7 +93,7 @@ function ViewVehicle(props): JSX.Element {
                                 <View style={style.viewIcon}>
                                     <Palete width={RFValue(30)} height={RFValue(22)} fill={DefaultStyles.colors.tabBar} />
                                 </View>
-                                <Text style={[style.text, style.textBold]}>Cor: </Text>
+                                <Text style={[style.text, style.textBold]}>{_.capitalize(Trans.t('color'))}: </Text>
                                 <Text numberOfLines={1} adjustsFontSizeToFit style={style.text}>{vehicle?.data().color}</Text>
                             </View> : false
                         }
@@ -101,7 +103,7 @@ function ViewVehicle(props): JSX.Element {
                             <View style={style.viewIcon}>
                                 <Plate width={RFValue(30)} height={RFValue(35)} fill={DefaultStyles.colors.tabBar} />
                             </View>
-                            <Text style={[style.text, style.textBold]}>Placa: </Text>
+                            <Text style={[style.text, style.textBold]}>{_.capitalize(Trans.t('plate'))}: </Text>
                             <Text style={style.text}>{vehicle?.data().plate}</Text>
                         </View>
 

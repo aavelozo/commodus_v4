@@ -10,17 +10,23 @@ class Vehicles {
     static #dbData : Array<any> | null = null;
     static #singleData: Array<any> | null = null;
 
+
     static ENGINES_TYPES = [
-        'Combustão',
-        'Híbrido',
-        'Elétrico'
+        'combustion',
+        'hybrid',
+        'eletric'
     ];
+
+    static FUELS_LIST = [
+        'alcohol', 
+        'gasoline', 
+        'diesel'
+    ]
     
     static getDBCollection(){
         if (!this.#dbCollection) { //"singleton" property
             this.#dbCollection = AuthController.getLoggedUser().ref.collection('vehicles');
             this.#dbCollection.onSnapshot(function(querySnapshot){
-                console.log('documentos atualizados na nuvem, recarregando');
                 Vehicles.loadDBData();
             });
         }
@@ -29,12 +35,8 @@ class Vehicles {
 
      //"singleton" request to server, store on local cache with app is running
     static async loadDBData(){     
-        console.log('INIT Vehicles.loadDBData');   
-        console.log('loading data Vehicles from db');        
         this.#dbData = await this.getDBCollection().get();
         this.#singleData = [];
-        console.log(`loading data Vehicles from db ok, size ${this.#dbData?.size}`);
-        console.log('END Vehicles.loadDBData'); 
         
     }
 
