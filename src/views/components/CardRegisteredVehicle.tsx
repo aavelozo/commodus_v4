@@ -6,6 +6,8 @@ import Icon from 'react-native-vector-icons/Fontisto'
 import { RFValue } from "react-native-responsive-fontsize";
 import { DefaultStyles } from '../DefaultStyles'
 import { setCurrentViewVehicle } from '../screens/vehicles/ViewVehicle'
+import Trans from '../../controllers/internatiolization/Trans'
+import _ from 'lodash';
 const { width, height } = Dimensions.get('window')
 
 function CardRegisteredVehicle(props: React.PropsWithChildren): JSX.Element {
@@ -13,11 +15,11 @@ function CardRegisteredVehicle(props: React.PropsWithChildren): JSX.Element {
     var type;
     const vehicle = ((props.route || {}).params || {}).vehicle || props.vehicle || {};
     if (vehicle.data().idEngineType == 0) {
-        type = 'Combustão'
+        type = 'combustion'
     } else if (vehicle.data().idEngineType == 1) {
-        type = 'Híbrido'
+        type = 'hybrid'
     } else {
-        type = 'Elétrico'
+        type = 'eletric'
     }
     return (
         <TouchableOpacity
@@ -43,10 +45,10 @@ function CardRegisteredVehicle(props: React.PropsWithChildren): JSX.Element {
                 </View>
                 {/* dados do veiculo */}
                 <View style={style.info}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit style={[style.textInfo, { fontSize: RFValue(17) }]}>Veículo: {`${vehicle.data().model?.id}`}</Text>
-                    <Text numberOfLines={1} adjustsFontSizeToFit style={style.textInfo}>Cor: {vehicle.data().color}</Text>
+                    <Text numberOfLines={1} adjustsFontSizeToFit style={[style.textInfo, { fontSize: RFValue(17) }]}>{_.capitalize(Trans.t('vehicle'))}: {`${vehicle.data().model?.id}`}</Text>
+                    <Text numberOfLines={1} adjustsFontSizeToFit style={style.textInfo}>{_.capitalize(Trans.t('color'))}: {vehicle.data().color}</Text>
                     <Text style={style.textInfo}>KM: {vehicle.data().km}</Text>
-                    <Text style={style.textInfo}>{type}</Text>
+                    <Text style={style.textInfo}>{_.capitalize(Trans.t(type))}</Text>
                 </View>
                 <View style={style.icon}>
                     <Fontisto name="angle-right" size={RFValue(20)} color={DefaultStyles.colors.tabBar} style={{ alignSelf: 'center', paddingLeft: RFValue(3), paddingTop: 4 }} />

@@ -10,6 +10,8 @@ import Chave from '../../assets/iconSvg/chaveinglesa.svg'
 import Outros from '../../assets/iconSvg/outros.svg'
 import Pneu from '../../assets/iconSvg/pneu.svg'
 import Aparencia from '../../assets/iconSvg/car-wash.svg'
+import Trans from '../../../controllers/internatiolization/Trans';
+import _ from 'lodash'
 
 
 
@@ -18,7 +20,7 @@ function PercentageExpenses({ data, monthlyExpenses }): JSX.Element {
     return (
         monthlyExpenses.current > 0 ?
         <View style={{ borderBottomWidth: 1, marginTop: RFValue(10), alignItems: "flex-start" }}>
-            <Text style={style.titleGraph}>Porcentagem dos gastos</Text>
+            <Text style={style.titleGraph}>{_.capitalize(Trans.t('percentage of expenses'))}</Text>
 
 
             <VictoryPie
@@ -48,19 +50,19 @@ function PercentageExpenses({ data, monthlyExpenses }): JSX.Element {
                 data.length > 0 ?
                     data.map((data, index) => {
                         var Icon = ''
-                        if (data.x == 'Borracharia') {
+                        if (data.x == 'tyre') {
                             Icon = <Pneu width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                        } else if (data.x == 'Combustível') {
+                        } else if (data.x == 'fuel') {
                             Icon = <Fuel width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                        } else if (data.x == 'Mecânica') {
+                        } else if (data.x == 'mechanic') {
                             Icon = <Chave width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                        } else if (data.x == 'Óleo') {
+                        } else if (data.x == 'óil') {
                             Icon = <Oil width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                        } else if (data.x == 'Documento') {
+                        } else if (data.x == 'document') {
                             Icon = <Seguro width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                        } else if (data.x == 'Outros') {
+                        } else if (data.x == 'others') {
                             Icon = <Outros width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                        } else if (data.x == 'Aparência') {
+                        } else if (data.x == 'appearence') {
                             Icon = <Aparencia width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
                         }
                         return (
@@ -68,7 +70,9 @@ function PercentageExpenses({ data, monthlyExpenses }): JSX.Element {
                             <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginLeft: RFValue(20), marginBottom: RFValue(10) }}>
                                 {Icon}
                                 <View style={{ borderWidth: 1, height: RFValue(12), width: RFValue(12), backgroundColor: data.color, marginHorizontal: RFValue(10) }}></View>
-                                <Text style={[style.textButton, style.textLegend]}>{data.x}: R${data.y.toFixed(2)}  </Text>
+                                <Text style={[style.textButton, style.textLegend]}>
+                                    {Trans.t(data.x)}: {(data?.y||0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}  
+                                </Text>
                             </View>
                             : false
                         )

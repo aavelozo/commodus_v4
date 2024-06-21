@@ -1,9 +1,8 @@
 
 import React, { useEffect, useState } from 'react'
-import { View, StyleSheet, Dimensions, TouchableOpacity, Alert, ToastAndroid } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Alert, ToastAndroid } from 'react-native'
 import { RFValue } from "react-native-responsive-fontsize";
 import { DefaultStyles } from '../../DefaultStyles';
-import ModalAlert from '../../components/ModalAlert';
 import Header from '../../components/Header';
 import Utils from '../../../controllers/Utils';
 import Vehicles from '../../../database/models/Vehicles';
@@ -23,7 +22,8 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Brands from '../../../database/models/Brands';
 import { setCurrentViewVehicle } from './ViewVehicle';
 import { TextInput, useTheme } from 'react-native-paper';
-const { width, height } = Dimensions.get('window');
+import Trans from '../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
 
 
 let currentVehicle;
@@ -42,7 +42,6 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
     const [saving,setSaving] = useState(false);
     const [vehicle,setVehicle] = useState(currentVehicle);
     const [brands, setBrands] = useState([]);
-    const [showAlert, setShowAlert] = useState(false);
     const [missingData, setMissingData] = useState(false);
     const [selectedBrand, setSelectedBrand] = useState(null);
     const [selectedModel, setSelectedModel] = useState(null);
@@ -54,7 +53,6 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
     const [idEngineType, setIdEngineType] = useState(0);
     const [plate, setPlate] = useState('');
     const [photo, setPhoto] = useState('');
-    const fuels = ['Álcool', 'Gasolina', 'Diesel'];
     const years = (function () {
         let anos = [];
         let anoFinal = new Date().getFullYear() + 1;
@@ -124,7 +122,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
             if (!selectedModel || !selectedBrand || !selectedYear || !km || !plate) {
                 setMissingData(true);
                 //setShowAlert(true);                
-                Utils.toast("error","faltam dados");
+                Utils.toast("error",_.capitalize(Trans.t('missing data')));
             } else {
                 setMissingData(false);
                 setSaving(true);
@@ -178,21 +176,21 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
 
     // mostra alert para selecionar camera ou galeria
     const handleImageCar = () => {
-        Alert.alert("IMAGEM", "Selecione o local em que está a foto:", [
+        Alert.alert(_.upper(Trans.t('image')), `${_.capitalize(Trans.t('select the location where your photo is'))}:`, [
             {
-                text: 'Galeria',
+                text: _.capitalize(Trans.t('galery')),
                 onPress: () => pickImageGalery(),
                 style: 'default'
             },
             {
-                text: 'Câmera',
+                text: _.capitalize(Trans.t('camera')),
                 onPress: () => pickImageCamera(),
                 style: 'default'
             }
         ],
             {
                 cancelable: true,
-                onDismiss: () => console.log("tratar depois")
+                onDismiss: () => console.log("to implement")
             })
     }
 
@@ -224,24 +222,13 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
     }
 
     const showToast = () => {
-        ToastAndroid.showWithGravity("Imagem inserida com sucesso!", ToastAndroid.LONG, ToastAndroid.CENTER, 25, 50);
+        ToastAndroid.showWithGravity(Trans.t('msg_successfull_image_inserted'), ToastAndroid.LONG, ToastAndroid.CENTER, 25, 50);
     };
 
 
 
 
-    return (<View style={style.container}>
-            {showAlert
-                ? <ModalAlert
-                    onlyConfirm={false}
-                    title="Dados incompletos"
-                    message='Preecha todos os campos obrigatórios'
-                    textConfirm='Confirmar'
-                    textCancel="Cancelar"
-                    updateShowAlert={pBool => setShowAlert(false)}
-                />
-                : false
-            }
+    return (<View style={style.container}>            
             <Header 
                 withButtons={true} 
                 onPressConclude={saveVehicle} 
@@ -249,12 +236,12 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                 onPressCancel={() => navigation.navigate('ListVehicle')} 
             />
             <View style={style.title}>
-                <TitleView title={vehicle ? 'Edição de veículo' : 'Cadastro de veículo'} />
+                <TitleView title={_.capitalize(Trans.t(vehicle ? 'vehicle edition' : 'vehicle register'))} />
                 <ContentContainer  >
                     <FormLayout>
                         <Radio
                             enginesTypes={
-                                Vehicles.ENGINES_TYPES.map((engineType, index) => { return { label: engineType, value: index } })
+                                Vehicles.ENGINES_TYPES.map((engineType, index) => { return { label: _.capitalize(Trans.t(engineType)), value: index } })
                             }
                             selected={idEngineType}
                             funcao={index => setIdEngineType(index)}
@@ -276,7 +263,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
                                             error={missingData && !selectedBrand}
-                                            label='* Marca'
+                                            label={`* ${_.capitalize(Trans.t('brand'))}`}
                                             value={selectedItem?.id}
                                             pointerEvents="none"                                            
                                             readOnly
@@ -309,7 +296,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
                                             error={missingData && !selectedModel}
-                                            label='* Modelo'
+                                            label={`* ${_.capitalize(Trans.t('model'))}`}
                                             value={selectedItem?.id}
                                             pointerEvents="none"
                                             readOnly
@@ -342,7 +329,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
                                             error={missingData && !selectedYear}
-                                            label='* Ano Modelo'
+                                            label={`* ${_.capitalize(Trans.t('model year'))}`}
                                             value={selectedItem ? selectedItem.toString() : ''}
                                             pointerEvents="none"
                                             readOnly
@@ -366,7 +353,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                             dropdownStyle={DefaultStyles.dropdownMenuStyle}
                             search={true}
                             showsVerticalScrollIndicator={true} 
-                            data={fuels}
+                            data={Vehicles.FUELS_LIST}
                             defaultValue={selectedFuel}
                             renderButton={(selectedItem, isOpened) => {
                                 return (
@@ -374,8 +361,8 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            label='Combustível preferido'
-                                            value={selectedItem}
+                                            label={_.capitalize(Trans.t('preferred fuel'))}
+                                            value={_.capitalize(Trans.t(selectedItem))}
                                             pointerEvents="none"
                                             readOnly
                                         />
@@ -384,7 +371,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                             }}
                             renderItem={(item, index, isSelected) => {
                                 return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
-                                        <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                                        <Text style={DefaultStyles.dropdownText}>{_.capitalize(Trans.t(item))}</Text>
                                 </View>);
                             }}
                             onSelect={(selectedItem, index) => {
@@ -398,7 +385,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                             style={DefaultStyles.textInput}
                             error={missingData && !Utils.hasValue(km)}
                             keyboardType='numeric'
-                            label='* Quilometragem atual'
+                            label={`* ${_.capitalize(Trans.t('actual kilometers'))}`}
                             onChangeText={km => {
                                 if (km.includes('.')) return
                                 if (km.includes(',')) return
@@ -407,7 +394,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                 setKm(km);
                             }}
                             maxLength={7}
-                            value={(km || '').toString()}
+                            value={km ? km.toString() : null}
                         />
 
                         {/*TEXTINPUT PLACA*/}
@@ -415,7 +402,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                             {...DefaultProps.textInput}
                             style={[DefaultStyles.textInput, { marginTop: RFValue(7) }]}
                             error={missingData && !Utils.hasValue(plate)}                    
-                            label='* Placa do veículo'
+                            label={`* ${_.capitalize(Trans.t('vehicle plate'))}`}
                             value={plate}
                             onChangeText={plate => setPlate(plate)}
                             maxLength={7}
@@ -432,7 +419,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                             />
                             {<TouchableWithoutFeedback onPress={() => setIsColorEnabled(!isColorEnabled)}>
                                 <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                                    Cor
+                                    {_.capitalize(Trans.t('color'))}
                                 </Text>
                             </TouchableWithoutFeedback>}
                         </View>
@@ -441,7 +428,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                             ? <TextInput
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
-                                label='Cor'
+                                label={_.capitalize(Trans.t('color'))}
                                 value={color ? color : ''}
                                 onChangeText={color => setColor(color)}
                                 //defaultValue={color}
@@ -471,94 +458,12 @@ const style = StyleSheet.create({
         backgroundColor: DefaultStyles.colors.fundo,
         flex: 1,
     },
-    espacoCentral: {
-        backgroundColor: DefaultStyles.colors.fundo,
-        flex: 9,
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        borderTopLeftRadius: RFValue(25),
-        width: '100%',
-    },
     title: {
         flex: 9,
         backgroundColor: DefaultStyles.colors.tabBar,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    input: {
-        width: width * 0.9,
-        backgroundColor: DefaultStyles.colors.fundoInput,
-        height: height / 14,
-        marginBottom: 15,
-        borderRadius: 5,
-        paddingLeft: 5,
-        color: DefaultStyles.colors.tabBar,
-        fontSize: 20,
-        alignSelf: 'center'
-    },
-    textSwitch: {
-        fontSize: 20,
-        color: DefaultStyles.colors.tabBar,
-
-    },
-    picker: {
-        borderWidth: 1,
-        height: height / 14,
-        width: width * 0.9,
-        backgroundColor: DefaultStyles.colors.fundoInput,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    pickerItem: {
-        backgroundColor: DefaultStyles.colors.fundoInput,
-        color: DefaultStyles.colors.tabBar,
-        marginLeft: 20,
-        color: DefaultStyles.colors.tabBar,
-        fontSize: 20,
-        borderColor: 'transparent',
-    },
-    dropdownButtonStyle: {
-        width: 200,
-        height: 50,
-        backgroundColor: '#E9ECEF',
-        borderRadius: 12,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-      },
-      dropdownButtonTxtStyle: {
-        flex: 1,
-        fontSize: 18,
-        fontWeight: '500',
-        color: '#151E26',
-      },
-      dropdownButtonArrowStyle: {
-        fontSize: 28,
-      },
-      dropdownButtonIconStyle: {
-        fontSize: 28,
-        marginRight: 8,
-      },
-     
-      dropdownItemStyle: {
-        width: '100%',
-        flexDirection: 'row',
-        paddingHorizontal: 12,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingVertical: 8,
-      },
-      dropdownItemTxtStyle: {
-        flex: 1,
-        fontSize: 18,
-        fontWeight: '500',
-        color: '#151E26',
-      },
-      dropdownItemIconStyle: {
-        fontSize: 28,
-        marginRight: 8,
-      },
+    }
 });
 
 

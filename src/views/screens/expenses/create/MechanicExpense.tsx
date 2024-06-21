@@ -1,27 +1,29 @@
 import React, { useState, useCallback, useRef } from 'react'
-import { View, StyleSheet, Alert, Dimensions, ScrollView, TouchableWithoutFeedback, Switch, Text } from 'react-native'
-import { RFValue } from "react-native-responsive-fontsize";
-import TitleView from '../../../components/TitleView';
-import Header from '../../../components/Header';
-import ContentContainer from '../../../components/ContentContainer';
-import Observations from '../../../components/expenses/Observations';
-import SelectVehicle from '../../../components/vehicles/SelectVehicle';
+import { View, TouchableWithoutFeedback, Switch, Text } from 'react-native'
 import DateComponent from '../../../components/expenses/DateComponent';
-import InputKM from '../../../components/vehicles/InputKM';
 import { TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
-import Utils from '../../../../controllers/Utils';
 import SelectDropdown from 'react-native-select-dropdown';
-import Establishment from '../../../components/expenses/Establishment';
-import AuthController from '../../../../controllers/AuthController';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
-import Vehicles from '../../../../database/models/Vehicles';
 import { BaseExpense } from './BaseExpense';
+import { TotalValue } from '../../../components/expenses/TotalValue';
+import Trans from '../../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
 
-const { width, height } = Dimensions.get('window')
 
+const serviceList = [
+    'brake maintenance',
+    'alignment and balancing',
+    'changing belts and tensioners',
+    'changing spark plugs',
+    'diagnosis',
+    'suspension repair',
+    'battery change',
+    'exhaust system replacement',
+    'air conditioning service'
+];
 
 /******************************************************
 ** COMPONENTE DA VIEW PRINCIPAL                      **
@@ -37,9 +39,8 @@ function MechanicsExpense(props): JSX.Element {
     const [currentExpense, setCurrentExpense] = useState(null);
     const [totalValue, setTotalValue] = useState(0);
 
-    //specific properties
-    const [serviceList, setServiceList] = useState(['Manutenção de freios', 'Alinhamento e balanceamento', 'Troca de correias e tensores', 'Troca de velas', 'Diagnóstico', 'Reparo de suspensão', 'Troca de bateria', 'Troca de sistema de escape', 'Serviço de ar condicionado']);
-    const [service, setService] = useState('Serviço realizado');
+    //specific properties    
+    const [service, setService] = useState(null);
     const [isEnabled, setIsEnabled] = useState(false);
     const [dateReminder, setDateReminder] = useState(null);
 
@@ -146,8 +147,8 @@ function MechanicsExpense(props): JSX.Element {
                             <TextInput
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
-                                label='Serviço'
-                                value={selectedItem}
+                                label={_.capitalize(Trans.t('service'))}
+                                value={_.capitalize(Trans.t(selectedItem))}
                                 pointerEvents="none"
                                 readOnly
                             />
@@ -156,26 +157,16 @@ function MechanicsExpense(props): JSX.Element {
                 }}
                 renderItem={(item, index, isSelected) => {
                     return (<View style={{ ...DefaultStyles.dropdownTextView, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                        <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                        <Text style={DefaultStyles.dropdownText}>{_.capitalize(Trans.t(item))}</Text>
                     </View>);
                 }}
                 onSelect={(selectedItem, index) => {
-                    setService(selectedItem);
+                    setService(serviceList[index]);
                 }}
                 ref={selectServiceRef}
             />
 
-
-            {/* PREÇO TOTAL */}
-            <TextInput
-                {...DefaultProps.textInput}
-                style={DefaultStyles.textInput}
-                error={missingData && !totalValue}
-                keyboardType='numeric'
-                label='* Preço Total'
-                onChangeText={value => setTotalValue(Utils.toNumber(value))}
-                value={totalValue.toString()}
-            />
+            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
 
             <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
                 <Switch
@@ -189,7 +180,7 @@ function MechanicsExpense(props): JSX.Element {
                     onPress={() => setIsEnabled(!isEnabled)}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                        Lembrete revisão do serviço
+                        {_.capitalize(Trans.t('service review reminder'))}
                     </Text>
                 </TouchableWithoutFeedback>
             </View>
@@ -202,35 +193,5 @@ function MechanicsExpense(props): JSX.Element {
     );
 };
 
-const style = StyleSheet.create({
-    container: {
-        backgroundColor: '#202D46',
-        flex: 1,
-    },
-    espacoCentral: {
-        backgroundColor: 'black',
-        flex: 9,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    input: {
-        width: "100%",
-        backgroundColor: DefaultStyles.colors.fundoInput,
-        height: height / 14,
-        marginBottom: RFValue(15),
-        borderRadius: RFValue(5),
-        color: DefaultStyles.colors.tabBar,
-        fontSize: RFValue(20),
-        alignSelf: 'center',
-        justifyContent: 'center',
-
-    },
-    viewExpense: {
-        flex: 1,
-        width: width * 0.9,
-        alignItems: 'center',
-    },
-
-});
 
 export default MechanicsExpense;

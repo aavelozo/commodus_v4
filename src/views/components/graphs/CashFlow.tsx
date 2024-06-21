@@ -3,6 +3,8 @@ import { View, Text, Image, Dimensions, StyleSheet, TouchableWithoutFeedback, Mo
 import { RFValue } from 'react-native-responsive-fontsize'
 import { DefaultStyles } from '../../DefaultStyles'
 import { VictoryLine, VictoryChart, VictoryTheme, VictoryPie, VictoryLabel, VictoryAxis, VictoryBar } from "victory-native";
+import Trans from '../../../controllers/internatiolization/Trans';
+import _ from 'lodash'
 
 
 
@@ -12,7 +14,7 @@ function CashFlow({ data, monthlyExpenses }): JSX.Element {
     return (
         monthlyExpenses.current > 0 ?
             <View style={{ borderBottomWidth: 1, marginTop: RFValue(10), alignItems: "center" }}>
-                <Text style={style.titleGraph}>Fluxo de caixa</Text>
+                <Text style={style.titleGraph}>{_.capitalize(Trans.t('cash flow'))}</Text>
 
                 <VictoryChart
                     // theme={VictoryTheme.material}
@@ -35,7 +37,7 @@ function CashFlow({ data, monthlyExpenses }): JSX.Element {
 
                     <VictoryAxis
                         dependentAxis
-                        tickFormat={(x) => `R$${x}`}
+                        tickFormat={(x) => (x||0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}
                     />
                     <VictoryAxis
                         // tickFormat={total.name}

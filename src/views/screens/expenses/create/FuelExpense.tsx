@@ -5,12 +5,14 @@ import { DefaultStyles } from '../../../DefaultStyles';
 import { Text, TextInput } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import { DefaultProps } from '../../../DefaultProps';
-import Establishment from '../../../components/expenses/Establishment';
-import Observations from '../../../components/expenses/Observations';
 import Utils from '../../../../controllers/Utils';
 import { useFocusEffect } from '@react-navigation/native';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
 import { BaseExpense } from './BaseExpense';
+import { TotalValue } from '../../../components/expenses/TotalValue';
+import Trans from '../../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
+import Vehicles from '../../../../database/models/Vehicles';
 const { width, height } = Dimensions.get('window')
 
 
@@ -31,7 +33,6 @@ function FuelExpense(props): JSX.Element {
     const [totalValue, setTotalValue] = useState(0);
 
     //specific properties
-    const listaCombustiveis = ['Álcool', 'Gasolina', 'Diesel']
     const [selectedFuel, setSelectedFuel] = useState(null);
     const [unValue, setUnValue] = useState(0);
     const [liters, setLiters] = useState(0);
@@ -127,7 +128,7 @@ function FuelExpense(props): JSX.Element {
                 dropdownStyle={DefaultStyles.dropdownMenuStyle}
                 search={true}
                 showsVerticalScrollIndicator={true}                            
-                data={listaCombustiveis}
+                data={Vehicles.FUELS_LIST}
                 defaultValue={selectedFuel}
                 renderButton={(selectedItem, isOpened) => {
                     return (
@@ -136,8 +137,8 @@ function FuelExpense(props): JSX.Element {
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
                                 error={missingData && !selectedFuel}
-                                label='* Combustível'
-                                value={selectedItem}
+                                label={`* ${_.capitalize(Trans.t('fuel'))}`}
+                                value={_.capitalize(Trans.t(selectedItem))}
                                 pointerEvents="none"
                                 readOnly
                             />
@@ -146,11 +147,11 @@ function FuelExpense(props): JSX.Element {
                 }}
                 renderItem={(item, index, isSelected) => {
                     return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
-                            <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                            <Text style={DefaultStyles.dropdownText}>{_.capitalize(Trans.t(item))}</Text>
                     </View>);
                 }}
                 onSelect={(selectedItem, index) => {
-                    setSelectedFuel(selectedItem);
+                    setSelectedFuel(Vehicles.FUELS_LIST[index]);
                 }}
                 ref={selectFuelRef}
             />
@@ -161,7 +162,7 @@ function FuelExpense(props): JSX.Element {
                     {...DefaultProps.textInput}
                     style={[DefaultStyles.textInput, { width: width * 0.27, marginTop: RFValue(12)  }]}
                     keyboardType='numeric'
-                    label='Preço/L'
+                    label={Trans.t('Price/L')}
                     placeholder='R$'
                     placeholderTextColor='#666'
                     //color={DefaultStyles.colors.tabBar}
@@ -180,15 +181,14 @@ function FuelExpense(props): JSX.Element {
                         setUnValue(Utils.toNumber(valorunitario));
                         setTotalValue(Utils.toNumber(liters) * Utils.toNumber(valorunitario));
                     }}
-                    value={(unValue || 0).toString()}
+                    value={unValue ? unValue.toString() : null}
                     maxLength={6}
-                    search={false}
                 />
                 <TextInput
                     {...DefaultProps.textInput}
                     style={[DefaultStyles.textInput, { marginLeft: RFValue(15), width: width * 0.27 , marginTop: RFValue(12) }]}
                     keyboardType='numeric'
-                    label='Litros'
+                    label={_.capitalize(Trans.t('liters'))}
                     onChangeText={litros => {
                         if (litros.includes(',')) return
                         if (litros.includes('-')) return
@@ -205,24 +205,17 @@ function FuelExpense(props): JSX.Element {
                         setLiters(Utils.toNumber(litros));
                         setTotalValue(Utils.toNumber(litros) * Utils.toNumber(unValue));
                     }}
-                    value={(liters || 0).toString()}
+                    value={liters ? liters.toString() : null}
                     maxLength={3}
-                    search={false}
                 />
 
-                <TextInput
-                    {...DefaultProps.textInput}
-                    style={[DefaultStyles.textInput, { marginLeft: RFValue(15), width: width * 0.27, marginTop: RFValue(12) }]}
-                    error={missingData && !totalValue}
-                    keyboardType='numeric'
-                    label='* Valor'
-                    placeholder='R$'
-
-                    placeholderTextColor='#666'
-                    onChangeText={totalValue => setTotalValue(totalValue)}
+                <TotalValue 
+                    totalValue={totalValue} 
+                    setTotalValue={setTotalValue} 
+                    style={{marginLeft: RFValue(15), width: width * 0.27, marginTop: RFValue(12)}} 
                     maxLength={7}
-                    value={(totalValue || 0).toString()}
-                    search={false}
+                    label="value"
+                    missingData={missingData}
                 />
 
             </View>            

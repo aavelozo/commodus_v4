@@ -9,10 +9,13 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Vehicles from '../../../database/models/Vehicles';
-
+import Trans from '../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
+import Utils from '../../../controllers/Utils';
 
 function Login(props: Object): JSX.Element {
-    const [login, setLogin] = useState((props.user || {}).email)
+    const [missingData,setMissingData] = useState(false);
+    const [login, setLogin] = useState((props.user || {}).email)    
     const [senha, setSenha] = useState('');
     const [loading,setLoading] = useState(false);
     const [logged, setLogged] = useState(false);
@@ -35,10 +38,11 @@ function Login(props: Object): JSX.Element {
                 <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
-                    label='E-mail'
+                    label={_.capitalize(Trans.t('e-mail'))}
                     mode='outlined'
                     keyboardType='email-address'
                     defaultValue=''
+                    error={missingData && !login}
                     onChangeText={text => {
                         setLogin(text)
                         setErrorMessage('')
@@ -55,8 +59,9 @@ function Login(props: Object): JSX.Element {
                 <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
-                    label='Senha'
+                    label={_.capitalize(Trans.t('password'))}
                     mode='outlined'
+                    error={missingData && !senha}
                     onChangeText={text => {
                         setLogged(false)
                         setErrorMessage('')
@@ -74,7 +79,7 @@ function Login(props: Object): JSX.Element {
                     <Text
                         style={{ marginBottom: RFValue(20), color: DefaultStyles.colors.tabBar, alignSelf: 'flex-start', marginLeft: RFValue(20) }}
                     >
-                        Esqueceu a senha ?
+                        {Trans.t('ask_forgot_password')}                        
                     </Text>
                 </TouchableWithoutFeedback>
 
@@ -83,62 +88,67 @@ function Login(props: Object): JSX.Element {
                 <TouchableOpacity
                     activeOpacity={0.9}
                     disabled={loading}
-                    onPress={async () => {                        
-                        setLoading(true);
-                        auth().signInWithEmailAndPassword(login, senha).then((loginResult) => {
-                            console.log('user logged!',loginResult);
-                            let nextRouteName = 'StackVehicle';
-                            (async () => {
-                                try {
-                                    let loggedUser = await firestore().collection('Users').where('authUserId','==',loginResult.user.uid).get();
-                                    console.log('getting user of collection... ok');
-                                    if (loggedUser && loggedUser.docs && loggedUser.docs.length > 0) {
-                                        console.log('loggedUser',loggedUser);
-                                        AuthController.setLoggedUser(loggedUser.docs[0]);
-                                        console.log('loggedUser setted');
-                                        if ((await Vehicles.getDBData())?.size > 0) {
-                                            nextRouteName = 'ViewExpense';
-                                        }
-                                    }   
-                                } catch (e) {
-                                    console.log(e);
-                                } finally {
-                                    setLoading(false);
-                                    navigation.dispatch(
-                                        CommonActions.reset({
-                                            index: 0,
-                                            routes: [{ name: 'Tab', params: { route: nextRouteName } }]
+                    onPress={async () => {                                                
+                        if (Utils.hasValue(login) && Utils.hasValue(senha)) {
+                            setLoading(true);
+                            setMissingData(false);
+                            auth().signInWithEmailAndPassword(login, senha).then((loginResult) => {
+                                console.log('user logged!',loginResult);
+                                let nextRouteName = 'StackVehicle';
+                                (async () => {
+                                    try {
+                                        let loggedUser = await firestore().collection('Users').where('authUserId','==',loginResult.user.uid).get();
+                                        console.log('getting user of collection... ok');
+                                        if (loggedUser && loggedUser.docs && loggedUser.docs.length > 0) {
+                                            console.log('loggedUser',loggedUser);
+                                            AuthController.setLoggedUser(loggedUser.docs[0]);
+                                            console.log('loggedUser setted');
+                                            if ((await Vehicles.getDBData())?.size > 0) {
+                                                nextRouteName = 'ViewExpense';
+                                            }
+                                        }   
+                                    } catch (e) {
+                                        console.log(e);
+                                    } finally {
+                                        setLoading(false);
+                                        navigation.dispatch(
+                                            CommonActions.reset({
+                                                index: 0,
+                                                routes: [{ name: 'Tab', params: { route: nextRouteName } }]
 
-                                        })
-                                    );
+                                            })
+                                        );
+                                    }
+                                })();
+                            }).catch(err => {
+                                console.log(err);
+                                setLoading(false);
+                                setLogged(false);
+                                if (err.code === 'auth/invalid-credential') {
+                                    setErrorMessage(Trans.t('msg_email_or_password_invalids'));
+                                } else {
+                                    setErrorMessage(err?.message || err);
                                 }
-                            })();
-                        }).catch(err => {
-                            console.log(err);
-                            setLoading(false);
-                            setLogged(false);
-                            if (err.code === 'auth/invalid-credential') {
-                                setErrorMessage('email ou senha inválido(s)');
-                            } else {
-                                setErrorMessage(err?.message || err);
-                            }
 
-                        })
+                            })
+                        } else {
+                            setMissingData(true);
+                        }
                     }}
                     style={style.button}
                 >
                     <Text style={style.textButton}>
                         {loading 
                             ? <ActivityIndicator />
-                            : 'Entrar'
+                            : _.capitalize(Trans.t('sig in'))
                         }
                     </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => navigation.navigate('UserRegistration')}>
                     <>
-                        <Text style={{ marginTop: 50, color: DefaultStyles.colors.tabBar }}>Ainda não tem cadastro ?</Text>
-                        <Text style={{ textAlign: 'center', color: DefaultStyles.colors.tabBar }}>Registre-se</Text>
+                        <Text style={{ marginTop: 50, color: DefaultStyles.colors.tabBar }}>{Trans.t('ask_dont_registered')}</Text>
+                        <Text style={{ textAlign: 'center', color: DefaultStyles.colors.tabBar }}>{_.capitalize(Trans.t('register now'))}</Text>
                     </>
 
                 </TouchableOpacity>

@@ -12,6 +12,8 @@ import auth from '@react-native-firebase/auth';
 import Brands from '../../database/models/Brands'
 import Vehicles from '../../database/models/Vehicles'
 import AuthController from '../../controllers/AuthController'
+import Trans from '../../controllers/internatiolization/Trans'
+import _ from 'lodash';
 
 
 function Header(props): JSX.Element {
@@ -74,7 +76,7 @@ function Header(props): JSX.Element {
             <View style={{ width: '50%', justifyContent: 'center', alignItems: 'flex-end', flexDirection: 'row' }}>
                 <Image source={require('../assets/logoCommodusEscuro.png')} style={[style.imagem, styles]} />
                 {!props.withButtons ?
-                    <Text style={style.texto}> COMMODUS</Text> : false}
+                    <Text style={style.texto}>COMMODUS</Text> : false}
             </View>
 
             <View style={{ width: '25%', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
@@ -118,7 +120,7 @@ function Header(props): JSX.Element {
                                     navigation.navigate('Dashboard')
                                 }
                                 }>
-                                    <Text adjustsFontSizeToFit style={style.textDrawer}>Relatórios e gráficos</Text>
+                                    <Text adjustsFontSizeToFit style={style.textDrawer}>{_.capitalize(Trans.t('reports and charts'))}</Text>
                                 </TouchableWithoutFeedback>
                             </View>
                             <View style={style.optionNavigation}>
@@ -127,7 +129,7 @@ function Header(props): JSX.Element {
                                     hideModal()
                                     navigation.navigate('ViewExpense')
                                 }}>
-                                    <Text adjustsFontSizeToFit style={style.textDrawer}>Consultar despesas</Text>
+                                    <Text adjustsFontSizeToFit style={style.textDrawer}>{_.capitalize(Trans.t('expense consult'))}</Text>
                                 </TouchableWithoutFeedback>
                             </View>
                             <View style={style.optionNavigation}>
@@ -136,7 +138,7 @@ function Header(props): JSX.Element {
                                     hideModal()
                                     navigation.navigate('StackIncludeExpense')
                                 }}>
-                                    <Text adjustsFontSizeToFit style={style.textDrawer}>Lançar nova despesa</Text>
+                                    <Text adjustsFontSizeToFit style={style.textDrawer}>{_.capitalize(Trans.t('launch new expense'))}</Text>
                                 </TouchableWithoutFeedback>
                             </View>
                             <View style={style.optionNavigation}>
@@ -146,7 +148,7 @@ function Header(props): JSX.Element {
                                     hideModal()
                                     navigation.navigate('StackVehicle')
                                 }}>
-                                    <Text adjustsFontSizeToFit style={style.textDrawer}>Editar veículo</Text>
+                                    <Text adjustsFontSizeToFit style={style.textDrawer}>{_.capitalize(Trans.t('vehicle edit'))}</Text>
                                 </TouchableWithoutFeedback>
                             </View>
                             <View style={style.optionNavigation}>
@@ -155,7 +157,7 @@ function Header(props): JSX.Element {
                                     hideModal()
                                     navigation.navigate('StackUser')
                                 }}>
-                                    <Text adjustsFontSizeToFit style={style.textDrawer}>Alterar usuário</Text>
+                                    <Text adjustsFontSizeToFit style={style.textDrawer}>{_.capitalize(Trans.t('change user'))}</Text>
                                 </TouchableWithoutFeedback>
                             </View>
                             <View style={[style.optionNavigation, { height: '50%', width: '100%', alignItems: 'flex-end', flexDirection: 'row', paddingBottom: RFValue(15) }]}>
@@ -163,7 +165,7 @@ function Header(props): JSX.Element {
                                 <TouchableWithoutFeedback onPress={() => unloggingUser()}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <FeatherIcon name="log-out" size={RFValue(30)} color={DefaultStyles.colors.tabBar} />
-                                        <Text adjustsFontSizeToFit style={style.textDrawer}>Sair</Text>
+                                        <Text adjustsFontSizeToFit style={style.textDrawer}>{_.capitalize(Trans.t('logout'))}</Text>
                                     </View>
                                 </TouchableWithoutFeedback>
 

@@ -1,28 +1,20 @@
-import React, { useState, useRef, useCallback } from 'react'
-import { View, StyleSheet, Alert, Dimensions, ScrollView, Switch, TouchableWithoutFeedback, Text } from 'react-native'
-import { RFValue } from "react-native-responsive-fontsize";
-import TitleView from '../../../components/TitleView';
-import Vehicles from '../../../../database/models/Vehicles';
-import Header from '../../../components/Header';
-import ContentContainer from '../../../components/ContentContainer';
-import Observations from '../../../components/expenses/Observations';
+import React, { useState, useCallback } from 'react'
+import { View, Switch, TouchableWithoutFeedback, Text } from 'react-native'
 import DateComponent from '../../../components/expenses/DateComponent';
-import InputKM from '../../../components/vehicles/InputKM';
 import { TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
-import Utils from '../../../../controllers/Utils';
-import SelectDropdown from 'react-native-select-dropdown';
 import { useFocusEffect } from '@react-navigation/native';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
 import { BaseExpense } from './BaseExpense';
-const { width, height } = Dimensions.get('window')
+import { TotalValue } from '../../../components/expenses/TotalValue';
+import Trans from '../../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
 
 /******************************************************
 ** COMPONENTE DA VIEW PRINCIPAL                      **
 ******************************************************/
 function OthersExpense(props): JSX.Element {
-    const selectVehicleRef = useRef();
     const [loading,setLoading] = useState(false);    
     const [loaded,setLoaded] = useState(false); 
     const [saving,setSaving] = useState(false);
@@ -121,21 +113,13 @@ function OthersExpense(props): JSX.Element {
                 style={DefaultStyles.textInput}
                 error={missingData && !description}
                 keyboardType='default'
-                label='* Descrição da despesa'
+                label={`* ${_.capitalize(Trans.t('expense description'))}`}
                 onChangeText={value => setDescription(value)}
                 value={description}
                 maxLength={20}
             />
 
-            <TextInput
-                {...DefaultProps.textInput}
-                style={DefaultStyles.textInput}
-                error={missingData && !totalValue}
-                keyboardType='numeric'
-                label='* Valor Total'
-                onChangeText={value => setTotalValue(Utils.toNumber(value))}
-                value={totalValue.toString()}
-            />
+            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
 
             <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
                 <Switch
@@ -149,7 +133,7 @@ function OthersExpense(props): JSX.Element {
                     onPress={() => setIsReminder(!isReminder)}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                        Lembrete revisão do serviço
+                        {_.capitalize(Trans.t('service review reminder'))}
                     </Text>
                 </TouchableWithoutFeedback>
             </View>
@@ -162,35 +146,5 @@ function OthersExpense(props): JSX.Element {
     );
 };
 
-const style = StyleSheet.create({
-    container: {
-        backgroundColor: '#202D46',
-        flex: 1,
-    },
-    espacoCentral: {
-        backgroundColor: 'black',
-        flex: 9,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    input: {
-        width: "100%",
-        backgroundColor: DefaultStyles.colors.fundoInput,
-        height: height / 14,
-        marginBottom: RFValue(15),
-        borderRadius: RFValue(5),
-        color: DefaultStyles.colors.tabBar,
-        fontSize: RFValue(20),
-        alignSelf: 'center',
-        justifyContent: 'center',
-
-    },
-    viewExpense: {
-        flex: 1,
-        width: width * 0.9,
-        alignItems: 'center',
-    },
-
-});
 
 export default OthersExpense;

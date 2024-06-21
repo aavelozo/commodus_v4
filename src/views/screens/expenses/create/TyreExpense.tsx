@@ -1,25 +1,15 @@
-import React, { useState, useRef, useCallback } from 'react'
-import { View, StyleSheet, Alert, Dimensions, ScrollView, Switch, TouchableWithoutFeedback, Text } from 'react-native'
-import { RFValue } from "react-native-responsive-fontsize";
-import TitleView from '../../../components/TitleView';
-import Vehicles from '../../../../database/models/Vehicles';
-import Header from '../../../components/Header';
-import ContentContainer from '../../../components/ContentContainer';
-import Observations from '../../../components/expenses/Observations';
+import React, { useState, useCallback } from 'react'
+import { View, Switch, TouchableWithoutFeedback, Text } from 'react-native'
 import DateComponent from '../../../components/expenses/DateComponent';
-import InputKM from '../../../components/vehicles/InputKM';
 import { TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
-import Utils from '../../../../controllers/Utils';
-import SelectDropdown from 'react-native-select-dropdown';
-import Establishment from '../../../components/expenses/Establishment';
 import { useFocusEffect } from '@react-navigation/native';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
-import Trans from '../../../../controllers/internatiolization/Trans';
-const { width, height } = Dimensions.get('window');
 import _ from 'lodash';
 import { BaseExpense } from './BaseExpense';
+import { TotalValue } from '../../../components/expenses/TotalValue';
+import Trans from '../../../../controllers/internatiolization/Trans';
 
 
 
@@ -27,7 +17,6 @@ import { BaseExpense } from './BaseExpense';
 ** COMPONENTE DA VIEW PRINCIPAL                      **
 ******************************************************/
 function TyreExpense(props): JSX.Element {
-    const selectVehicleRef = useRef();
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -131,21 +120,12 @@ function TyreExpense(props): JSX.Element {
                 {...DefaultProps.textInput}
                 style={DefaultStyles.textInput}
                 keyboardType='default'
-                label='Descrição do serviço'
+                label={_.capitalize(Trans.t('service description'))}
                 onChangeText={value => setTyreService(value)}
                 value={tyreService}
             />
 
-            {/* PREÇO TOTAL */}
-            <TextInput
-                {...DefaultProps.textInput}
-                style={DefaultStyles.textInput}
-                error={missingData && !totalValue}
-                keyboardType='numeric'
-                label='* Valor Total'
-                onChangeText={value => setTotalValue(Utils.toNumber(value))}
-                value={totalValue.toString()}
-            />
+            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
 
             <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
                 <Switch
@@ -159,7 +139,7 @@ function TyreExpense(props): JSX.Element {
                     onPress={() => setIsReminderAlignmentEnabled(!isReminderAlignmentEnabled)}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                        Lembrete próximo alinhamento
+                        {_.capitalize(Trans.t('next alignment reminder'))}
                     </Text>
                 </TouchableWithoutFeedback>
             </View>
@@ -180,7 +160,7 @@ function TyreExpense(props): JSX.Element {
                     onPress={() => setIsReminderBalancingEnabled(!isReminderBalancingEnabled)}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                        Lembrete próximo balanceamento
+                        {_.capitalize(Trans.t('next alignment balancing'))}
                     </Text>
                 </TouchableWithoutFeedback>
             </View>
@@ -192,53 +172,5 @@ function TyreExpense(props): JSX.Element {
         </BaseExpense>
     );
 };
-
-const style = StyleSheet.create({
-    container: {
-        backgroundColor: '#202D46',
-        flex: 1,
-    },
-    espacoCentral: {
-        backgroundColor: 'black',
-        flex: 9,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    input: {
-        width: "100%",
-        backgroundColor: DefaultStyles.colors.fundoInput,
-        height: height / 14,
-        marginBottom: RFValue(15),
-        borderRadius: RFValue(5),
-        color: DefaultStyles.colors.tabBar,
-        fontSize: RFValue(20),
-        alignSelf: 'center',
-        justifyContent: 'center',
-
-    },
-    viewExpense: {
-        flex: 1,
-        width: width * 0.9,
-        alignItems: 'center',
-    },
-    viewSwitch: {
-        width: '100%',
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        marginBottom: RFValue(10)
-    },
-    viewCheckBox: {
-        // borderWidth: 1,
-        width: '65%',
-
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        marginLeft: width * 0.03,
-        alignItems: 'center',
-        alignSelf: 'flex-start'
-    },
-
-});
 
 export default TyreExpense;

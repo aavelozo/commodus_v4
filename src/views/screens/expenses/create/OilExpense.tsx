@@ -1,24 +1,16 @@
 import React, { useState, useCallback, useRef } from 'react'
-import { Text, View, StyleSheet, TouchableWithoutFeedback, Alert, Dimensions, Switch, ScrollView } from 'react-native'
+import { Text, View, StyleSheet, TouchableWithoutFeedback, Dimensions, Switch } from 'react-native'
 import { Checkbox, TextInput } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
-import Header from '../../../components/Header';
-import TitleView from '../../../components/TitleView';
-import ContentContainer from '../../../components/ContentContainer';
-import SelectVehicle from '../../../components/vehicles/SelectVehicle';
-import DateComponent from '../../../components/expenses/DateComponent';
-import InputKM from '../../../components/vehicles/InputKM';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
 import Utils from '../../../../controllers/Utils';
-import Observations from '../../../components/expenses/Observations';
-import Establishment from '../../../components/expenses/Establishment';
-import AuthController from '../../../../controllers/AuthController';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
-import SelectDropdown from 'react-native-select-dropdown';
-import Vehicles from '../../../../database/models/Vehicles';
 import { BaseExpense } from './BaseExpense';
+import { TotalValue } from '../../../components/expenses/TotalValue';
+import Trans from '../../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
 const { width, height } = Dimensions.get('window')
 
 
@@ -28,7 +20,6 @@ const { width, height } = Dimensions.get('window')
 ** COMPONENTE PRINCIPAL                             **
 ******************************************************/
 function OilExpense(props): JSX.Element {
-    const selectVehicleRef = useRef();
     const [loading,setLoading] = useState(false);    
     const [loaded,setLoaded] = useState(false);  
     const [saving,setSaving] = useState(false); 
@@ -166,21 +157,12 @@ function OilExpense(props): JSX.Element {
                 style={DefaultStyles.textInput}
                 error={missingData && !codOil}
                 keyboardType='default'
-                label='* Código do óleo'
+                label={`* ${_.capitalize(Trans.t('oil code'))}`}
                 onChangeText={value => setCodOil(value)}
                 value={codOil}
             />
 
-            {/* PREÇO TOTAL */}
-            <TextInput
-                {...DefaultProps.textInput}
-                style={DefaultStyles.textInput}
-                error={missingData && !totalValue}
-                keyboardType='numeric'
-                label='* Valor Total'
-                onChangeText={value => setTotalValue(Utils.toNumber(value))}
-                value={totalValue.toString()}
-            />
+            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
 
             {/*LEMBRETE*/}
             <View style={style.viewSwitch}>
@@ -193,7 +175,7 @@ function OilExpense(props): JSX.Element {
                 />
                 <TouchableWithoutFeedback onPress={() => setIsReminderEnabled(!isReminderEnabled)}>
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                        Lembrete próxima troca
+                        {_.capitalize(Trans.t('next exchange reminder'))}
                     </Text>
                 </TouchableWithoutFeedback>
 
@@ -202,14 +184,14 @@ function OilExpense(props): JSX.Element {
                 <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
-                    label='Validade do óleo (Meses)'
+                    label={_.capitalize(Trans.t('oil validity (months)'))}
                     value={reminderMonths ? reminderMonths.toString() : null}
                     onChangeText={lembreteMeses => setReminderMonths(lembreteMeses)}
                 />
                 <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
-                    label='Próxima troca (KM)'
+                    label={Trans.t('Next exchange (KM)')}
                     value={reminderKM ? reminderKM.toString() : null}
                     onChangeText={lembreteKm => setReminderKM(lembreteKm)}
                 />
@@ -226,7 +208,7 @@ function OilExpense(props): JSX.Element {
                 />
                 <TouchableWithoutFeedback onPress={() => setIsFiltersEnabled(!isFiltersEnabled)}>
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                        Troquei o filtro
+                        {_.capitalize(Trans.t('i changed the filter'))}
                     </Text>
                 </TouchableWithoutFeedback>
             </View>
@@ -239,7 +221,9 @@ function OilExpense(props): JSX.Element {
                         }}
                     />
                     <TouchableWithoutFeedback onPress={() => setIsOilFilterChecked(!isOilFilterChecked)}>
-                        <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Filtro de óleo</Text>
+                        <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>
+                            {_.capitalize(Trans.t('oil filter'))}
+                        </Text>
                     </TouchableWithoutFeedback>
 
                 </View> : false}
@@ -248,7 +232,7 @@ function OilExpense(props): JSX.Element {
                 <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
-                    label='Preço do filtro de óleo'
+                    label={_.capitalize(Trans.t('oil filter price'))}
                     value={oilFilterPrice ? oilFilterPrice.toString() : null}
                     keyboardType='numeric'
                     onChangeText={filtroOleo => setOilFilterPrice(Utils.toNumber(filtroOleo))}
@@ -263,7 +247,9 @@ function OilExpense(props): JSX.Element {
                         }}
                     />
                     <TouchableWithoutFeedback onPress={() => setIsFuelFilterChecked(!isFuelFilterChecked)}>
-                        <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Filtro de combustível</Text>
+                        <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>
+                            {_.capitalize(Trans.t('fuel filter'))}
+                        </Text>
                     </TouchableWithoutFeedback>
                 </View> : false}
 
@@ -271,7 +257,7 @@ function OilExpense(props): JSX.Element {
                 <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
-                    label='Preço do filtro de combustível'
+                    label={_.capitalize(Trans.t('fuel filter price'))}
                     value={fuelFilterPrice ? fuelFilterPrice.toString() : null}
                     keyboardType='numeric'
                     onChangeText={filtroCombustivel => setFuelFilterPrice(Utils.toNumber(filtroCombustivel))}
@@ -286,7 +272,9 @@ function OilExpense(props): JSX.Element {
                         }}
                     />
                     <TouchableWithoutFeedback onPress={() => setIsAirFilterChecked(!isAirFilterChecked)}>
-                        <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Filtro de ar</Text>
+                        <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>
+                            {_.capitalize(Trans.t('air filter'))}
+                        </Text>
                     </TouchableWithoutFeedback>
                 </View> : false}
 
@@ -294,7 +282,7 @@ function OilExpense(props): JSX.Element {
                 <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
-                    label='Preço do filtro de ar'
+                    label={_.capitalize(Trans.t('air filter price'))}
                     value={airFilterPrice ? airFilterPrice.toString() : null}
                     keyboardType='numeric'
                     onChangeText={filtroAr => setAirFilterPrice(Utils.toNumber(filtroAr))}
@@ -311,7 +299,7 @@ function OilExpense(props): JSX.Element {
                 />
                 <TouchableWithoutFeedback onPress={() => setIsOilBrandEnabled(!isOilBrandEnabled)}>
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                        Marca
+                        {_.capitalize(Trans.t('brand'))}
                     </Text>
                 </TouchableWithoutFeedback>
             </View>
@@ -320,7 +308,7 @@ function OilExpense(props): JSX.Element {
                 isOilBrandEnabled ? <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
-                    label='Marca do óleo'
+                    label={_.capitalize(Trans.t('oil brand'))}
                     onChangeText={marcaOleo => setOilBrand(marcaOleo)}
                     value={oilBrand}
                 /> : false
@@ -331,38 +319,7 @@ function OilExpense(props): JSX.Element {
     );
 }
 
-const style = StyleSheet.create({
-    container: {
-        backgroundColor: '#202D46',
-        flex: 1,
-        overflow: "scroll"
-    },
-    espacoCentral: {
-        backgroundColor: 'black',
-        flex: 9,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    lancamento: {
-        backgroundColor: DefaultStyles.colors.fundo,
-        flex: 1,
-        alignItems: 'center',
-        borderTopLeftRadius: RFValue(25),
-        padding: RFValue(10),
-        width: '100%',
-    },
-    input: {
-        width: "100%",
-        backgroundColor: DefaultStyles.colors.fundoInput,
-        height: height * 0.071,
-        marginBottom: RFValue(15),
-        borderRadius: RFValue(5),
-        color: DefaultStyles.colors.tabBar,
-        fontSize: RFValue(20),
-        alignSelf: 'center',
-        justifyContent: 'center',
-
-    },
+const style = StyleSheet.create({    
     viewCheckBox: {
         // borderWidth: 1,
         width: '65%',
@@ -377,15 +334,6 @@ const style = StyleSheet.create({
         fontSize: RFValue(25),
         color: DefaultStyles.colors.tabBar
 
-    },
-    inputFiltro: {
-        width: width * 0.85,
-        height: height * 0.071,
-        backgroundColor: DefaultStyles.colors.fundoInput,
-        color: DefaultStyles.colors.tabBar,
-        borderRadius: RFValue(5),
-        fontSize: RFValue(20),
-        alignSelf: 'flex-end'
     },
     viewSwitch: {
         width: '100%',
