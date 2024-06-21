@@ -4,15 +4,31 @@ import { Checkbox, TextInput, useTheme } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
-import Utils from '../../../../controllers/Utils';
 import SelectDropdown from 'react-native-select-dropdown';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
 import { useFocusEffect } from '@react-navigation/native';
 import { BaseExpense } from './BaseExpense';
+import Trans from '../../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
+import { TotalValue } from '../../../components/expenses/TotalValue';
 const { width, height } = Dimensions.get('window')
 
 
-
+const serviceList = [
+    'painting glazing', 
+    'headlight polishing', 
+    'painting crystallization', 
+    'leather hydration', 
+    'ceiling cleaning', 
+    'carpet cleaning',
+    'seat cleaning',
+    'cleaning plastic areas',
+    'painting revitalization',
+    'painting',
+    'gold hammer',
+    'sinister recovery',
+    'others services'
+];
 
 /******************************************************
 ** COMPONENTE PRINCIPAL                             **
@@ -32,8 +48,8 @@ function AppearanceExpense(props): JSX.Element {
     //specific properties
     const [regularWashing, setRegularWashing] = useState(false);
     const [completeWashing, setCompleteWashing] = useState(false);
-    const [serviceList, setServiceList] = useState(['Vitrificação de pintura', 'Polimento de faróis', 'Cristalização de pintura', 'Hidratação de couro', 'Limpeza de teto', 'Limpeza de carpete','Limpeza dos bancos','Limpeza das áreas plásticas','Revitalização de pintura','Pintura','Martelinho de ouro','Recuperação de sinistro']);
-    const [service, setService] = useState('Outros Serviços');
+    
+    const [service, setService] = useState(serviceList[serviceList.length-1]);
 
     useFocusEffect(useCallback(() => {
         console.log('INIT AppearanceExpense.useFocusEffect.useCallBack');
@@ -81,8 +97,8 @@ function AppearanceExpense(props): JSX.Element {
 
     function getOthersDatas() {
         return {
-            regularWashing: regularWashing ? 'Lavagem normal' : false,
-            completeWashing: completeWashing ? 'Lavagem completa' : false,
+            regularWashing: regularWashing ? 'regular washing' : false,
+            completeWashing: completeWashing ? 'complete washing' : false,
             othersServices: service
         }
     }
@@ -130,7 +146,7 @@ function AppearanceExpense(props): JSX.Element {
                     uncheckedColor={missingData && !(regularWashing || completeWashing) ? theme.colors.error : undefined}                               
                 />
                 <TouchableWithoutFeedback onPress={() => setRegularWashing(!regularWashing)}>
-                    <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Lavagem Normal</Text>
+                    <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>{_.capitalize(Trans.t('regular washing'))}</Text>
                 </TouchableWithoutFeedback>
 
             </View>
@@ -144,7 +160,7 @@ function AppearanceExpense(props): JSX.Element {
                     uncheckedColor={missingData && !(regularWashing || completeWashing) ? theme.colors.error : undefined}
                 />
                 <TouchableWithoutFeedback onPress={() => setCompleteWashing(!completeWashing)}>
-                    <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Lavagem Completa</Text>
+                    <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>{_.capitalize(Trans.t('complete washing'))}</Text>
                 </TouchableWithoutFeedback>
 
             </View>
@@ -165,8 +181,8 @@ function AppearanceExpense(props): JSX.Element {
                             <TextInput
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
-                                label='Serviço'
-                                value={selectedItem}
+                                label={_.capitalize(Trans.t('service'))}
+                                value={_.capitalize(Trans.t(selectedItem))}
                                 pointerEvents="none"
                                 readOnly
                             />
@@ -175,25 +191,16 @@ function AppearanceExpense(props): JSX.Element {
                 }}
                 renderItem={(item, index, isSelected) => {
                     return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
-                            <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                            <Text style={DefaultStyles.dropdownText}>{_.capitalize(Trans.t(item))}</Text>
                     </View>);
                 }}
                 onSelect={(selectedItem, index) => {
-                    setService(selectedItem);
+                    setService(serviceList[index]);
                 }}
                 ref={selectServiceRef}
             />
             
-            {/* PREÇO TOTAL */}
-            <TextInput
-                {...DefaultProps.textInput}
-                style={DefaultStyles.textInput}
-                error={missingData && !totalValue}
-                keyboardType='numeric'
-                label='* Preço Total'
-                onChangeText={value => setTotalValue(Utils.toNumber(value))}
-                value={totalValue.toString()}
-            />            
+            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
         </BaseExpense>
     );
 }

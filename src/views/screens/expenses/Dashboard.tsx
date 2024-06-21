@@ -18,6 +18,7 @@ import _ from "lodash";
 import Utils from '../../../controllers/Utils'
 import EditExpenseController from '../../../controllers/EditExpenseController'
 import Vehicles from '../../../database/models/Vehicles'
+import Trans from '../../../controllers/internatiolization/Trans'
 const { height, width } = Dimensions.get('window')
 
 
@@ -78,19 +79,16 @@ function Dashboard(props): JSX.Element {
 
     const montaMeses = (datamenor: Number, datamaior: Number) => {
         var quantidade = (Math.ceil((Number(datamaior) - Number(datamenor)) / 1000 / 60 / 60 / 24 / 30))
-        if (quantidade < 3) quantidade = 3
-        const mesesNomes = [
-            "jan", "fev", "mar", "abr", "mai", "jun",
-            "jul", "ago", "set", "out", "nov", "dez"
-        ];
+        if (quantidade < 3) quantidade = 3;
+        
         let inicio = moment(Number(datamenor)).format('MM/YY')
         let meses = []
         for (let i = 0; i < quantidade; i++) {
             let [mes, ano] = inicio.split('/')
             mes = parseInt(mes)
             ano = parseInt(ano)
-            let mesStr = mesesNomes[mes - 1]
-            let texto = mesStr + '/' + ano;
+            let mesStr = Utils.abbreviatedMonths[mes - 1]
+            let texto = Trans.t(mesStr) + '/' + ano;
             let id = mes.toString().padStart(2, '0') + '/' + ano;
             meses.push({ "id": id, "text": texto })
             if (date == id) {
@@ -255,7 +253,7 @@ function Dashboard(props): JSX.Element {
             }, {
                 x: `31/${date?.slice(0, 2)}`, y: totalizador31 + totalizador25 + totalizador20 + totalizador15 + totalizador10 + totalizador05 + totalizador01
             }])
-            setExpensesThirdGraph([{ x: 'Combustível', y: gastoCombustivel, color: "#f47476" }, { x: 'Óleo', y: gastoOleo, color: "#B8DBF2" }, { x: 'Documento', y: gastoDocumentos, color: "#9BC995" }, { x: 'Mecânica', y: gastoMecanica, color: "#FFD38E" }, { x: 'Aparência', y: gastoAparencia, color: "#D0A9F5" }, { x: 'Outros', y: gastoOutros, color: "#e9f143" }, { x: 'Borracharia', y: gastoBorracharia, color: "#F8B6D3" }])
+            setExpensesThirdGraph([{ x: 'fuel', y: gastoCombustivel, color: "#f47476" }, { x: 'oil', y: gastoOleo, color: "#B8DBF2" }, { x: 'document', y: gastoDocumentos, color: "#9BC995" }, { x: 'mechanic', y: gastoMecanica, color: "#FFD38E" }, { x: 'appearence', y: gastoAparencia, color: "#D0A9F5" }, { x: 'others', y: gastoOutros, color: "#e9f143" }, { x: 'tyre', y: gastoBorracharia, color: "#F8B6D3" }])
         } catch (e) {
             console.log('e1', e);
         }
@@ -391,7 +389,7 @@ function Dashboard(props): JSX.Element {
 
                                 < View style={{ alignSelf: 'center', borderBottomWidth: RFValue(0.5), borderBottomColor: DefaultStyles.colors.tabBar, height: height * 0.06, justifyContent: 'center', alignItems: 'center', width: '60%' }}>
                                     <Text style={style.textSummary}>{carsThisUser[changeCar]?.vehicle?.vehicleName}</Text>
-                                    <Text style={[style.textSummary, { fontSize: RFValue(16), paddingBottom: RFValue(5) }]}>Gastos do mês: R${((expensesFirstGraph[1] || {}).y || 0).toFixed(2)}</Text>
+                                    <Text style={[style.textSummary, { fontSize: RFValue(16), paddingBottom: RFValue(5) }]}>{_.capitalize(Trans.t('expenses of the month'))}: R${((expensesFirstGraph[1] || {}).y || 0).toFixed(2)}</Text>
 
                                 </View>
 
@@ -408,17 +406,17 @@ function Dashboard(props): JSX.Element {
 
                             <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginTop: RFValue(10), }}>
                                 <Velo width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                                <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>Odômetro:</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>{_.capitalize(Trans.t('odometer'))}:</Text>
                                 <Text style={{ fontSize: RFValue(17), color: DefaultStyles.colors.tabBar, }}> {carsThisUser[changeCar]?.vehicle?.km} km</Text>
                             </View>
                             <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center', }}>
                                 <Media width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                                <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>Média: </Text>
-                                <Text style={{ fontSize: RFValue(17), color: DefaultStyles.colors.tabBar, }}>10km / litro</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>{_.capitalize(Trans.t('average'))}: </Text>
+                                <Text style={{ fontSize: RFValue(17), color: DefaultStyles.colors.tabBar, }}>10km / {Trans.t('liter')}</Text>
                             </View>
                             <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center', }}>
                                 <Oil width={RFValue(21)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                                <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>Próx. troca de óleo: </Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>{_.capitalize(Trans.t('next oil change'))}: </Text>
                                 <Text style={{ fontSize: RFValue(17), color: DefaultStyles.colors.tabBar, }}>{carsThisUser[changeCar]?.vehicle?.oilChange != null ? carsThisUser[changeCar]?.vehicle?.oilChange : '--'} km</Text>
                             </View>
 

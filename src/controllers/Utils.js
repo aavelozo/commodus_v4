@@ -8,6 +8,12 @@ import { ToasterHelper } from "react-native-customizable-toast";
  */
 export default class Utils{
     static logActive = (typeof Utils.logActive !== "undefined"? Utils.logActive : true);
+
+    static abbreviatedMonths = [
+        "jan", "feb", "mar", "apr", "mai", "jun",
+        "jul", "aug", "sep", "oct", "nov", "dec"
+    ];
+
     static setLogActive(active) {
         Utils.logActive = active;
     }

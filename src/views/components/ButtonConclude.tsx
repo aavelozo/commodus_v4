@@ -3,7 +3,8 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { DefaultStyles } from "../DefaultStyles";
 import { ActivityIndicator } from "react-native-paper";
 import { RFValue } from "react-native-responsive-fontsize";
-
+import Trans from "../../controllers/internatiolization/Trans";
+import _ from 'lodash';
 /**
  * Botao cancelar padrao para uso no app
  * @author Alencar
@@ -27,7 +28,7 @@ function ButtonConclude(props) : JSX.Element {
                 : <Text 
                     style={DefaultStyles.textButton}
                 >
-                    {props.text || 'Concluir'}
+                    {_.capitalize(Trans.t(props.text || 'conclude'))}
                 </Text>
             }
         </TouchableOpacity>

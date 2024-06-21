@@ -9,6 +9,8 @@ import { DefaultStyles } from '../../DefaultStyles'
 import { DefaultProps } from '../../DefaultProps'
 import Utils from '../../../controllers/Utils'
 import auth from '@react-native-firebase/auth';
+import Trans from '../../../controllers/internatiolization/Trans'
+import _ from 'lodash';
 
 function ChangePassword(props): JSX.Element {
     const [saving,setSaving] = useState(false);
@@ -34,7 +36,7 @@ function ChangePassword(props): JSX.Element {
                         console.log(updateResult);
                         await auth().currentUser?.reload();
                         setSaving(false);
-                        Alert.alert("Senha alterada com sucesso");
+                        Alert.alert(_.capitalize(Trans.t('successfull updated password')));
                     }).catch(updateError=>{
                         setSaving(false);
                         Utils.showError(updateError);
@@ -42,7 +44,7 @@ function ChangePassword(props): JSX.Element {
                 }).catch(loginResultError=>{
                     setSaving(false);
                     console.log(loginResultError);
-                    Utils.showError("Senha atual não confere");
+                    Utils.showError(_.capitalize(Trans.t('current password not match')));
                 })                
             }
         } catch (error) {
@@ -64,17 +66,17 @@ function ChangePassword(props): JSX.Element {
                 saving={saving}
             />
             <View style={style.title}>
-                <TitleView title='Alteração de senha'></TitleView>
+                <TitleView title={_.capitalize(Trans.t('password updating'))}></TitleView>
                 <View style={style.espacoCentral}>
                     <View style={{ height: '30%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={style.description}>Para garantir a segurança da sua conta, o COMMODUS solicita sua senha atual para proceder com a alteração.</Text>
+                        <Text style={style.description}>{Trans.t('info_require_password')}</Text>
                     </View>
                     <View style={{ height: '50%', marginTop: RFValue(20), alignItems: 'center' }}>
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
                             keyboardType='default'
-                            label='Senha atual'
+                            label={_.capitalize(Trans.t('actual password'))}
                             onChangeText={text => setPasswordActual(text)}
                             value={passwordActual}
                             secureTextEntry
@@ -85,7 +87,7 @@ function ChangePassword(props): JSX.Element {
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
                             keyboardType='default'
-                            label='Nova senha'
+                            label={_.capitalize(Trans.t('new password'))}
                             onChangeText={text => {
                                 setDivergent(false)
                                 setNewPassword(text)
@@ -94,11 +96,11 @@ function ChangePassword(props): JSX.Element {
                             secureTextEntry
                             disabled={saving}
                         />
-                        {divergent ? <Text style={{ paddingLeft: RFValue(30) }}>*Senhas informadas são divergentes</Text> : false}
+                        {divergent ? <Text style={{ paddingLeft: RFValue(30) }}>{`*${Trans.t('msg_passords_not_match')}`}</Text> : false}
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}
-                            label='Confirme a nova senha'
+                            label={_.capitalize(Trans.t('new password confirm'))}
                             onChangeText={text => {
                                 setDivergent(false)
                                 setNewPasswordConfirm(text)
@@ -107,7 +109,7 @@ function ChangePassword(props): JSX.Element {
                             secureTextEntry={true}
                             disabled={saving}
                         />
-                        {divergent ? <Text style={{ paddingLeft: RFValue(30) }}>*Senhas informadas são divergentes</Text> : false}
+                        {divergent ? <Text style={{ paddingLeft: RFValue(30) }}>{`*${Trans.t('msg_passords_not_match')}`}</Text> : false}
                     </View>
 
 

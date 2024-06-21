@@ -3,7 +3,17 @@ import en from './en';
 import pt_BR from './pt_BR'
 
 class Trans {
-    static getDeviceLanguage(){
+    static defaultLang = 'en';
+    static langs = {
+        en,
+        pt_BR
+    };
+    static langsKeys = Object.keys(this.langs);
+    static currencies = {
+        [this.langsKeys[0]]:'USD',
+        [this.langsKeys[1]]:'BRL'
+    };
+    static getDeviceLocale(){
         let currentLocale = 'en';
 
         if (Platform.OS === 'ios') {
@@ -14,17 +24,17 @@ class Trans {
             const locale = I18nManager.getConstants().localeIdentifier;
             if (locale) currentLocale = locale;
         }
-
-        return currentLocale
+        return currentLocale || this.defaultLang;
     }
 
-    static langs = {
-        en,
-        pt_BR
+    static getLocaleCurrency(locale){
+        return this.currencies[locale || this.getDeviceLocale()] || this.currencies[this.defaultLang];
     }
+
+    
 
     static t(v) {
-        return (Trans.langs[Trans.getDeviceLanguage()]||{})[v] || v;
+        return (this.langs[this.getDeviceLocale()]||this.langs[this.defaultLang]||{})[v] || v;
     }
 }
 

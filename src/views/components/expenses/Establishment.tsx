@@ -3,7 +3,8 @@ import { Switch, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { DefaultStyles } from '../../DefaultStyles';
 import { TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../DefaultProps';
-
+import Trans from '../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
 
 interface EstablishmentProps {
     setEstablishment : (establishment: string) => void,
@@ -30,7 +31,7 @@ function Establishment(props : EstablishmentProps) : JSX.Element {
                     onPress={() => props.setIsEnabled(!props.isEnabled)}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                        Estabelecimento
+                        {_.capitalize(Trans.t('establishment'))}
                     </Text>
                 </TouchableWithoutFeedback>                    
             </View>
@@ -39,7 +40,7 @@ function Establishment(props : EstablishmentProps) : JSX.Element {
                 props.isEnabled ? <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
-                    label='Estabelecimento'
+                    label={_.capitalize(Trans.t('establishment'))}
                     onChangeText={estab => props.setEstablishment(estab)}
                     value={props.establishment}
                     maxLength={20}

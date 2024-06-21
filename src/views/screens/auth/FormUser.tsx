@@ -13,12 +13,14 @@ import { RFValue } from 'react-native-responsive-fontsize'
 import Utils from '../../../controllers/Utils'
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import _ from 'lodash'
+import Trans from '../../../controllers/internatiolization/Trans'
 
 const schema = yup.object({
-    nomeCompleto: yup.string().required("Informe seu nome completo"),
-    email: yup.string().email("Email inválido").required("Informe seu email"),
-    senha: yup.string().min(6, '6 digitos').required("Informe sua senha"),
-    confirmeSenha: yup.string().min(6, '6 digitos').required("Informe sua senha"),
+    fullName: yup.string().required(_.capitalize(Trans.t('msg_enter_full_name'))),
+    email: yup.string().email(_.capitalize(Trans.t('invalid e-mail'))).required(_.capitalize(Trans.t('msg_enter_email'))),
+    password: yup.string().min(6, `6 ${Trans.t('digits')}`).required(_.capitalize(Trans.t('msg_enter_password'))),
+    confirmPassword: yup.string().min(6, `6 ${Trans.t('digits')}`).required(_.capitalize(Trans.t('msg_enter_password'))),
 })
 
 
@@ -39,8 +41,8 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
     async function onSubmit(data: any) {
         try {
 
-            if (data.senha !== data.confirmeSenha) {
-                Alert.alert('Erro encontrado', 'Senhas divergentes')
+            if (data.password !== data.confirmPassword) {
+                Alert.alert(_.capitalize(Trans.t('error')), Trans.t('msg_passords_not_match'))
                 return;
             }
 
@@ -50,13 +52,13 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
             Dados.user = data;
 
             //firebase user registration
-            auth().createUserWithEmailAndPassword(data.email.trim().toLowerCase(), data.senha).then((responseUserData) => {
+            auth().createUserWithEmailAndPassword(data.email.trim().toLowerCase(), data.password).then((responseUserData) => {
                 console.log(responseUserData);
                 console.log('User account created & signed in!');
 
                 //save user register on user collections (<> auth.user)
                 const user = firestore().collection('Users').add({
-                    name: data.nomeCompleto,
+                    name: data.fullName,
                     email: data.email.trim().toLowerCase(),
                     authUserId: responseUserData.user.uid
                 }).then(succ=>{
@@ -76,11 +78,11 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
             }).catch(error => {
                 setSaving(false);
                 if (error.code === 'auth/email-already-in-use') {
-                    Alert.alert('este email já está registrado!');
+                    Alert.alert(Trans.t('msg_email_already_registered'));
                 }
 
                 if (error.code === 'auth/invalid-email') {
-                    Alert.alert('email inválido!');
+                    Alert.alert(Trans.t('invalid email'));
                 }
 
                 console.error(error);
@@ -106,18 +108,18 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
                                 disabled={saving}
-                                label='Nome Completo'
+                                label={_.capitalize(Trans.t('full name'))}
                                 autoComplete='name'
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
                             />
                         )}
-                        name="nomeCompleto"
+                        name="fullName"
                     />
-                    {errors.nomeCompleto ?
+                    {errors.fullName ?
                         <View style={style.viewErro} >
-                            <Text style={style.textoErro}>{errors.nomeCompleto?.message}</Text>
+                            <Text style={style.textoErro}>{errors.fullName?.message}</Text>
 
                         </View>
                         : false
@@ -129,7 +131,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
                                 keyboardType='email-address'
-                                label='E-mail'
+                                label={_.capitalize(Trans.t('e-mail'))}
                                 secureTextEntry={false}
                                 autoComplete='email'
                                 onBlur={onBlur}
@@ -153,7 +155,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                             <TextInput
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
-                                label='Senha'
+                                label={_.capitalize(Trans.t('password'))}
                                 secureTextEntry={true}
                                 onBlur={onBlur}
                                 onChangeText={onChange}
@@ -161,11 +163,11 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 disabled={saving}
                             />
                         )}
-                        name="senha"
+                        name="password"
                     />
-                    {errors.senha ?
+                    {errors.password ?
                         <View style={style.viewErro} >
-                            <Text style={style.textoErro}>{errors.senha?.message}</Text>
+                            <Text style={style.textoErro}>{errors.password?.message}</Text>
                         </View>
                         : false
                     }
@@ -175,7 +177,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                             <TextInput
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
-                                label='Confirme a senha'
+                                label={_.capitalize(Trans.t('passord confirm'))}
                                 secureTextEntry={true}
                                 onBlur={onBlur}
                                 onChangeText={onChange}
@@ -183,11 +185,11 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 disabled={saving}
                             />
                         )}
-                        name="confirmeSenha"
+                        name="confirmPassword"
                     />
-                    {errors.confirmeSenha && errors.senha !== errors.confirmeSenha ?
+                    {errors.confirmPassword && errors.password !== errors.confirmPassword ?
                         <View style={[style.viewErro, { marginBottom: 25 }]} >
-                            <Text style={style.textoErro}>Senha divergente</Text>
+                            <Text style={style.textoErro}>{_.capitalize(Trans.t('passord not match'))}</Text>
                         </View>
                         : false}
 
@@ -200,7 +202,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                         <Text style={style.textButton}>                            
                             {saving 
                                 ? <ActivityIndicator />
-                                : 'Confirmar'
+                                : _.capitalize(Trans.t('confirm'))
                             }
                         </Text>
                     </TouchableOpacity>

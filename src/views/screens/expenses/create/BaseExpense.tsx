@@ -1,6 +1,5 @@
 import React, { useRef, useState, useCallback } from 'react'
-import { View, StyleSheet, Alert, Dimensions, ScrollView } from 'react-native'
-import { RFValue } from "react-native-responsive-fontsize";
+import { View, StyleSheet, ScrollView } from 'react-native'
 import TitleView from '../../../components/TitleView';
 import Header from '../../../components/Header';
 import ContentContainer from '../../../components/ContentContainer';
@@ -17,7 +16,6 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
 import Vehicles from '../../../../database/models/Vehicles';
 import Trans from '../../../../controllers/internatiolization/Trans';
-const { width, height } = Dimensions.get('window');
 import _ from 'lodash';
 
 
@@ -243,25 +241,7 @@ const style = StyleSheet.create({
         flex: 9,
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    input: {
-        width: "100%",
-        backgroundColor: DefaultStyles.colors.fundoInput,
-        height: height / 14,
-        marginBottom: RFValue(15),
-        borderRadius: RFValue(5),
-        color: DefaultStyles.colors.tabBar,
-        fontSize: RFValue(20),
-        alignSelf: 'center',
-        justifyContent: 'center',
-
-    },
-    viewExpense: {
-        flex: 1,
-        width: width * 0.9,
-        alignItems: 'center',
-    },
-
+    }
 });
 
 export {BaseExpense};

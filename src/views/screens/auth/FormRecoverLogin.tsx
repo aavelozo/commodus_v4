@@ -10,6 +10,8 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Utils from '../../../controllers/Utils';
+import Trans from '../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
 
 
 function FormRecoverLogin(props): JSX.Element {
@@ -36,13 +38,13 @@ function FormRecoverLogin(props): JSX.Element {
                         setErrorMessage(result);
                     } else {
                         setErrorMessage('');
-                        Alert.alert("Verifique o email recebido para poder aterar sua senha, depois tente logar novamente com a nova senha");
+                        Alert.alert(Trans.t('msg_password_recover_check_email'));
                     }
                 } else {
-                    setErrorMessage("email não cadastrado");
+                    setErrorMessage(Trans.t('not registered e-mail'));
                 }
             } else {
-                setErrorMessage("email em branco");
+                setErrorMessage(Trans.t('empty e-mail'));
             }
         } catch (e) {
             console.log(e);
@@ -57,8 +59,8 @@ function FormRecoverLogin(props): JSX.Element {
             <View style={style.imagem}>
                 <Image style={{ height: RFValue(120), width: RFValue(120) }} resizeMode='contain' source={require('../../assets/logoCommodusEscuro.png')} />
             </View>
-            <Text style={style.title}>Recuperação de conta</Text>
-            <Text style={style.description}>Para ajudar a manter sua conta segura, o COMMODUS precisa saber qual email foi utilizado, para podermos lhe enviar a recuperação de senha.</Text>
+            <Text style={style.title}>{_.capitalize(Trans.t('account recover'))}</Text>
+            <Text style={style.description}>{Trans.t('info_require_email')}</Text>
             <View style={style.viewInput}>
 
 
@@ -66,7 +68,7 @@ function FormRecoverLogin(props): JSX.Element {
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
                     keyboardType='email-address'
-                    label='E-mail'
+                    label={_.capitalize(Trans.t('e-mail'))}
                     onChangeText={text => setEmail(text)}
                     value={email}
                     disabled={loading}
@@ -89,15 +91,15 @@ function FormRecoverLogin(props): JSX.Element {
                     {loading
                         ? <ActivityIndicator />
                         : <Text style={style.textButton}>
-                            Confirmar
+                            {_.capitalize(Trans.t('confirm'))}
                         </Text>
                     }
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => navigation.navigate('UserRegistration')}>
                     <>
-                        <Text style={{ marginTop: RFValue(50), color: DefaultStyles.colors.tabBar }}>Ainda não tem cadastro ?</Text>
-                        <Text style={{ textAlign: 'center', color: DefaultStyles.colors.tabBar }}>Registre-se</Text>
+                        <Text style={{ marginTop: RFValue(50), color: DefaultStyles.colors.tabBar }}>{Trans.t('ask_dont_registered')}</Text>
+                        <Text style={{ textAlign: 'center', color: DefaultStyles.colors.tabBar }}>{_.capitalize(Trans.t('register now'))}</Text>
                     </>
 
                 </TouchableOpacity>

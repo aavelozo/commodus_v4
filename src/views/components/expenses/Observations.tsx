@@ -3,7 +3,8 @@ import { Switch, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { DefaultStyles } from '../../DefaultStyles';
 import { TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../DefaultProps';
-
+import Trans from '../../../controllers/internatiolization/Trans';
+import _ from 'lodash';
 
 interface ObservationsProps {
     setObservations : (observations: string) => void,
@@ -29,7 +30,7 @@ function Observations(props : ObservationsProps) : JSX.Element {
                     onPress={() => props.setIsEnabled(!props?.isEnabled)}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                        Observações
+                        {_.capitalize(Trans.t('observations'))}
                     </Text>
                 </TouchableWithoutFeedback>                    
             </View>
@@ -38,7 +39,7 @@ function Observations(props : ObservationsProps) : JSX.Element {
                 props?.isEnabled ? <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
-                    label='Observações'
+                    label={_.capitalize(Trans.t('observations'))}
                     onChangeText={(observacoes:string) => props.setObservations(observacoes)}
                     value={props.observations}
                     maxLength={20}

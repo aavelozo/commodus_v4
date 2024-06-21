@@ -14,6 +14,7 @@ import moment, { months } from 'moment'
 import 'moment/locale/pt-br'
 import { useNavigation } from '@react-navigation/native'
 import EditExpenseController from '../../controllers/EditExpenseController'
+import Trans from '../../controllers/internatiolization/Trans'
 
 function ButtonCardExpense(props): JSX.Element {
     const item = props.data
@@ -48,7 +49,7 @@ function ButtonCardExpense(props): JSX.Element {
             console.log(item?.data())
             break;
         default:
-            throw new Error(`tipo de despesa nao esperada: ${item?.data().type}`);
+            throw new Error(`${Trans.t('not expected expense type')}: ${item?.data().type}`);
     }
 
 
@@ -95,7 +96,7 @@ function ButtonCardExpense(props): JSX.Element {
                     <View style={{ justifyContent: 'space-between', alignItems: 'flex-end', width: '30%', paddingVertical: 5 }}>
                         <Text style={style.textExpense}> {dateFormatted}</Text>
                         <Icon name="angle-right" size={30} color={DefaultStyles.colors.tabBar} />
-                        <Text style={style.textExpense}>R${Number(item?.data().totalValue).toFixed(2)}</Text>
+                        <Text style={style.textExpense}>{Number(item?.data()?.totalValue || 0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}</Text>
                     </View>
                 </View>
                 <View style={{ borderWidth: 1, borderColor: '#ccc' }} />

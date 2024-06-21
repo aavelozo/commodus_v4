@@ -1,24 +1,33 @@
 import React, { useState, useRef, useCallback } from 'react'
-import { View, StyleSheet, Alert, Dimensions, ScrollView } from 'react-native'
-import { RFValue } from "react-native-responsive-fontsize";
-import TitleView from '../../../components/TitleView';
-import Vehicles from '../../../../database/models/Vehicles';
-import Header from '../../../components/Header';
-import ContentContainer from '../../../components/ContentContainer';
-import Observations from '../../../components/expenses/Observations';
-import DateComponent from '../../../components/expenses/DateComponent';
-import InputKM from '../../../components/vehicles/InputKM';
+import { View } from 'react-native'
 import { Text, TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
-import Utils from '../../../../controllers/Utils';
 import SelectDropdown from 'react-native-select-dropdown';
 import EditExpenseController from '../../../../controllers/EditExpenseController';
 import { useFocusEffect } from '@react-navigation/native';
 import { BaseExpense } from './BaseExpense';
-const { width, height } = Dimensions.get('window')
+import _ from 'lodash';
+import { TotalValue } from '../../../components/expenses/TotalValue';
+import Trans from '../../../../controllers/internatiolization/Trans';
 
 
+
+const docList = [
+    'IPVA', 
+    'licensing',
+    'transfer', 
+    'insurance', 
+    'vehicle registration'
+];
+
+const recurrenceList = [
+    'monthly', 
+    'quarterly', 
+    'semiannual', 
+    'yearly', 
+    'biannual'
+];
 
 /******************************************************
 ** COMPONENTE DA VIEW PRINCIPAL                      **
@@ -35,10 +44,9 @@ function DocumentationExpense(props): JSX.Element {
     const [totalValue, setTotalValue] = useState(0);    
 
     //specific properties
-    const [docList, setDocList] = useState(['IPVA', 'Transferência', 'Seguro', 'Hidratação de couro', 'Emplacamento', 'Blindagem']);
-    const [documentName, setDocumentName] = useState(null);
-    const [recurrenceList] = useState(['Mensal', 'Trimensal', 'Semestral', 'Anual', 'Bianual']);
-    const [recurrence, setRecurrence] = useState('Sem recorrência');
+    
+    const [documentName, setDocumentName] = useState(null);    
+    const [recurrence, setRecurrence] = useState(null);
     const selectServiceRef = useRef();
 
 
@@ -137,8 +145,8 @@ function DocumentationExpense(props): JSX.Element {
                             <TextInput
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
-                                label='Nome do documento'
-                                value={selectedItem}
+                                label={_.capitalize(Trans.t('document name'))}
+                                value={_.capitalize(Trans.t(selectedItem))}
                                 pointerEvents="none"
                                 readOnly
                             />
@@ -147,27 +155,16 @@ function DocumentationExpense(props): JSX.Element {
                 }}
                 renderItem={(item, index, isSelected) => {
                     return (<View style={{ ...DefaultStyles.dropdownTextView, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                        <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                        <Text style={DefaultStyles.dropdownText}>{_.capitalize(Trans.t(item))}</Text>
                     </View>);
                 }}
                 onSelect={(selectedItem, index) => {
-                    setDocumentName(selectedItem);
+                    setDocumentName(docList[index]);
                 }}
                 ref={selectServiceRef}
             />
 
-            {/* PREÇO TOTAL */}
-            <TextInput
-                {...DefaultProps.textInput}
-                style={DefaultStyles.textInput}
-                error={missingData && !totalValue}
-                keyboardType='numeric'
-                label='* Valor Total'
-                onChangeText={value => setTotalValue(Utils.toNumber(value))}
-                value={totalValue.toString()}
-            />
-
-
+            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
 
             {/* dropdown: usado para selecionar o ano e atualizar o txtinput */}
             <SelectDropdown
@@ -182,8 +179,8 @@ function DocumentationExpense(props): JSX.Element {
                             <TextInput
                                 {...DefaultProps.textInput}
                                 style={DefaultStyles.textInput}
-                                label='Recorrência'
-                                value={selectedItem}
+                                label={_.capitalize(Trans.t('recurrency'))}
+                                value={_.capitalize(Trans.t(selectedItem))}
                                 pointerEvents="none"
                                 readOnly
                             />
@@ -192,11 +189,11 @@ function DocumentationExpense(props): JSX.Element {
                 }}
                 renderItem={(item, index, isSelected) => {
                     return (<View style={{ ...DefaultStyles.dropdownTextView, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                        <Text style={DefaultStyles.dropdownText}>{item}</Text>
+                        <Text style={DefaultStyles.dropdownText}>{_.capitalize(Trans.t(item))}</Text>
                     </View>);
                 }}
                 onSelect={(selectedItem, index) => {
-                    setRecurrence(selectedItem);
+                    setRecurrence(recurrenceList[index]);
                 }}
                 ref={selectRecurrenceRef}
             />
