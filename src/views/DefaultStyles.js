@@ -89,6 +89,12 @@ class DefaultStyles {
         fontSize: RFValue(20),
         color: DefaultStyles.colors.tabBar
     }
+    static defaultHelperText = {
+        marginTop:-13,
+        marginLeft:-10,
+        marginBottom:-5,
+        fontSize:RFValue(12)
+    }
 
 }
 export {DefaultStyles}

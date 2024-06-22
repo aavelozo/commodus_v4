@@ -1,7 +1,7 @@
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, Dimensions, TouchableWithoutFeedback, Text, TouchableOpacity } from "react-native";
-import { ActivityIndicator, TextInput } from "react-native-paper";
+import { ActivityIndicator, HelperText, TextInput } from "react-native-paper";
 import { DefaultStyles } from '../../DefaultStyles';
 import { DefaultProps } from '../../DefaultProps';
 import AuthController from '../../../controllers/AuthController';
@@ -42,7 +42,6 @@ function Login(props: Object): JSX.Element {
                     mode='outlined'
                     keyboardType='email-address'
                     defaultValue=''
-                    error={missingData && !login}
                     onChangeText={text => {
                         setLogin(text)
                         setErrorMessage('')
@@ -51,17 +50,18 @@ function Login(props: Object): JSX.Element {
                     value={login}
                     disabled={loading}
                 />
-                {
-                    !logged && errorMessage != '' ?
-                        <Text style={style.textoErro}>{errorMessage}</Text>
-                        : false
-                }
+                <HelperText
+                    style={{marginTop:-13,marginLeft:10,fontSize:RFValue(12),textAlign:'left',alignSelf:'flex-start'}}            
+                    type="error"
+                    visible={(missingData && !login) || (!logged && errorMessage != '')}
+                >
+                    {(missingData && !login)? _.capitalize(Trans.t('msg_enter_email')) : errorMessage}
+                </HelperText>                 
                 <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
                     label={_.capitalize(Trans.t('password'))}
                     mode='outlined'
-                    error={missingData && !senha}
                     onChangeText={text => {
                         setLogged(false)
                         setErrorMessage('')
@@ -72,6 +72,13 @@ function Login(props: Object): JSX.Element {
                     autoComplete='email'
                     disabled={loading}
                 />
+                <HelperText
+                    style={{marginTop:-13,marginLeft:10,fontSize:RFValue(12),textAlign:'left',alignSelf:'flex-start'}}            
+                    type="error"
+                    visible={(missingData && !senha)}
+                >
+                    {_.capitalize(Trans.t('msg_enter_password'))}
+                </HelperText>
 
                 <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('RecoverLogin')}
