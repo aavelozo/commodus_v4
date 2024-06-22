@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { View, Switch, TouchableWithoutFeedback, Text } from 'react-native'
 import DateComponent from '../../../components/expenses/DateComponent';
-import { TextInput } from 'react-native-paper';
+import { HelperText, TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
 import { useFocusEffect } from '@react-navigation/native';
@@ -124,6 +124,13 @@ function TyreExpense(props): JSX.Element {
                 onChangeText={value => setTyreService(value)}
                 value={tyreService}
             />
+            <HelperText
+                style={DefaultStyles.defaultHelperText}            
+                type="error"
+                visible={false}
+            >
+                {_.capitalize(Trans.t('enter a value'))}
+            </HelperText>
 
             <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
 

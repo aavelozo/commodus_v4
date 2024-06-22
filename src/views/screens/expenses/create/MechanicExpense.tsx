@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react'
 import { View, TouchableWithoutFeedback, Switch, Text } from 'react-native'
 import DateComponent from '../../../components/expenses/DateComponent';
-import { TextInput } from 'react-native-paper';
+import { HelperText, TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -152,6 +152,13 @@ function MechanicsExpense(props): JSX.Element {
                                 pointerEvents="none"
                                 readOnly
                             />
+                            <HelperText
+                                style={DefaultStyles.defaultHelperText}            
+                                type="error"
+                                visible={false}
+                            >
+                                {_.capitalize(Trans.t('enter a value'))}
+                            </HelperText>
                         </View>
                     );
                 }}

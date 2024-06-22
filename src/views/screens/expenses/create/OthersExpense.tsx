@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { View, Switch, TouchableWithoutFeedback, Text } from 'react-native'
 import DateComponent from '../../../components/expenses/DateComponent';
-import { TextInput } from 'react-native-paper';
+import { HelperText, TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
 import { useFocusEffect } from '@react-navigation/native';
@@ -10,6 +10,7 @@ import { BaseExpense } from './BaseExpense';
 import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 /******************************************************
 ** COMPONENTE DA VIEW PRINCIPAL                      **
@@ -110,14 +111,20 @@ function OthersExpense(props): JSX.Element {
         
             <TextInput
                 {...DefaultProps.textInput}
-                style={DefaultStyles.textInput}
-                error={missingData && !description}
+                style={DefaultStyles.textInput}                
                 keyboardType='default'
                 label={`* ${_.capitalize(Trans.t('expense description'))}`}
                 onChangeText={value => setDescription(value)}
                 value={description}
                 maxLength={20}
             />
+            <HelperText
+                style={DefaultStyles.defaultHelperText}            
+                type="error"
+                visible={missingData && !description}
+            >
+                {_.capitalize(Trans.t('enter a description'))}
+            </HelperText>
 
             <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
 

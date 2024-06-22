@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react'
 import { Text, View, StyleSheet, TouchableWithoutFeedback, Dimensions } from 'react-native'
-import { Checkbox, TextInput, useTheme } from 'react-native-paper';
+import { Checkbox, HelperText, TextInput, useTheme } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
@@ -164,6 +164,13 @@ function AppearanceExpense(props): JSX.Element {
                 </TouchableWithoutFeedback>
 
             </View>
+            <HelperText
+                style={DefaultStyles.defaultHelperText}            
+                type="error"
+                visible={false}
+            >
+                {_.capitalize(Trans.t('enter a value'))}
+            </HelperText>
 
 
             
@@ -186,6 +193,13 @@ function AppearanceExpense(props): JSX.Element {
                                 pointerEvents="none"
                                 readOnly
                             />
+                            <HelperText
+                                style={DefaultStyles.defaultHelperText}            
+                                type="error"
+                                visible={false}
+                            >
+                                {_.capitalize(Trans.t('enter a value'))}
+                            </HelperText>
                         </View>
                     );
                 }}

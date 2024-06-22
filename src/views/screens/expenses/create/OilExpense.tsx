@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react'
 import { Text, View, StyleSheet, TouchableWithoutFeedback, Dimensions, Switch } from 'react-native'
-import { Checkbox, TextInput } from 'react-native-paper';
+import { Checkbox, HelperText, TextInput } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { DefaultProps } from '../../../DefaultProps';
 import { DefaultStyles } from '../../../DefaultStyles';
@@ -154,13 +154,19 @@ function OilExpense(props): JSX.Element {
             {/* CÓDIGO DO ÓLEO */}
             <TextInput
                 {...DefaultProps.textInput}
-                style={DefaultStyles.textInput}
-                error={missingData && !codOil}
+                style={DefaultStyles.textInput}                
                 keyboardType='default'
                 label={`* ${_.capitalize(Trans.t('oil code'))}`}
                 onChangeText={value => setCodOil(value)}
                 value={codOil}
             />
+            <HelperText
+                style={DefaultStyles.defaultHelperText}            
+                type="error"
+                visible={missingData && !codOil}
+            >
+                {_.capitalize(Trans.t('enter a oil code'))}
+            </HelperText>
 
             <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
 
