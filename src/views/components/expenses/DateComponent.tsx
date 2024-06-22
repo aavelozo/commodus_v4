@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment'
 import 'moment/locale/pt-br'
 import DatePicker from 'react-native-date-picker';
-import { TextInput } from 'react-native-paper';
+import { HelperText, TextInput } from 'react-native-paper';
 import { DefaultProps } from '../../DefaultProps';
 import { DefaultStyles } from '../../DefaultStyles';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -45,7 +45,6 @@ function DateComponent(props : DateComponentProps) : JSX.Element {
             <TextInput            
                 {...DefaultProps.textInput}
                 style={[DefaultStyles.textInput]}    
-                error={props.error||false}           
                 label={`${_.capitalize(Trans.t('date'))}`} 
                 keyboardType='default'
                 showSoftInputOnFocus={false}
@@ -53,7 +52,14 @@ function DateComponent(props : DateComponentProps) : JSX.Element {
                     setOpened(true);
                 }}
                 value={moment(date).locale('pt-br').format('DD[/]MM[/]YY')}
-            />                    
+            /> 
+            <HelperText
+                style={DefaultStyles.defaultHelperText}            
+                type="error"
+                visible={props.error||false} 
+            >
+                {_.capitalize(Trans.t('enter date'))}
+            </HelperText>                   
         </>
     );
 };

@@ -21,7 +21,7 @@ import Camera from '../../assets/iconSvg/camera.svg'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Brands from '../../../database/models/Brands';
 import { setCurrentViewVehicle } from './ViewVehicle';
-import { TextInput, useTheme } from 'react-native-paper';
+import { HelperText, TextInput, useTheme } from 'react-native-paper';
 import Trans from '../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 
@@ -261,13 +261,19 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                     <View>
                                         <TextInput
                                             {...DefaultProps.textInput}
-                                            style={DefaultStyles.textInput}
-                                            error={missingData && !selectedBrand}
+                                            style={DefaultStyles.textInput}                                            
                                             label={`* ${_.capitalize(Trans.t('brand'))}`}
                                             value={selectedItem?.id}
                                             pointerEvents="none"                                            
                                             readOnly
                                         />
+                                        <HelperText
+                                            style={DefaultStyles.defaultHelperText}            
+                                            type="error"
+                                            visible={missingData && !selectedBrand}
+                                        >
+                                            {_.capitalize(Trans.t('select a brand'))}
+                                        </HelperText>
                                     </View>
                                 );
                             }}
@@ -294,13 +300,19 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                     <View>
                                         <TextInput
                                             {...DefaultProps.textInput}
-                                            style={DefaultStyles.textInput}
-                                            error={missingData && !selectedModel}
+                                            style={DefaultStyles.textInput}                                            
                                             label={`* ${_.capitalize(Trans.t('model'))}`}
                                             value={selectedItem?.id}
                                             pointerEvents="none"
                                             readOnly
                                         />
+                                        <HelperText
+                                            style={DefaultStyles.defaultHelperText}            
+                                            type="error"
+                                            visible={missingData && !selectedModel}
+                                        >
+                                            {_.capitalize(Trans.t('select a model'))}
+                                        </HelperText>
                                     </View>
                                 );
                             }}
@@ -328,12 +340,18 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            error={missingData && !selectedYear}
                                             label={`* ${_.capitalize(Trans.t('model year'))}`}
                                             value={selectedItem ? selectedItem.toString() : ''}
                                             pointerEvents="none"
                                             readOnly
                                         />
+                                        <HelperText
+                                            style={DefaultStyles.defaultHelperText}            
+                                            type="error"
+                                            visible={missingData && !selectedYear}
+                                        >
+                                            {_.capitalize(Trans.t('select a year'))}
+                                        </HelperText>
                                     </View>
                                 );
                             }}
@@ -382,8 +400,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         {/*TEXTINPUT KM*/}
                         <TextInput
                             {...DefaultProps.textInput}
-                            style={DefaultStyles.textInput}
-                            error={missingData && !Utils.hasValue(km)}
+                            style={DefaultStyles.textInput}                            
                             keyboardType='numeric'
                             label={`* ${_.capitalize(Trans.t('actual kilometers'))}`}
                             onChangeText={km => {
@@ -396,17 +413,30 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                             maxLength={7}
                             value={km ? km.toString() : null}
                         />
+                        <HelperText
+                            style={DefaultStyles.defaultHelperText}            
+                            type="error"
+                            visible={missingData && !Utils.hasValue(km)}
+                        >
+                            {_.capitalize(Trans.t('enter actual kilometers'))}
+                        </HelperText>
 
                         {/*TEXTINPUT PLACA*/}
                         <TextInput
                             {...DefaultProps.textInput}
-                            style={[DefaultStyles.textInput, { marginTop: RFValue(7) }]}
-                            error={missingData && !Utils.hasValue(plate)}                    
+                            style={[DefaultStyles.textInput, { marginTop: RFValue(7) }]}                            
                             label={`* ${_.capitalize(Trans.t('vehicle plate'))}`}
                             value={plate}
                             onChangeText={plate => setPlate(plate)}
                             maxLength={7}
                         />
+                        <HelperText
+                            style={DefaultStyles.defaultHelperText}            
+                            type="error"
+                            visible={missingData && !Utils.hasValue(plate)}                    
+                        >
+                            {_.capitalize(Trans.t('enter a plate'))}
+                        </HelperText>
 
                         <View style={DefaultStyles.viewSwitch}>
                             {/* se ativo, liberar input de Cor */}

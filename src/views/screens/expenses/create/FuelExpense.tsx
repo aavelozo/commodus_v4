@@ -2,7 +2,7 @@ import React, { useRef, useState, useCallback } from 'react'
 import { View, Dimensions } from 'react-native'
 import { RFValue } from "react-native-responsive-fontsize";
 import { DefaultStyles } from '../../../DefaultStyles';
-import { Text, TextInput } from 'react-native-paper';
+import { HelperText, Text, TextInput } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import { DefaultProps } from '../../../DefaultProps';
 import Utils from '../../../../controllers/Utils';
@@ -135,13 +135,19 @@ function FuelExpense(props): JSX.Element {
                         <View>
                             <TextInput
                                 {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                error={missingData && !selectedFuel}
+                                style={DefaultStyles.textInput}                                
                                 label={`* ${_.capitalize(Trans.t('fuel'))}`}
                                 value={_.capitalize(Trans.t(selectedItem))}
                                 pointerEvents="none"
                                 readOnly
                             />
+                            <HelperText
+                                style={DefaultStyles.defaultHelperText}            
+                                type="error"
+                                visible={missingData && !selectedFuel}
+                            >
+                                {_.capitalize(Trans.t('select a fuel'))}
+                            </HelperText>
                         </View>
                     );
                 }}

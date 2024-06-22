@@ -4,7 +4,7 @@ import TitleView from '../../../components/TitleView';
 import Header from '../../../components/Header';
 import ContentContainer from '../../../components/ContentContainer';
 import { DefaultStyles } from '../../../DefaultStyles';
-import { Text, TextInput } from 'react-native-paper';
+import { HelperText, Text, TextInput } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import { DefaultProps } from '../../../DefaultProps';
 import DateComponent from '../../../components/expenses/DateComponent';
@@ -17,6 +17,7 @@ import EditExpenseController from '../../../../controllers/EditExpenseController
 import Vehicles from '../../../../database/models/Vehicles';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 
 
@@ -184,12 +185,18 @@ function BaseExpense(props): JSX.Element {
                                         <TextInput
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
-                                            error={missingData && !selectedVehicle}
                                             label={`* ${_.capitalize(Trans.t('vehicle'))}`}
                                             value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
                                             pointerEvents="none"
                                             readOnly
                                         />
+                                        <HelperText
+                                            style={DefaultStyles.defaultHelperText}            
+                                            type="error"
+                                            visible={missingData && !selectedVehicle}
+                                        >
+                                            {_.capitalize(Trans.t('select a vehicle'))}
+                                        </HelperText> 
                                     </View>
                                 );
                             }}
@@ -216,14 +223,27 @@ function BaseExpense(props): JSX.Element {
                             establishment={establishment}
                             setIsEnabled={setIsEnabledEstablishment}
                             setEstablishment={setEstablishment}
-                        />}
+                        /> && <HelperText
+                            style={DefaultStyles.defaultHelperText}            
+                            type="error"
+                            visible={false}
+                        >
+                            {_.capitalize(Trans.t('enter a value'))}
+                        </HelperText>
+                        }
                         {props.childrenAfterEstablishment && props.children}
                         {Utils.firstValid([props.hasObservations,true]) && <Observations
                             isEnabled={isEnabledObservations}
                             observations={observations}
                             setIsEnabled={setIsEnabledObservations}
                             setObservations={setObservations}
-                        />}                      
+                        /> && <HelperText
+                            style={DefaultStyles.defaultHelperText}            
+                            type="error"
+                            visible={false}
+                        >
+                            {_.capitalize(Trans.t('enter a value'))}
+                        </HelperText>}                      
                     </ScrollView>
                 </ContentContainer>
             </View >
