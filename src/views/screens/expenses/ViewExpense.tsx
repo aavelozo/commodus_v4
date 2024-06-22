@@ -262,7 +262,8 @@ const style = StyleSheet.create({
         fontSize: RFValue(18),
         color: '#000',
         marginLeft: RFValue(15),
-        textAlign: 'left'
+        textAlign: 'left',
+        maxWidth:'78%'
     }
 })
 
