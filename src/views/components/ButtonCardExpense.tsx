@@ -15,6 +15,7 @@ import 'moment/locale/pt-br'
 import { useNavigation } from '@react-navigation/native'
 import EditExpenseController from '../../controllers/EditExpenseController'
 import Trans from '../../controllers/internatiolization/Trans'
+import _ from 'lodash'
 
 function ButtonCardExpense(props): JSX.Element {
     const item = props.data
@@ -88,8 +89,13 @@ function ButtonCardExpense(props): JSX.Element {
                         }
                     </View>
                     <View style={{ justifyContent: 'center', paddingLeft: RFValue(10), width: '55%' }}>
-                        <Text style={style.textExpense}>{item?.data().othersdatas.codOil || item?.data().othersdatas.fuel || item?.data().othersdatas.documentName
-                            || item?.data().othersdatas.othersServices || item?.data().othersdatas.service || item?.data().othersdatas.typeService || item?.data().othersdatas.description }</Text>
+                        <Text style={style.textExpense}>{
+                            item?.data().othersdatas.codOil 
+                            || _.capitalize(Trans.t((item?.data().othersdatas.fuel || item?.data().othersdatas.documentName)?.toLowerCase()))
+                            || item?.data().othersdatas.othersServices 
+                            || _.capitalize(Trans.t((item?.data().othersdatas.service || item?.data().othersdatas.typeService)?.toLowerCase()))
+                            || item?.data().othersdatas.description 
+                        }</Text>
                         <Text style={style.textExpense}>{item?.data().establishment}</Text>
                         <Text style={style.textExpense}>{item?.vehicleName}</Text>
                     </View>
