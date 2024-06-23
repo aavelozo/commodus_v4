@@ -62,7 +62,7 @@ function PercentageExpenses({ data, monthlyExpenses }): JSX.Element {
                             Icon = <Seguro width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
                         } else if (data.x == 'others') {
                             Icon = <Outros width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                        } else if (data.x == 'appearence') {
+                        } else if (data.x == 'appearance') {
                             Icon = <Aparencia width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
                         }
                         return (

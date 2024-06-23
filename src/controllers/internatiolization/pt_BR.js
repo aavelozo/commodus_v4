@@ -9,7 +9,7 @@ export default {
     'alcohol':'álcool',
     'alignment and balancing':'alinhamento e balanceamento',
     'all vehicles':'todos os veículos',
-    'appearence expense': 'despesa de aparência',
+    'appearance expense': 'despesa de aparência',
     'apr':'abr',
     'ask_dont_registered':'Ainda não tem cadastro?',
     'ask_forgot_password':'Esqueceu a senha?',
