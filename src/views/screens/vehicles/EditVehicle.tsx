@@ -401,14 +401,14 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}                            
-                            keyboardType='numeric'
+                            keyboardType='decimal-pad'
                             label={`* ${_.capitalize(Trans.t('actual kilometers'))}`}
                             onChangeText={km => {
-                                if (km.includes('.')) return
-                                if (km.includes(',')) return
+                                //if (km.includes('.')) return
+                                //if (km.includes(',')) return
                                 if (km.includes('-')) return
                                 if (km.includes(' ')) return
-                                setKm(km);
+                                setKm(Utils.toNumber(Utils.toNumericText(km)));
                             }}
                             maxLength={7}
                             value={km ? km.toString() : null}

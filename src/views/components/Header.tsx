@@ -63,7 +63,7 @@ function Header(props): JSX.Element {
 
     return (
         <View style={style.container}>
-            <View style={{ width: '25%', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+            <View style={{ width: '25%', justifyContent: 'center', alignItems: 'flex-start' }}>
                 {props.withButtons ?
                     <ButtonCancel onPress={() => props.onPressCancel()} /> :
                     !props.noBars ? <TouchableWithoutFeedback onPress={() => showModal()}>
@@ -79,7 +79,7 @@ function Header(props): JSX.Element {
                     <Text style={style.texto}>COMMODUS</Text> : false}
             </View>
 
-            <View style={{ width: '25%', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+            <View style={{ width: '25%', justifyContent: 'center', alignItems: 'flex-end' }}>
                 {props.withButtons
                     ? <ButtonConclude
                         loading={props.saving || props.loading || false}

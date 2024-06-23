@@ -33,15 +33,25 @@ class Trans {
     
     static getCurrencySymbol (locale, currency) {
         return (0).toLocaleString(
-          locale || this.getDeviceLocale().replace("_","-"),
-          {
-            style: 'currency',
-            currency: currency || this.getLocaleCurrency(),
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-          }
+            locale || this.getDeviceLocale().replace("_","-"),
+            {
+                style: 'currency',
+                currency: currency || this.getLocaleCurrency(),
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }
         ).replace(/\d/g, '').trim()
-      }
+    }
+
+    static getDecimalSeparator(locale) {
+        return (0.1).toLocaleString(
+            locale || this.getDeviceLocale().replace("_","-"),
+            {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1
+            }
+        ).replace(/\d/g, '').trim()
+    }
 
     
 
