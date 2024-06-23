@@ -51,7 +51,7 @@ function Login(props: Object): JSX.Element {
                     disabled={loading}
                 />
                 <HelperText
-                    style={{marginTop:-13,marginLeft:10,fontSize:RFValue(12),textAlign:'left',alignSelf:'flex-start'}}            
+                    style={[DefaultStyles.defaultHelperText,{marginLeft:10}]}            
                     type="error"
                     visible={(missingData && !login) || (!logged && errorMessage != '')}
                 >
@@ -73,7 +73,7 @@ function Login(props: Object): JSX.Element {
                     disabled={loading}
                 />
                 <HelperText
-                    style={{marginTop:-13,marginLeft:10,fontSize:RFValue(12),textAlign:'left',alignSelf:'flex-start'}}            
+                    style={[DefaultStyles.defaultHelperText,{marginLeft:10}]}
                     type="error"
                     visible={(missingData && !senha)}
                 >
@@ -188,16 +188,6 @@ const style = StyleSheet.create({
         color: DefaultStyles.colors.tabBar,
         fontWeight: 'bold',
         fontSize: RFValue(20),
-
-    },
-    textoErro: {
-        color: '#cb0000',
-        alignSelf: 'flex-start',
-        marginLeft: RFValue(30)
-    },
-    viewErro: {
-        // paddingHorizontal: Dimensions.get('window').width * 0.10, 
-        alignSelf: 'center',
 
     },
     imagem: {

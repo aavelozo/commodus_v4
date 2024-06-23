@@ -118,12 +118,10 @@ function AppearanceExpense(props): JSX.Element {
     }
     
 
-
-
     return (
         <BaseExpense
-            title='appearence expense'
-            type='APPEARENCE'
+            title='appearance expense'
+            type='APPEARANCE'
             loading={loading}
             setLoading={setLoading}
             loaded={loaded}

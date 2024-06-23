@@ -1,7 +1,7 @@
 import { CommonActions } from '@react-navigation/native'
 import React, { useState } from 'react'
 import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Image, TouchableWithoutFeedback, Alert } from 'react-native'
-import { ActivityIndicator, TextInput } from 'react-native-paper'
+import { ActivityIndicator, HelperText, TextInput } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native';
 import AuthController from '../../../controllers/AuthController';
 import { DefaultProps } from '../../DefaultProps';
@@ -73,15 +73,13 @@ function FormRecoverLogin(props): JSX.Element {
                     value={email}
                     disabled={loading}
                 />
-
-
-                <View style={[style.viewErro, { marginBottom: RFValue(25) }]} >
-                    {
-                        errorMessage ? <Text style={style.textoErro}>{errorMessage}</Text> : false
-                    }
-                </View>
-
-
+                <HelperText
+                    style={[DefaultStyles.defaultHelperText,{marginLeft:10}]}            
+                    type="error"
+                    visible={errorMessage ? true : false}
+                >
+                    {errorMessage}
+                </HelperText>
                 <TouchableOpacity
                     activeOpacity={0.9}
                     onPress={() => recoverPassword(email)}
@@ -149,17 +147,6 @@ const style = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: RFValue(20),
 
-    },
-    textoErro: {
-        color: '#cb0000',
-
-
-    },
-    viewErro: {
-        // paddingHorizontal: Dimensions.get('window').width * 0.10, 
-        alignSelf: 'flex-start',
-        height: RFValue(18),
-        marginLeft: RFValue(50),
     },
     imagem: {
         justifyContent: 'center',

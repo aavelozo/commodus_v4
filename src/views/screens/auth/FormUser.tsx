@@ -7,7 +7,7 @@ import * as yup from 'yup'
 import { CommonActions } from '@react-navigation/native'
 import { DefaultStyles } from '../../DefaultStyles'
 import Dados from '../../../controllers/Dados'
-import { ActivityIndicator, TextInput } from 'react-native-paper'
+import { ActivityIndicator, HelperText, TextInput } from 'react-native-paper'
 import { DefaultProps } from '../../DefaultProps'
 import { RFValue } from 'react-native-responsive-fontsize'
 import Utils from '../../../controllers/Utils'
@@ -104,95 +104,106 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                     <Controller
                         control={control}
                         render={({ field: { onChange, onBlur, value } }) => (
-                            <TextInput
-                                {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                disabled={saving}
-                                label={_.capitalize(Trans.t('full name'))}
-                                autoComplete='name'
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                value={value}
-                            />
+                            <>
+                                <TextInput
+                                    {...DefaultProps.textInput}
+                                    style={DefaultStyles.textInput}
+                                    disabled={saving}
+                                    label={_.capitalize(Trans.t('full name'))}
+                                    autoComplete='name'
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                />
+                                <HelperText
+                                    style={DefaultStyles.defaultHelperText}            
+                                    type="error"
+                                    visible={errors.fullName ? true : false}
+                                >
+                                    {errors.fullName?.message}
+                                </HelperText>
+                            </>
+                            
                         )}
                         name="fullName"
-                    />
-                    {errors.fullName ?
-                        <View style={style.viewErro} >
-                            <Text style={style.textoErro}>{errors.fullName?.message}</Text>
-
-                        </View>
-                        : false
-                    }
+                    />                    
                     <Controller
                         control={control}
                         render={({ field: { onChange, onBlur, value } }) => (
-                            <TextInput
-                                {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                keyboardType='email-address'
-                                label={_.capitalize(Trans.t('e-mail'))}
-                                secureTextEntry={false}
-                                autoComplete='email'
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                value={value}
-                                disabled={saving}
-                            />
+                            <>
+                                <TextInput
+                                    {...DefaultProps.textInput}
+                                    style={DefaultStyles.textInput}
+                                    keyboardType='email-address'
+                                    label={_.capitalize(Trans.t('e-mail'))}
+                                    secureTextEntry={false}
+                                    autoComplete='email'
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    disabled={saving}
+                                />
+                                <HelperText
+                                    style={DefaultStyles.defaultHelperText}            
+                                    type="error"
+                                    visible={errors.email ? true : false}
+                                >
+                                    {errors.email?.message}
+                                </HelperText>
+                            </>
                         )}
                         name="email"
-                    />
-                    {errors.email ?
-                        <View style={style.viewErro} >
-                            <Text style={style.textoErro}>{errors.email?.message}</Text>
-
-                        </View>
-                        : false
-                    }
+                    />                   
                     <Controller
                         control={control}
                         render={({ field: { onChange, onBlur, value } }) => (
-                            <TextInput
-                                {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                label={_.capitalize(Trans.t('password'))}
-                                secureTextEntry={true}
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                value={value}
-                                disabled={saving}
-                            />
+                            <>
+                                <TextInput
+                                    {...DefaultProps.textInput}
+                                    style={DefaultStyles.textInput}
+                                    label={_.capitalize(Trans.t('password'))}
+                                    secureTextEntry={true}
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    disabled={saving}
+                                />
+                                <HelperText
+                                    style={DefaultStyles.defaultHelperText}            
+                                    type="error"
+                                    visible={errors.password ? true : false}
+                                >
+                                    {errors.password?.message}
+                                </HelperText>
+                            </>
                         )}
                         name="password"
-                    />
-                    {errors.password ?
-                        <View style={style.viewErro} >
-                            <Text style={style.textoErro}>{errors.password?.message}</Text>
-                        </View>
-                        : false
-                    }
+                    />                   
                     <Controller
                         control={control}
                         render={({ field: { onChange, onBlur, value } }) => (
-                            <TextInput
-                                {...DefaultProps.textInput}
-                                style={DefaultStyles.textInput}
-                                label={_.capitalize(Trans.t('passord confirm'))}
-                                secureTextEntry={true}
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                value={value}
-                                disabled={saving}
-                            />
+                            <>
+                                <TextInput
+                                    {...DefaultProps.textInput}
+                                    style={DefaultStyles.textInput}
+                                    label={_.capitalize(Trans.t('passord confirm'))}
+                                    secureTextEntry={true}
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    disabled={saving}
+                                />
+                                <HelperText
+                                    style={DefaultStyles.defaultHelperText}            
+                                    type="error"
+                                    visible={errors.confirmPassword ? true : false}
+                                >
+                                    {_.capitalize(Trans.t('password not match'))}
+                                </HelperText>
+                            </>
                         )}
                         name="confirmPassword"
-                    />
-                    {errors.confirmPassword && errors.password !== errors.confirmPassword ?
-                        <View style={[style.viewErro, { marginBottom: 25 }]} >
-                            <Text style={style.textoErro}>{_.capitalize(Trans.t('passord not match'))}</Text>
-                        </View>
-                        : false}
-
+                    />                    
                     <TouchableOpacity
                         activeOpacity={0.9}
                         onPress={handleSubmit(onSubmit)}
@@ -237,14 +248,6 @@ const style = StyleSheet.create({
         color: DefaultStyles.colors.tabBar,
         fontWeight: 'bold',
         fontSize: 20,
-    },
-    textoErro: {
-        color: '#CD1515',
-    },
-    viewErro: {
-        alignSelf: 'flex-start',
-        height: 18,
-        marginLeft: RFValue(10),
     }
 });
 

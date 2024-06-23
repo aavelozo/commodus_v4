@@ -253,7 +253,7 @@ function Dashboard(props): JSX.Element {
             }, {
                 x: `31/${date?.slice(0, 2)}`, y: totalizador31 + totalizador25 + totalizador20 + totalizador15 + totalizador10 + totalizador05 + totalizador01
             }])
-            setExpensesThirdGraph([{ x: 'fuel', y: gastoCombustivel, color: "#f47476" }, { x: 'oil', y: gastoOleo, color: "#B8DBF2" }, { x: 'document', y: gastoDocumentos, color: "#9BC995" }, { x: 'mechanic', y: gastoMecanica, color: "#FFD38E" }, { x: 'appearence', y: gastoAparencia, color: "#D0A9F5" }, { x: 'others', y: gastoOutros, color: "#e9f143" }, { x: 'tyre', y: gastoBorracharia, color: "#F8B6D3" }])
+            setExpensesThirdGraph([{ x: 'fuel', y: gastoCombustivel, color: "#f47476" }, { x: 'oil', y: gastoOleo, color: "#B8DBF2" }, { x: 'document', y: gastoDocumentos, color: "#9BC995" }, { x: 'mechanic', y: gastoMecanica, color: "#FFD38E" }, { x: 'appearance', y: gastoAparencia, color: "#D0A9F5" }, { x: 'others', y: gastoOutros, color: "#e9f143" }, { x: 'tyre', y: gastoBorracharia, color: "#F8B6D3" }])
         } catch (e) {
             console.log('e1', e);
         }
@@ -389,7 +389,9 @@ function Dashboard(props): JSX.Element {
 
                                 < View style={{ alignSelf: 'center', borderBottomWidth: RFValue(0.5), borderBottomColor: DefaultStyles.colors.tabBar, height: height * 0.06, justifyContent: 'center', alignItems: 'center', width: '60%' }}>
                                     <Text style={style.textSummary}>{carsThisUser[changeCar]?.vehicle?.vehicleName}</Text>
-                                    <Text style={[style.textSummary, { fontSize: RFValue(16), paddingBottom: RFValue(5) }]}>{_.capitalize(Trans.t('expenses of the month'))}: R${((expensesFirstGraph[1] || {}).y || 0).toFixed(2)}</Text>
+                                    <Text style={[style.textSummary, { fontSize: RFValue(16), paddingBottom: RFValue(5) }]}>
+                                        {_.capitalize(Trans.t('expenses of the month'))}: {((expensesFirstGraph[1] || {}).y || 0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}
+                                    </Text>
 
                                 </View>
 

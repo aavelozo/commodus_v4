@@ -163,65 +163,91 @@ function FuelExpense(props): JSX.Element {
             />
 
             {/* PREÇO/L, LITRO, VALOR */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: width * 0.9, marginTop: RFValue(-10) }}>
-                <TextInput
-                    {...DefaultProps.textInput}
-                    style={[DefaultStyles.textInput, { width: width * 0.27, marginTop: RFValue(12)  }]}
-                    keyboardType='numeric'
-                    label={Trans.t('Price/L')}
-                    placeholder='R$'
-                    placeholderTextColor='#666'
-                    //color={DefaultStyles.colors.tabBar}
-                    onChangeText={valorunitario => {
-                        if (valorunitario.includes(',')) return
-                        if (valorunitario.includes('-')) return
-                        if (valorunitario.includes(' ')) return
-                        if (valorunitario.includes('/')) return
-                        if (valorunitario.includes('+')) return
-                        if (valorunitario.includes('(')) return
-                        if (valorunitario.includes(')')) return
-                        if (valorunitario.includes('-')) return
-                        if (valorunitario.includes(';')) return
-                        if (valorunitario.includes('#')) return
-                        if (valorunitario.includes('*')) return
-                        setUnValue(Utils.toNumber(valorunitario));
-                        setTotalValue(Utils.toNumber(liters) * Utils.toNumber(valorunitario));
-                    }}
-                    value={unValue ? unValue.toString() : null}
-                    maxLength={6}
-                />
-                <TextInput
-                    {...DefaultProps.textInput}
-                    style={[DefaultStyles.textInput, { marginLeft: RFValue(15), width: width * 0.27 , marginTop: RFValue(12) }]}
-                    keyboardType='numeric'
-                    label={_.capitalize(Trans.t('liters'))}
-                    onChangeText={litros => {
-                        if (litros.includes(',')) return
-                        if (litros.includes('-')) return
-                        if (litros.includes(' ')) return
-                        if (litros.includes('/')) return
-                        if (litros.includes('+')) return
-                        if (litros.includes('(')) return
-                        if (litros.includes(')')) return
-                        if (litros.includes('-')) return
-                        if (litros.includes(';')) return
-                        if (litros.includes('#')) return
-                        if (litros.includes('*')) return
+            <View 
+                style={{ 
+                    flexDirection: 'row', 
+                    justifyContent: 'space-between', 
+                    width: width * 0.9, 
+                    marginTop: RFValue(-10),
+                    //height:200
+                }}>
+                <View>
+                    <TextInput
+                        {...DefaultProps.textInput}
+                        style={[DefaultStyles.textInput, { width: width * 0.27, marginTop: RFValue(12)  }]}
+                        keyboardType='numeric'
+                        label={Trans.t('Price/L')}
+                        placeholder={Trans.getCurrencySymbol()}
+                        placeholderTextColor='#666'
+                        //color={DefaultStyles.colors.tabBar}
+                        onChangeText={valorunitario => {
+                            if (valorunitario.includes(',')) return
+                            if (valorunitario.includes('-')) return
+                            if (valorunitario.includes(' ')) return
+                            if (valorunitario.includes('/')) return
+                            if (valorunitario.includes('+')) return
+                            if (valorunitario.includes('(')) return
+                            if (valorunitario.includes(')')) return
+                            if (valorunitario.includes('-')) return
+                            if (valorunitario.includes(';')) return
+                            if (valorunitario.includes('#')) return
+                            if (valorunitario.includes('*')) return
+                            setUnValue(Utils.toNumber(valorunitario));
+                            setTotalValue(Utils.toNumber(liters) * Utils.toNumber(valorunitario));
+                        }}
+                        value={unValue ? unValue.toString() : null}
+                        maxLength={6}
+                    />
+                    <HelperText
+                        style={DefaultStyles.defaultHelperText}            
+                        type="error"
+                        visible={false}
+                    >
+                        {_.capitalize(Trans.t('enter value'))}
+                    </HelperText>
+                </View>
+                <View>
+                    <TextInput
+                        {...DefaultProps.textInput}
+                        style={[DefaultStyles.textInput, { marginLeft: RFValue(15), width: width * 0.27 , marginTop: RFValue(12) }]}
+                        keyboardType='numeric'
+                        label={_.capitalize(Trans.t('liters'))}
+                        onChangeText={litros => {
+                            if (litros.includes(',')) return
+                            if (litros.includes('-')) return
+                            if (litros.includes(' ')) return
+                            if (litros.includes('/')) return
+                            if (litros.includes('+')) return
+                            if (litros.includes('(')) return
+                            if (litros.includes(')')) return
+                            if (litros.includes('-')) return
+                            if (litros.includes(';')) return
+                            if (litros.includes('#')) return
+                            if (litros.includes('*')) return
 
-                        setLiters(Utils.toNumber(litros));
-                        setTotalValue(Utils.toNumber(litros) * Utils.toNumber(unValue));
-                    }}
-                    value={liters ? liters.toString() : null}
-                    maxLength={3}
-                />
+                            setLiters(Utils.toNumber(litros));
+                            setTotalValue(Utils.toNumber(litros) * Utils.toNumber(unValue));
+                        }}
+                        value={liters ? liters.toString() : null}
+                        maxLength={3}
+                    />
+                    <HelperText
+                        style={DefaultStyles.defaultHelperText}            
+                        type="error"
+                        visible={false}
+                    >
+                        {_.capitalize(Trans.t('enter value'))}
+                    </HelperText>
+                </View>
 
                 <TotalValue 
                     totalValue={totalValue} 
                     setTotalValue={setTotalValue} 
-                    style={{marginLeft: RFValue(15), width: width * 0.27, marginTop: RFValue(12)}} 
+                    style={{marginLeft: RFValue(15), width: width * 0.265, marginTop: RFValue(12)}} 
                     maxLength={7}
                     label="value"
                     missingData={missingData}
+                    helperTextStyle={{marginLeft:5}}
                 />
 
             </View>            
