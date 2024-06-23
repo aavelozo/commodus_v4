@@ -12,13 +12,14 @@ function TotalValue(props) {
     if (Utils.hasValue(props.maxLength||null)) {
         otherProps.maxLength = props.maxLength
     }
+    
     return <View>
         <TextInput
             {...DefaultProps.textInput}
             style={[DefaultStyles.textInput,props.style || {}]}
-            keyboardType='numeric'
+            keyboardType='decimal-pad'
             label={`* ${_.capitalize(Trans.t(props.label || 'total value'))}`}
-            onChangeText={value => props.setTotalValue(Utils.toNumber(value))}
+            onChangeText={value=>props.setTotalValue(Utils.toNumericText(value))}
             placeholder={Trans.getCurrencySymbol()}
             placeholderTextColor='#666'
             value={props.totalValue ? props.totalValue.toString() : null}

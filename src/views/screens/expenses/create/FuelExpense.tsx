@@ -52,11 +52,11 @@ function FuelExpense(props): JSX.Element {
                         console.log('loading states...2');
                         let dataExpense = EditExpenseController.currentExpense.data();
                         console.log('loading states...2.1');
-                        setTotalValue(dataExpense.totalValue||0);
+                        setTotalValue(Utils.toNumber(dataExpense.totalValue||0));
                         //specific properties
-                        setUnValue(dataExpense.othersdatas.unValue||0);
+                        setUnValue(Utils.toNumber(dataExpense.othersdatas.unValue||0));
                         console.log('loading states...2.3');
-                        setLiters(dataExpense.othersdatas.liters||0);
+                        setLiters(Utils.toNumber(dataExpense.othersdatas.liters||0));
                         setSelectedFuel(dataExpense.othersdatas.fuel||null);
                         console.log('loading states...3');
                     } else {
@@ -175,7 +175,7 @@ function FuelExpense(props): JSX.Element {
                     <TextInput
                         {...DefaultProps.textInput}
                         style={[DefaultStyles.textInput, { width: width * 0.27, marginTop: RFValue(12)  }]}
-                        keyboardType='numeric'
+                        keyboardType='decimal-pad'
                         label={Trans.t('Price/L')}
                         placeholder={Trans.getCurrencySymbol()}
                         placeholderTextColor='#666'
@@ -192,8 +192,8 @@ function FuelExpense(props): JSX.Element {
                             if (valorunitario.includes(';')) return
                             if (valorunitario.includes('#')) return
                             if (valorunitario.includes('*')) return
-                            setUnValue(Utils.toNumber(valorunitario));
-                            setTotalValue(Utils.toNumber(liters) * Utils.toNumber(valorunitario));
+                            setUnValue(Utils.toNumericText(valorunitario));
+                            setTotalValue(Utils.toNumber(liters) * Utils.toNumber(Utils.toNumericText(valorunitario)));
                         }}
                         value={unValue ? unValue.toString() : null}
                         maxLength={6}
@@ -210,7 +210,7 @@ function FuelExpense(props): JSX.Element {
                     <TextInput
                         {...DefaultProps.textInput}
                         style={[DefaultStyles.textInput, { marginLeft: RFValue(15), width: width * 0.27 , marginTop: RFValue(12) }]}
-                        keyboardType='numeric'
+                        keyboardType='decimal-pad'
                         label={_.capitalize(Trans.t('liters'))}
                         onChangeText={litros => {
                             if (litros.includes(',')) return
@@ -225,8 +225,8 @@ function FuelExpense(props): JSX.Element {
                             if (litros.includes('#')) return
                             if (litros.includes('*')) return
 
-                            setLiters(Utils.toNumber(litros));
-                            setTotalValue(Utils.toNumber(litros) * Utils.toNumber(unValue));
+                            setLiters(Utils.toNumericText(litros));
+                            setTotalValue(Utils.toNumber(Utils.toNumericText(litros)) * Utils.toNumber(unValue));
                         }}
                         value={liters ? liters.toString() : null}
                         maxLength={3}

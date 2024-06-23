@@ -240,8 +240,8 @@ function OilExpense(props): JSX.Element {
                     style={DefaultStyles.textInput}
                     label={_.capitalize(Trans.t('oil filter price'))}
                     value={oilFilterPrice ? oilFilterPrice.toString() : null}
-                    keyboardType='numeric'
-                    onChangeText={filtroOleo => setOilFilterPrice(Utils.toNumber(filtroOleo))}
+                    keyboardType='decimal-pad'
+                    onChangeText={filtroOleo => setOilFilterPrice(Utils.toNumber(Utils.toNumericText(filtroOleo)))}
                 /> : false}
 
             {isFiltersEnabled ?
@@ -265,8 +265,8 @@ function OilExpense(props): JSX.Element {
                     style={DefaultStyles.textInput}
                     label={_.capitalize(Trans.t('fuel filter price'))}
                     value={fuelFilterPrice ? fuelFilterPrice.toString() : null}
-                    keyboardType='numeric'
-                    onChangeText={filtroCombustivel => setFuelFilterPrice(Utils.toNumber(filtroCombustivel))}
+                    keyboardType='decimal-pad'
+                    onChangeText={filtroCombustivel => setFuelFilterPrice(Utils.toNumber(Utils.toNumericText(filtroCombustivel)))}
                 /> : false}
 
             {isFiltersEnabled ?
@@ -290,8 +290,8 @@ function OilExpense(props): JSX.Element {
                     style={DefaultStyles.textInput}
                     label={_.capitalize(Trans.t('air filter price'))}
                     value={airFilterPrice ? airFilterPrice.toString() : null}
-                    keyboardType='numeric'
-                    onChangeText={filtroAr => setAirFilterPrice(Utils.toNumber(filtroAr))}
+                    keyboardType='decimal-pad'
+                    onChangeText={filtroAr => setAirFilterPrice(Utils.toNumber(Utils.toNumericText(filtroAr)))}
                 /> : false}
 
 
