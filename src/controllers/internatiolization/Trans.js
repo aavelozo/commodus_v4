@@ -30,6 +30,18 @@ class Trans {
     static getLocaleCurrency(locale){
         return this.currencies[locale || this.getDeviceLocale()] || this.currencies[this.defaultLang];
     }
+    
+    static getCurrencySymbol (locale, currency) {
+        return (0).toLocaleString(
+          locale || this.getDeviceLocale().replace("_","-"),
+          {
+            style: 'currency',
+            currency: currency || this.getLocaleCurrency(),
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+          }
+        ).replace(/\d/g, '').trim()
+      }
 
     
 

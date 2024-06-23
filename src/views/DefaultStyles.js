@@ -90,6 +90,7 @@ class DefaultStyles {
         color: DefaultStyles.colors.tabBar
     }
     static defaultHelperText = {
+        alignSelf:'flex-start',
         marginTop:-13,
         marginLeft:-10,
         marginBottom:-5,
