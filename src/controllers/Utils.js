@@ -189,4 +189,20 @@ export default class Utils{
             timeout: timer            
           });
     }
+
+    static toNumericText(value) {
+        if (Utils.hasValue(value)) {
+            let decimalDigits = [',','.']; //Trans.getDecimalSeparator();
+            for (let k in decimalDigits) {
+                let p1 = value.indexOf(decimalDigits[k]);
+                if (p1 > -1) {
+                    let p2 = value.indexOf(decimalDigits[k],p1+1);
+                    if (p2 > -1) {
+                        value = value.substring(0,p1+1) + value.substring(p1+1).replaceAll(decimalDigits[k],'');                    
+                    }
+                }
+            }
+        } 
+        return value || null;
+    }
 }
