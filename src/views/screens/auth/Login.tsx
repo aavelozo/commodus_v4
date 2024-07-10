@@ -1,7 +1,8 @@
 import { CommonActions, useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, Dimensions, TouchableWithoutFeedback, Text, TouchableOpacity } from "react-native";
+import React, { useState } from 'react';
+import { View, Image, StyleSheet, Dimensions, Text, TouchableOpacity } from "react-native";
 import { ActivityIndicator, HelperText, TextInput } from "react-native-paper";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DefaultStyles } from '../../DefaultStyles';
 import { DefaultProps } from '../../DefaultProps';
 import AuthController from '../../../controllers/AuthController';
@@ -14,12 +15,14 @@ import _ from 'lodash';
 import Utils from '../../../controllers/Utils';
 
 function Login(props: Object): JSX.Element {
-    const [missingData,setMissingData] = useState(false);
-    const [login, setLogin] = useState((props.user || {}).email)    
+    const [missingData, setMissingData] = useState(false);
+    const [login, setLogin] = useState((props.user || {}).email);
     const [senha, setSenha] = useState('');
-    const [loading,setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [logged, setLogged] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [passwordFocused, setPasswordFocused] = useState(false);
     const navigation = useNavigation();
 
     return (
@@ -51,69 +54,84 @@ function Login(props: Object): JSX.Element {
                     disabled={loading}
                 />
                 <HelperText
-                    style={[DefaultStyles.defaultHelperText,{marginLeft:10}]}            
+                    style={[DefaultStyles.defaultHelperText, { marginLeft: 10 }]}
                     type="error"
                     visible={(missingData && !login) || (!logged && errorMessage != '')}
                 >
-                    {(missingData && !login)? _.capitalize(Trans.t('msg_enter_email')) : errorMessage}
-                </HelperText>                 
-                <TextInput
-                    {...DefaultProps.textInput}
-                    style={DefaultStyles.textInput}
-                    label={_.capitalize(Trans.t('password'))}
-                    mode='outlined'
-                    onChangeText={text => {
-                        setLogged(false)
-                        setErrorMessage('')
-                        setSenha(text)
-                    }}
-                    value={senha}
-                    secureTextEntry={true}
-                    autoComplete='email'
-                    disabled={loading}
-                />
+                    {(missingData && !login) ? _.capitalize(Trans.t('msg_enter_email')) : errorMessage}
+                </HelperText>
+
+                <View style={style.passwordContainer}>
+                    <TextInput
+                        {...DefaultProps.textInput}
+                        style={DefaultStyles.textInput}
+                        label={_.capitalize(Trans.t('password'))}
+                        mode='outlined'
+                        onChangeText={text => {
+                            setLogged(false)
+                            setErrorMessage('')
+                            setSenha(text)
+                        }}
+                        value={senha}
+                        secureTextEntry={!showPassword}
+                        autoComplete='email'
+                        disabled={loading}
+                        onFocus={() => setPasswordFocused(true)}
+                        onBlur={() => setPasswordFocused(false)}
+                    />
+                    {passwordFocused && (
+                        <TouchableOpacity 
+                            style={style.icon}
+                            onPress={() => setShowPassword(!showPassword)}
+                        >
+                            <Icon 
+                                name={showPassword ? "eye-off" : "eye"} 
+                                size={24} 
+                                color="gray"
+                            />
+                        </TouchableOpacity>
+                    )}
+                </View>
+
                 <HelperText
-                    style={[DefaultStyles.defaultHelperText,{marginLeft:10}]}
+                    style={[DefaultStyles.defaultHelperText, { marginLeft: 10 }]}
                     type="error"
                     visible={(missingData && !senha)}
                 >
                     {_.capitalize(Trans.t('msg_enter_password'))}
                 </HelperText>
 
-                <TouchableWithoutFeedback
+                <TouchableOpacity
                     onPress={() => navigation.navigate('RecoverLogin')}
+                    style={style.forgotPasswordLink}
                 >
-                    <Text
-                        style={{ marginBottom: RFValue(20), color: DefaultStyles.colors.tabBar, alignSelf: 'flex-start', marginLeft: RFValue(20) }}
-                    >
-                        {Trans.t('ask_forgot_password')}                        
+                    <Text style={{ color: DefaultStyles.colors.tabBar }}>
+                        {Trans.t('ask_forgot_password')}
                     </Text>
-                </TouchableWithoutFeedback>
-
-
+                </TouchableOpacity>
 
                 <TouchableOpacity
                     activeOpacity={0.9}
                     disabled={loading}
-                    onPress={async () => {                                                
+                    onPress={async () => {
                         if (Utils.hasValue(login) && Utils.hasValue(senha)) {
                             setLoading(true);
                             setMissingData(false);
                             auth().signInWithEmailAndPassword(login, senha).then((loginResult) => {
-                                console.log('user logged!',loginResult);
+                                console.log('user logged!', loginResult);
                                 let nextRouteName = 'StackVehicle';
                                 (async () => {
                                     try {
-                                        let loggedUser = await firestore().collection('Users').where('authUserId','==',loginResult.user.uid).get();
+                                        let loggedUser = await firestore().collection('Users').where('authUserId', '==', loginResult.user.uid).get();
                                         console.log('getting user of collection... ok');
                                         if (loggedUser && loggedUser.docs && loggedUser.docs.length > 0) {
-                                            console.log('loggedUser',loggedUser);
+                                            console.log('loggedUser', loggedUser);
                                             AuthController.setLoggedUser(loggedUser.docs[0]);
                                             console.log('loggedUser setted');
                                             if ((await Vehicles.getDBData())?.size > 0) {
                                                 nextRouteName = 'ViewExpense';
                                             }
-                                        }   
+                                        }
                                     } catch (e) {
                                         console.log(e);
                                     } finally {
@@ -122,7 +140,6 @@ function Login(props: Object): JSX.Element {
                                             CommonActions.reset({
                                                 index: 0,
                                                 routes: [{ name: 'Tab', params: { route: nextRouteName } }]
-
                                             })
                                         );
                                     }
@@ -136,7 +153,6 @@ function Login(props: Object): JSX.Element {
                                 } else {
                                     setErrorMessage(err?.message || err);
                                 }
-
                             })
                         } else {
                             setMissingData(true);
@@ -145,7 +161,7 @@ function Login(props: Object): JSX.Element {
                     style={style.button}
                 >
                     <Text style={style.textButton}>
-                        {loading 
+                        {loading
                             ? <ActivityIndicator />
                             : _.capitalize(Trans.t('sig in'))
                         }
@@ -157,11 +173,8 @@ function Login(props: Object): JSX.Element {
                         <Text style={{ marginTop: 50, color: DefaultStyles.colors.tabBar }}>{Trans.t('ask_dont_registered')}</Text>
                         <Text style={{ textAlign: 'center', color: DefaultStyles.colors.tabBar }}>{_.capitalize(Trans.t('register now'))}</Text>
                     </>
-
                 </TouchableOpacity>
             </View>
-
-
         </View>
     )
 }
@@ -170,7 +183,6 @@ const style = StyleSheet.create({
     container: {
         backgroundColor: DefaultStyles.colors.fundo,
         flex: 1,
-        // borderTopLeftRadius: 30,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -188,7 +200,6 @@ const style = StyleSheet.create({
         color: DefaultStyles.colors.tabBar,
         fontWeight: 'bold',
         fontSize: RFValue(20),
-
     },
     imagem: {
         justifyContent: 'center',
@@ -196,15 +207,25 @@ const style = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
     },
-
     viewInput: {
         flex: 4,
         width: '100%',
         justifyContent: 'center',
-        alignItems: 'center'
-
-        // borderWidth: 1,
-        // borderColor: 'blue'
+        alignItems: 'center',
+    },
+    forgotPasswordLink: {
+        marginBottom: RFValue(20),
+        alignSelf: 'flex-start',
+        marginLeft: RFValue(20),
+    },
+    passwordContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    icon: {
+        position: 'absolute',
+        right: 10,
     }
 })
 
