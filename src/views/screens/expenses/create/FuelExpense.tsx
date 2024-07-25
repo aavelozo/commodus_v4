@@ -1,5 +1,5 @@
-import React, { useRef, useState, useCallback } from 'react'
-import { View, Dimensions } from 'react-native'
+import React, { useRef, useState, useCallback } from 'react';
+import { View, Dimensions } from 'react-native';
 import { RFValue } from "react-native-responsive-fontsize";
 import { DefaultStyles } from '../../../DefaultStyles';
 import { HelperText, Text, TextInput } from 'react-native-paper';
@@ -13,57 +13,42 @@ import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 import Vehicles from '../../../../database/models/Vehicles';
-const { width, height } = Dimensions.get('window')
-
-
-
+const { width } = Dimensions.get('window');
 
 /******************************************************
 ** COMPONENTE DA VIEW PRINCIPAL                      **
 ******************************************************/
 function FuelExpense(props): JSX.Element {
     const selectFuelRef = useRef();
-    const [loading,setLoading] = useState(false);    
-    const [loaded,setLoaded] = useState(false);   
-    const [saving,setSaving] = useState(false); 
+    const [loading, setLoading] = useState(false);    
+    const [loaded, setLoaded] = useState(false);   
+    const [saving, setSaving] = useState(false); 
     const [missingData, setMissingData] = useState(false);
 
     //default properties
-    const [currentExpense,setCurrentExpense] = useState(null); 
+    const [currentExpense, setCurrentExpense] = useState(null); 
     const [totalValue, setTotalValue] = useState(0);
 
     //specific properties
     const [selectedFuel, setSelectedFuel] = useState(null);
-    const [unValue, setUnValue] = useState(0);
-    const [liters, setLiters] = useState(0);
+    const [unValue, setUnValue] = useState('');
+    const [liters, setLiters] = useState('');
 
     useFocusEffect(useCallback(() => {
-        console.log('INIT FuelExpense.useFocusEffect.useCallBack',loading,loaded);
         if (!loaded) {
             if (!loading) setLoading(true);
-            (async()=>{
+            (async() => {
                 try {
-                    console.log('loading expense...');
-                    console.log('EditExpenseController.currentExpense',EditExpenseController.currentExpense);
                     if (EditExpenseController.currentExpense) { 
-                        console.log('loading states...');             
-                        //default properties    
                         setCurrentExpense(EditExpenseController.currentExpense);  
-                        console.log('loading states...2');
                         let dataExpense = EditExpenseController.currentExpense.data();
-                        console.log('loading states...2.1');
-                        setTotalValue(Utils.toNumber(dataExpense.totalValue||0));
-                        //specific properties
-                        setUnValue(Utils.toNumber(dataExpense.othersdatas.unValue||0));
-                        console.log('loading states...2.3');
-                        setLiters(Utils.toNumber(dataExpense.othersdatas.liters||0));
-                        setSelectedFuel(dataExpense.othersdatas.fuel||null);
-                        console.log('loading states...3');
+                        setTotalValue(Utils.toNumber(dataExpense.totalValue || 0));
+                        setUnValue(dataExpense.othersdatas.unValue ? formatCurrency(Utils.toNumber(dataExpense.othersdatas.unValue)) : '');
+                        setLiters(dataExpense.othersdatas.liters ? dataExpense.othersdatas.liters.toString() : '');
+                        setSelectedFuel(dataExpense.othersdatas.fuel || null);
                     } else {
-                       clearStates();
+                        clearStates();
                     }
-
-                    console.log('loading expense... ok');
                 } catch (e) {
                     console.log(e);                    
                 } finally {
@@ -74,12 +59,8 @@ function FuelExpense(props): JSX.Element {
         }
     }, [props.navigation]));
 
-
     function isMissingData() {
-        let result = false;
-        if (!selectedFuel || !totalValue) {
-            result = true;
-        } 
+        let result = !selectedFuel || !totalValue;
         setMissingData(result);
         return result;
     }
@@ -87,23 +68,45 @@ function FuelExpense(props): JSX.Element {
     function getOthersDatas() {
         return {
             fuel: selectedFuel,
-            unValue: unValue,
-            liters: liters
+            unValue: Utils.toNumber(unValue.replace('R$', '').replace(',', '.').trim()),
+            liters: Utils.toNumber(liters.trim())
         }
     }
 
-    function clearStates(){
+    function clearStates() {
         setCurrentExpense(null);                
-
-        //specific properties
-        setUnValue(0);
-        setLiters(0);
+        setUnValue('');
+        setLiters('');
         setSelectedFuel(null);
        
         if (selectFuelRef) {
             selectFuelRef.current?.reset();
         }
     }
+
+    // Format a number as currency
+    const formatCurrency = (value) => {
+        if (value === null || value === undefined || isNaN(value)) return '';
+        return `R$ ${parseFloat(value).toFixed(2).replace('.', ',')}`;
+    };
+
+    // Handle changes in price and liters
+    const handlePriceChange = (value) => {
+        const numericValue = value.replace(/\D/g, '');
+        const formattedValue = numericValue.length > 0 ? `R$ ${(numericValue / 100).toFixed(2).replace('.', ',')}` : '';
+        setUnValue(formattedValue);
+
+        const parsedValue = parseFloat(numericValue) / 100;
+        const litersNumeric = Utils.toNumber(liters.trim());
+        setTotalValue(parsedValue * litersNumeric);
+    };
+
+    const handleLitersChange = (value) => {
+        setLiters(value);
+        const numericValue = Utils.toNumber(value.trim());
+        const unValueNumeric = Utils.toNumber(unValue.replace('R$', '').replace(',', '.').trim());
+        setTotalValue(numericValue * unValueNumeric);
+    };
 
     return (
         <BaseExpense
@@ -123,7 +126,6 @@ function FuelExpense(props): JSX.Element {
             totalValue={totalValue}
         >
             {/* FUEL */}                        
-            {/* dropdown: usado para selecionar o ano e atualizar o txtinput */}
             <SelectDropdown
                 dropdownStyle={DefaultStyles.dropdownMenuStyle}
                 search={true}
@@ -152,9 +154,11 @@ function FuelExpense(props): JSX.Element {
                     );
                 }}
                 renderItem={(item, index, isSelected) => {
-                    return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                    return (
+                        <View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
                             <Text style={DefaultStyles.dropdownText}>{_.capitalize(Trans.t(item))}</Text>
-                    </View>);
+                        </View>
+                    );
                 }}
                 onSelect={(selectedItem, index) => {
                     setSelectedFuel(Vehicles.FUELS_LIST[index]);
@@ -169,34 +173,18 @@ function FuelExpense(props): JSX.Element {
                     justifyContent: 'space-between', 
                     width: width * 0.9, 
                     marginTop: RFValue(-10),
-                    //height:200
                 }}>
                 <View>
                     <TextInput
                         {...DefaultProps.textInput}
-                        style={[DefaultStyles.textInput, { width: width * 0.27, marginTop: RFValue(12)  }]}
-                        keyboardType='decimal-pad'
-                        label={Trans.t('Price/L')}
+                        style={[DefaultStyles.textInput, { width: width * 0.27, marginTop: RFValue(12) }]}
+                        keyboardType='numeric'
+                        label={Trans.t('Preço/L')}
                         placeholder={Trans.getCurrencySymbol()}
                         placeholderTextColor='#666'
-                        //color={DefaultStyles.colors.tabBar}
-                        onChangeText={valorunitario => {
-                            if (valorunitario.includes(',')) return
-                            if (valorunitario.includes('-')) return
-                            if (valorunitario.includes(' ')) return
-                            if (valorunitario.includes('/')) return
-                            if (valorunitario.includes('+')) return
-                            if (valorunitario.includes('(')) return
-                            if (valorunitario.includes(')')) return
-                            if (valorunitario.includes('-')) return
-                            if (valorunitario.includes(';')) return
-                            if (valorunitario.includes('#')) return
-                            if (valorunitario.includes('*')) return
-                            setUnValue(Utils.toNumericText(valorunitario));
-                            setTotalValue(Utils.toNumber(liters) * Utils.toNumber(Utils.toNumericText(valorunitario)));
-                        }}
-                        value={unValue ? unValue.toString() : null}
-                        maxLength={6}
+                        onChangeText={handlePriceChange}
+                        value={unValue}
+                        maxLength={10}
                     />
                     <HelperText
                         style={DefaultStyles.defaultHelperText}            
@@ -210,26 +198,11 @@ function FuelExpense(props): JSX.Element {
                     <TextInput
                         {...DefaultProps.textInput}
                         style={[DefaultStyles.textInput, { marginLeft: RFValue(15), width: width * 0.27 , marginTop: RFValue(12) }]}
-                        keyboardType='decimal-pad'
-                        label={_.capitalize(Trans.t('liters'))}
-                        onChangeText={litros => {
-                            if (litros.includes(',')) return
-                            if (litros.includes('-')) return
-                            if (litros.includes(' ')) return
-                            if (litros.includes('/')) return
-                            if (litros.includes('+')) return
-                            if (litros.includes('(')) return
-                            if (litros.includes(')')) return
-                            if (litros.includes('-')) return
-                            if (litros.includes(';')) return
-                            if (litros.includes('#')) return
-                            if (litros.includes('*')) return
-
-                            setLiters(Utils.toNumericText(litros));
-                            setTotalValue(Utils.toNumber(Utils.toNumericText(litros)) * Utils.toNumber(unValue));
-                        }}
-                        value={liters ? liters.toString() : null}
-                        maxLength={3}
+                        keyboardType='numeric'
+                        label={_.capitalize(Trans.t('litros'))}
+                        onChangeText={handleLitersChange}
+                        value={liters}
+                        maxLength={6}
                     />
                     <HelperText
                         style={DefaultStyles.defaultHelperText}            
@@ -240,21 +213,26 @@ function FuelExpense(props): JSX.Element {
                     </HelperText>
                 </View>
 
-                <TotalValue 
-                    totalValue={totalValue} 
-                    setTotalValue={setTotalValue} 
-                    style={{marginLeft: RFValue(15), width: width * 0.265, marginTop: RFValue(12)}} 
-                    maxLength={7}
-                    label="value"
-                    missingData={missingData}
-                    helperTextStyle={{marginLeft:5}}
-                />
-
+                <View>
+                    <TextInput
+                        {...DefaultProps.textInput}
+                        style={[DefaultStyles.textInput, { marginLeft: RFValue(15), width: width * 0.27 , marginTop: RFValue(12) }]}
+                        keyboardType='numeric'
+                        label={Trans.t('Valor')}
+                        value={formatCurrency(totalValue)}
+                        editable={false}
+                    />
+                    <HelperText
+                        style={DefaultStyles.defaultHelperText}            
+                        type="error"
+                        visible={missingData && totalValue <= 0}
+                    >
+                        {_.capitalize(Trans.t('enter value'))}
+                    </HelperText>
+                </View>
             </View>            
         </BaseExpense>
     );
 };
 
-
-
-export {FuelExpense};
+export { FuelExpense };

@@ -3,8 +3,6 @@ import { ToasterHelper } from "react-native-customizable-toast";
 
 /**
  * utilitis javascripts
- * @author Alencar
- * @created 2022-09-11
  */
 export default class Utils{
     static logActive = (typeof Utils.logActive !== "undefined"? Utils.logActive : true);
@@ -17,8 +15,9 @@ export default class Utils{
     static setLogActive(active) {
         Utils.logActive = active;
     }
+
     static showError(error){
-        Utils.logi(Utils.name,Utils.showError.name);
+        Utils.logi(Utils.name, Utils.showError.name);
         try {
             if (Utils.logActive === true) {               
                 console.error(error);
@@ -27,17 +26,18 @@ export default class Utils{
             let title = "Erro";
             typeOfError = typeOfError.toLowerCase().trim();
             if (typeOfError === "string") {
-                Alert.alert(title,error);
+                Alert.alert(title, error);
             } else if (typeOfError === "object") {
-                Alert.alert(title,(error.message || error.toString()));
+                Alert.alert(title, (error.message || error.toString()));
             } else {
-                Alert.alert(title,`erro nao pode ser mostrado: ${typeOfError}, vide log`);
+                Alert.alert(title, `erro nao pode ser mostrado: ${typeOfError}, vide log`);
             }
         } catch (e) {
             Utils.log(e);
         }
-        Utils.logf(Utils.name,Utils.showError.name);
+        Utils.logf(Utils.name, Utils.showError.name);
     }
+
     static log(...objs) {
         if (Utils.logActive === true) {
             if (objs != null) {
@@ -45,9 +45,11 @@ export default class Utils{
             }
         }
     }
+
     static logi(objName, methodName) {
         Utils.log(`INIT ${objName}.${methodName}`);
     }
+
     static logf(objName, methodName) {
         Utils.log(`END  ${objName}.${methodName}`);
     }
@@ -176,13 +178,13 @@ export default class Utils{
                 } 
             }            
             return null;
-        }catch(e){
+        } catch(e){
             console.log(e);          
             return null;
         } 
     };
 
-    static toast(type,message,timer) {
+    static toast(type, message, timer) {
         ToasterHelper.show({            
             type: type,
             text: message,            
@@ -204,5 +206,11 @@ export default class Utils{
             }
         } 
         return value || null;
+    }
+
+    static toCurrency(value) {
+        if (!value) return '';
+        const number = Number(value);
+        return number.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 }
