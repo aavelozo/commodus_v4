@@ -59,7 +59,7 @@ function FormRecoverLogin(props): JSX.Element {
             <View style={style.imagem}>
                 <Image style={{ height: RFValue(120), width: RFValue(120) }} resizeMode='contain' source={require('../../assets/logoCommodusEscuro.png')} />
             </View>
-            <Text style={style.title}>{_.capitalize(Trans.t('account recover'))}</Text>
+            <Text style={style.title}>{_.capitalize(Trans.t('Recuperação de conta'))}</Text>
             <Text style={style.description}>{Trans.t('info_require_email')}</Text>
             <View style={style.viewInput}>
 
