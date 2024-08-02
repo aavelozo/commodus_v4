@@ -1,5 +1,5 @@
 export default {
-    'acount recover':'recuperação de conta',
+    'account recover':'recuperação de conta',
     'actual kilometers':'quilometragem atual',
     'actual month':'mês atual',
     'actual password':'senha atual',

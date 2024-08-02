@@ -12,6 +12,7 @@ import auth from '@react-native-firebase/auth';
 import Utils from '../../../controllers/Utils';
 import Trans from '../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
+import { BaseAuth } from './BaseAuth';
 
 
 function FormRecoverLogin(props): JSX.Element {
@@ -55,10 +56,18 @@ function FormRecoverLogin(props): JSX.Element {
     }
 
     return (
-        <View style={style.container}>
-            <View style={style.imagem}>
-                <Image style={{ height: RFValue(120), width: RFValue(120) }} resizeMode='contain' source={require('../../assets/logoCommodusEscuro.png')} />
-            </View>
+        <BaseAuth
+            onConfirm={()=>recoverPassword(email)}
+            textConfirm={_.capitalize(Trans.t('confirm'))}
+            afterConfirmButton={<TouchableOpacity 
+                    onPress={() => navigation.navigate('UserRegistration')}>
+                    <>
+                        <Text style={{ marginTop: 50, color: DefaultStyles.colors.tabBar }}>{Trans.t('ask_dont_registered')}</Text>
+                        <Text style={{ textAlign: 'center', color: DefaultStyles.colors.tabBar }}>{_.capitalize(Trans.t('register now'))}</Text>
+                    </>
+                </TouchableOpacity>
+            }
+        >
             <Text style={style.title}>{_.capitalize(Trans.t('account recover'))}</Text>
             <Text style={style.description}>{Trans.t('info_require_email')}</Text>
             <View style={style.viewInput}>
@@ -80,44 +89,13 @@ function FormRecoverLogin(props): JSX.Element {
                 >
                     {errorMessage}
                 </HelperText>
-                <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress={() => recoverPassword(email)}
-                    style={style.button}
-                    disabled={loading}
-                >
-                    {loading
-                        ? <ActivityIndicator />
-                        : <Text style={style.textButton}>
-                            {_.capitalize(Trans.t('confirm'))}
-                        </Text>
-                    }
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => navigation.navigate('UserRegistration')}>
-                    <>
-                        <Text style={{ marginTop: RFValue(50), color: DefaultStyles.colors.tabBar }}>{Trans.t('ask_dont_registered')}</Text>
-                        <Text style={{ textAlign: 'center', color: DefaultStyles.colors.tabBar }}>{_.capitalize(Trans.t('register now'))}</Text>
-                    </>
-
-                </TouchableOpacity>
-
             </View>
-
-
-        </View>
+        </BaseAuth>
 
     )
 }
 
-const style = StyleSheet.create({
-    container: {
-        backgroundColor: DefaultStyles.colors.fundo,
-        flex: 9,
-        borderTopLeftRadius: RFValue(30),
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+const style = StyleSheet.create({    
     title: {
         fontSize: RFValue(24),
         marginTop: RFValue(-10),
@@ -132,38 +110,10 @@ const style = StyleSheet.create({
         fontFamily: 'verdana',
         color: DefaultStyles.colors.tabBar
     },
-    button: {
-        alignItems: "center",
-        justifyContent: 'center',
-        backgroundColor: DefaultStyles.colors.botao,
-        width: '65%',
-        height: Dimensions.get('window').height / 14,
-        borderRadius: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: DefaultStyles.colors.tabBar,
-    },
-    textButton: {
-        color: DefaultStyles.colors.tabBar,
-        fontWeight: 'bold',
-        fontSize: RFValue(20),
-
-    },
-    imagem: {
-        justifyContent: 'center',
-        height: Dimensions.get('window').height / 4,
-        flex: 2,
-        width: '100%',
-        alignItems: 'center'
-        // borderWidth: 1,
-        // borderColor: 'red'
-    },
     viewInput: {
-        flex: 3,
+        flex: 4,
         width: '100%',
         alignItems: 'center'
-
-        // borderWidth: 1,
-        // borderColor: 'blue'
     }
 });
 
