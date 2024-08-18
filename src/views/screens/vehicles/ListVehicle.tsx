@@ -1,6 +1,6 @@
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import React, { useState, useCallback } from 'react'
-import { View, StyleSheet, TouchableOpacity, Dimensions, FlatList, Image } from 'react-native'
+import { View, StyleSheet, TouchableWithoutFeedback, Dimensions, FlatList, Image } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { DefaultStyles } from '../../DefaultStyles';
 import Vehicles from '../../../database/models/Vehicles';
@@ -96,13 +96,13 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
 
                     {/* BOTÃO ACRESCENTAR NOVO VEICULO */}
                     <View style={style.buttonNewCar} >
-                        <TouchableOpacity
+                        <TouchableWithoutFeedback
                             onPress={() => {
                                 setCurrentVehicle(null);
                                 navigation.navigate('EditVehicle');
                             }}>
                             <Icon name='plus' size={RFValue(35)} color={DefaultStyles.colors.botao} />
-                        </TouchableOpacity>
+                        </TouchableWithoutFeedback>
                     </View>
                 </View>
             </View>

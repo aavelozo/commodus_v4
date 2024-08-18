@@ -119,6 +119,7 @@ function Login(props: Object): JSX.Element {
                 autoComplete='email'
                 disabled={loading}
             />
+            
             <HelperText
                 style={[DefaultStyles.defaultHelperText,{marginLeft:10}]}
                 type="error"

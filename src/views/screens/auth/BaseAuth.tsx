@@ -15,7 +15,7 @@ function BaseAuth(props: Object): JSX.Element {
                 <View style={[style.imagem]}>
                     <Image
                         style={{ height: RFValue(130), width: RFValue(130) }}
-                        resizeMode='cover'
+                        resizeMode='contain'
                         source={require('../../assets/logoCommodusEscuro.png')}
                     />
                 </View>
@@ -70,10 +70,10 @@ const style = StyleSheet.create({
 
     },
     imagem: {
-        justifyContent: 'center',
-        flex: 2.5,
+        justifyContent: 'center',       
         width: '100%',
         alignItems: 'center',
+        height: Dimensions.get('window').height * 0.37
     },
 
     content: {
@@ -82,9 +82,10 @@ const style = StyleSheet.create({
         alignItems: 'center',
     },
     bottomView:{
-        flex:2,
+        height: Dimensions.get('window').height * 0.38,
         width:'100%',
-        alignItems:'center'
+        alignItems:'center',
+        justifyContent: 'center',      
     }
 })
 

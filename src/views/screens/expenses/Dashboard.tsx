@@ -253,7 +253,7 @@ function Dashboard(props): JSX.Element {
             }, {
                 x: `31/${date?.slice(0, 2)}`, y: totalizador31 + totalizador25 + totalizador20 + totalizador15 + totalizador10 + totalizador05 + totalizador01
             }])
-            setExpensesThirdGraph([{ x: 'fuel', y: gastoCombustivel, color: "#f47476" }, { x: 'oil', y: gastoOleo, color: "#B8DBF2" }, { x: 'document', y: gastoDocumentos, color: "#9BC995" }, { x: 'mechanic', y: gastoMecanica, color: "#FFD38E" }, { x: 'appearance', y: gastoAparencia, color: "#D0A9F5" }, { x: 'others', y: gastoOutros, color: "#e9f143" }, { x: 'tyre', y: gastoBorracharia, color: "#F8B6D3" }])
+            setExpensesThirdGraph([{ x: 'fuel', y: gastoCombustivel, color: "#F28CBA" }, { x: 'oil', y: gastoOleo, color: "#F2E18C" }, { x: 'document', y: gastoDocumentos, color: "#F2B48C" }, { x: 'mechanic', y: gastoMecanica, color: "#A1D6A1" }, { x: 'appearance', y: gastoAparencia, color: "#8CC2F2" }, { x: 'others', y: gastoOutros, color: "#F28C8C" }, { x: 'tyre', y: gastoBorracharia, color: "#C18CF2" }])
         } catch (e) {
             console.log('e1', e);
         }
@@ -435,7 +435,7 @@ function Dashboard(props): JSX.Element {
                                     <CashFlow data={expensesSecondGraph} monthlyExpenses={monthlyExpensesRef} />
                                     <PercentageExpenses data={expensesThirdGraph} monthlyExpenses={monthlyExpensesRef} />
                                     <ExpenseLastYear data={expensesFourthGraph} />
-                                    <View style={{ height: RFValue(50) }}></View>
+                                    <View style={{ height: RFValue(20) }}></View>
                                 </>
 
                             </ScrollView>

@@ -13,7 +13,7 @@ function CashFlow({ data, monthlyExpenses }): JSX.Element {
 
     return (
         monthlyExpenses.current > 0 ?
-            <View style={{ borderBottomWidth: 1, marginTop: RFValue(10), alignItems: "center" }}>
+            <View style={{ marginHorizontal: RFValue(3), borderWidth: 1, borderRadius: RFValue(10), marginTop: RFValue(10), alignItems: "center" }}>
                 <Text style={style.titleGraph}>{_.capitalize(Trans.t('cash flow'))}</Text>
 
                 <VictoryChart
@@ -22,13 +22,15 @@ function CashFlow({ data, monthlyExpenses }): JSX.Element {
                 >
                     <VictoryLine
                         style={{
-                            data: { stroke: "#c43a31", strokeWidth: 2 }
+                            data: { stroke: "#c43a31", strokeWidth: RFValue(3), },
+
+
                         }}
+                        width={300}
                         animate={{
                             duration: 1000,
                             onLoad: { duration: 1000 }
                         }}
-
                         interpolation={"linear"}
                         x={data.x}
                         y={data.y}
@@ -37,11 +39,12 @@ function CashFlow({ data, monthlyExpenses }): JSX.Element {
 
                     <VictoryAxis
                         dependentAxis
-                        tickFormat={(x) => (x||0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}
+                        tickFormat={(x) => (x || 0).toLocaleString(Trans.getDeviceLocale().replace("_", "-"), { style: 'currency', currency: Trans.getLocaleCurrency(), minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        tickLabelComponent={<VictoryLabel angle={RFValue(-45)} textAnchor="end" style={{ fontSize: RFValue(10) }} />}
                     />
                     <VictoryAxis
                         // tickFormat={total.name}
-                        tickLabelComponent={<VictoryLabel angle={RFValue(-30)} textAnchor="end" style={{ fontSize: RFValue(8) }} />}
+                        tickLabelComponent={<VictoryLabel angle={RFValue(-20)} textAnchor="end" style={{ fontSize: RFValue(10) }} />}
                     />
 
                 </VictoryChart>
@@ -52,9 +55,9 @@ function CashFlow({ data, monthlyExpenses }): JSX.Element {
 
 const style = StyleSheet.create({
     titleGraph: {
-        alignSelf: 'flex-start',
+        alignSelf: 'center',
         marginTop: RFValue(5),
-        fontSize: RFValue(14),
+        fontSize: RFValue(15),
         marginLeft: RFValue(10),
         color: DefaultStyles.colors.tabBar,
     },

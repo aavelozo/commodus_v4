@@ -9,7 +9,7 @@ import _ from 'lodash'
 
 function ExpenseLastYear({ data }): JSX.Element {
     return (
-        <View style={{ borderBottomWidth: 1, marginTop: RFValue(10), alignItems: "flex-start", paddingLeft: RFValue(10) }}>
+        <View style={{ marginHorizontal: RFValue(3), borderWidth: 1, borderRadius: RFValue(10), marginTop: RFValue(10), alignItems: "center" }}>
             <Text style={[style.titleGraph, {paddingLeft: RFValue(-10)}]}>{_.capitalize(Trans.t('spending from the last 365 days'))}</Text>
 
             <VictoryChart
@@ -21,15 +21,17 @@ function ExpenseLastYear({ data }): JSX.Element {
                     data={data.reverse()}
                     alignment="middle"
                     sortOrder="descending"
+                    labels={({ datum }) =>  (`${datum.y > 0 ? `${datum.y}` : ''}`)}
                 />
                 <VictoryAxis
                     tickFormat={data.x}
-                    tickLabelComponent={<VictoryLabel angle={-30} textAnchor="end" style={{ fontSize: RFValue(11) }} />}
+                    tickLabelComponent={<VictoryLabel angle={-30} textAnchor="end" style={{ fontSize: RFValue(10) }} />}
                 />
-                <VictoryAxis
+                {/* <VictoryAxis
                     dependentAxis
                     tickFormat={(x) => (x||0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}
-                />
+                    tickLabelComponent={<VictoryLabel angle={RFValue(-45)} textAnchor="end" style={{ fontSize: RFValue(10) }} />}
+                /> */}
             </VictoryChart>
 
 
@@ -39,9 +41,9 @@ function ExpenseLastYear({ data }): JSX.Element {
 
 const style = StyleSheet.create({
     titleGraph: {
-        alignSelf: 'flex-start',
+        alignSelf: 'center',
         marginTop: RFValue(5),
-        fontSize: RFValue(14),
+        fontSize: RFValue(15),
         marginLeft: RFValue(10),
         color: DefaultStyles.colors.tabBar,
     },

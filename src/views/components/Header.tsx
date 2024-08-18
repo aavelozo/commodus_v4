@@ -67,14 +67,14 @@ function Header(props): JSX.Element {
                 {props.withButtons ?
                     <ButtonCancel onPress={() => props.onPressCancel()} /> :
                     !props.noBars ? <TouchableWithoutFeedback onPress={() => showModal()}>
-                        <Icon name="bars" size={30} color={DefaultStyles.colors.tabBar} style={{ marginLeft: RFValue(10), marginBottom: RFValue(5) }} />
+                        <Icon name="bars" size={30} color={DefaultStyles.colors.tabBar} style={{ marginLeft: RFValue(10) }} />
                     </TouchableWithoutFeedback> : false
                 }
 
             </View>
 
             <View style={{ width: '50%', justifyContent: 'center', alignItems: 'flex-end', flexDirection: 'row' }}>
-                <Image source={require('../assets/logoCommodusEscuro.png')} style={[style.imagem, styles]} />
+                <Image source={require('../assets/logoCommodusEscuro.png')} resizeMode='contain' style={[style.imagem, styles]} />
                 {!props.withButtons ?
                     <Text style={style.texto}>COMMODUS</Text> : false}
             </View>
@@ -202,12 +202,13 @@ const style = StyleSheet.create({
         color: DefaultStyles.colors.tabBar,
         fontSize: RFValue(20),
         fontFamily: 'KronaOne-Regular',
-        marginBottom: 5,
+        marginBottom: RFValue(7),
+        marginLeft: RFValue(7),
     },
     imagem: {
         width: RFValue(25),
         height: RFValue(25),
-        marginBottom: 6,
+        marginBottom: RFValue(6),
 
     }, buttonConcluir: {
         right: 10,
