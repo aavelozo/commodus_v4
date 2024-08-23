@@ -100,7 +100,7 @@ function TyreExpense(props): JSX.Element {
 
     return (
         <BaseExpense
-            title='tyre expense'
+            title='tire expense'
             type='TYRE'
             loading={loading}
             setLoading={setLoading}
