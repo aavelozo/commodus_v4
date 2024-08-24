@@ -23,7 +23,7 @@ function ExpenseComparison({ data, monthlyExpenses }): JSX.Element {
                     </View>
                     <View style={{ alignItems: 'center'}}>
                         <VictoryPie
-                            innerRadius={70}
+                            innerRadius={RFValue(60)}
 
                             cornerRadius={({ datum }) => 3}
                             height={RFValue(150)}
@@ -44,7 +44,7 @@ function ExpenseComparison({ data, monthlyExpenses }): JSX.Element {
                                 </Text>
 
                             </View> :
-                            <View style={{ position: 'absolute', top: RFValue(100), alignItems: 'center' }}>
+                            <View style={{ position: 'absolute', top: RFValue(90), alignItems: 'center' }}>
                                 <Text style={{ fontSize: RFValue(16), color: DefaultStyles.colors.tabBar, }}>{_.capitalize(Trans.t('increased spending'))}</Text>
                                 {
                                     data[0]?.y == 0 ?

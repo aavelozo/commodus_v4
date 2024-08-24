@@ -101,7 +101,7 @@ function ButtonCardExpense(props): JSX.Element {
                     </View>
                     <View style={{ justifyContent: 'space-between', alignItems: 'flex-end', width: '30%', paddingVertical: 5 }}>
                         <Text style={style.textExpense}> {dateFormatted}</Text>
-                        <Icon name="angle-right" size={30} color={DefaultStyles.colors.tabBar} />
+                        <Icon name="angle-right" size={RFValue(25)} color={DefaultStyles.colors.tabBar} />
                         <Text style={style.textExpense}>{Number(item?.data()?.totalValue || 0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}</Text>
                     </View>
                 </View>
@@ -116,7 +116,7 @@ const style = StyleSheet.create({
         height: Dimensions.get('window').height * 0.11,
         paddingHorizontal: RFValue(10),
         flexDirection: 'row',
-        width: '100%'
+        width: '100%',
     },
     icon: {
         width: Dimensions.get('window').width * 0.13,
