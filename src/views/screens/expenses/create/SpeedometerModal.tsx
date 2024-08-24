@@ -11,7 +11,7 @@ import _ from 'lodash';
 function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
     const [visibleModal, setVisibleModal] = useState(true)
     const navigation = useNavigation();
-
+    console.log(height, 'heigth')
     // Sempre que entrar em foco, altera o modal como true
     useFocusEffect(useCallback(() => {
         EditExpenseController.currentExpense = null;
@@ -51,7 +51,7 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                         style={{ flex: 2, width: '100%' }}
                         resizeMode="contain" source={require('../../../assets/velocimetroIconesNovo.png')}
                     >
-                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.12 : height * 0.08, left: width * 0.065, position: 'absolute' }]}>
+                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.12 : height * 0.095, left: width * 0.065, position: 'absolute' }]}>
                             {_.capitalize(Trans.t('oil'))}
                         </Text>
                         <TouchableWithoutFeedback onPress={() => { //Oleo
@@ -61,7 +61,7 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                             <View style={[style.iconTouch, { bottom: height >= 700 ? height * 0.06 : height * 0.04, left: width * 0.0416 }]} />
                         </TouchableWithoutFeedback>
 
-                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.22 : height * 0.18, left: width * 0.06, position: 'absolute' }]}>
+                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.22 : height * 0.208, left:  height >= 700 ? width * 0.06 : width * 0.045, position: 'absolute' }]}>
                             {_.capitalize(Trans.t('document'))}
                         </Text>
                         <TouchableWithoutFeedback onPress={() => {  //Documento
@@ -71,7 +71,7 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                             <View style={[style.iconTouch, { bottom: height >= 700 ? height * 0.16 : height * 0.15, left: width * 0.075 }]} />
                         </TouchableWithoutFeedback>
 
-                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.305 : height * 0.28, left: width * 0.21, position: 'absolute' }]}>                            
+                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.305 : height * 0.306, left:height >= 700 ? width * 0.21 : width * 0.195, position: 'absolute' }]}>                            
                             {_.capitalize(Trans.t('mechanic'))}
                         </Text>
                         <TouchableWithoutFeedback onPress={() => {  //Outros
@@ -82,7 +82,7 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                             <View style={[style.iconTouch, { bottom: height * 0.25, left: width * 0.21 }]} />
                         </TouchableWithoutFeedback>
 
-                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.34 : height * 0.32, left: width * 0.42, position: 'absolute' }]}>
+                        <Text style={[style.text,{ bottom: height * 0.34, left: height >= 700 ? width * 0.42 : width * 0.392, position: 'absolute' }]}>
                             {_.capitalize(Trans.t('fuel'))}
                         </Text>
                         <TouchableWithoutFeedback onPress={() => {
@@ -93,7 +93,7 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                             <View style={[style.iconTouch, { bottom: height >= 700 ? height * 0.28 : height * 0.29, left: width * 0.425 }]} />
                         </TouchableWithoutFeedback>
 
-                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.305 : height * 0.29, right: width * 0.20, position: 'absolute' }]}>
+                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.305 : height * 0.302,  right: height >= 700 ? width * 0.20 : width * 0.18, position: 'absolute' }]}>
                             {_.capitalize(Trans.t('tire'))}
                         </Text>
                         <TouchableWithoutFeedback onPress={() => {
@@ -104,7 +104,7 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                             <View style={[style.iconTouch, { bottom: height * 0.25, right: width * 0.21 }]} />
                         </TouchableWithoutFeedback>
 
-                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.222 : height * 0.19, right: width * 0.06, position: 'absolute' }]}>
+                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.222 : height * 0.21, right: height >= 700 ? width * 0.06 : width * 0.042, position: 'absolute' }]}>
                             {_.capitalize(Trans.t('appearance'))}
                         </Text>
                         <TouchableWithoutFeedback onPress={() => {
@@ -115,7 +115,7 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                             <View style={[style.iconTouch, { bottom: height >= 700 ? height * 0.16 : height * 0.15, right: width * 0.06 }]} />
                         </TouchableWithoutFeedback>
 
-                        <Text style={[style.text,{bottom: height >= 700 ? height * 0.122 : height * 0.1, right: width * 0.055, position: 'absolute' }]}>
+                        <Text style={[style.text,{bottom: height >= 700 ? height * 0.122 : height * 0.1, right: height >= 700 ? width * 0.055 : width * 0.045, position: 'absolute' }]}>
                             {_.capitalize(Trans.t('others'))}
                         </Text>
                         <TouchableWithoutFeedback onPress={() => {  //Outros

@@ -96,13 +96,13 @@ function ViewExpense(props): JSX.Element {
                                     <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center' }}>
                                         <TouchableWithoutFeedback onPress={() => setAllVehicle(true)}>
                                             <View style={{ marginLeft: RFValue(10), borderBottomColor: allVehicle ? DefaultStyles.colors.botao : DefaultStyles.colors.tabBar, borderBottomWidth: allVehicle ? RFValue(4) : 1, width: '45%' }}>
-                                                <Text style={[style.textExpense, style.textButton]}>{_.capitalize(Trans.t('all vehicles'))}</Text>
+                                                <Text style={[style.textExpense, style.textButton]} numberOfLines={1} adjustsFontSizeToFit>{_.capitalize(Trans.t('all vehicles'))} </Text>
                                             </View>
                                         </TouchableWithoutFeedback>
 
                                         <TouchableWithoutFeedback onPress={() => setAllVehicle(false)}>
                                             <View style={{ marginRight: 10, borderBottomColor: !allVehicle ? DefaultStyles.colors.botao : DefaultStyles.colors.tabBar, borderBottomWidth: !allVehicle ? RFValue(4) : 1, width: '45%' }}>
-                                                <Text style={[style.textExpense, style.textButton]}>{_.capitalize(Trans.t('choice the vehicle'))}</Text>
+                                                <Text style={[style.textExpense, style.textButton]} numberOfLines={1} adjustsFontSizeToFit>{_.capitalize(Trans.t('choice the vehicle'))}</Text>
                                             </View>
                                         </TouchableWithoutFeedback>
                                     </View>
@@ -113,7 +113,7 @@ function ViewExpense(props): JSX.Element {
                                             {/* Todos os Veiculo */}
                                             < View style={{ alignSelf: 'center', height: height * 0.06, marginTop: RFValue(20), justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={style.textSummary}>{vehicles.length} {Trans.t(vehicles.length > 1 ? 'vehicles' : 'vehicle')}</Text>
-                                                <Text style={[style.textSummary, { fontSize: RFValue(18), paddingBottom: 2 }]}>
+                                                <Text style={[style.textSummary, { fontSize: RFValue(18), paddingBottom: 2 }]} numberOfLines={1} adjustsFontSizeToFit>
                                                     {_.capitalize(Trans.t('total expenses'))}: {(totalValue || 0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}
                                                 </Text>
                                             </View>

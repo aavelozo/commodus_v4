@@ -49,6 +49,7 @@ function Dashboard(props): JSX.Element {
                 setLoading(true)
                 const cars = await getExpensesThisUser()
                 setCarsThisUser(cars)
+                console.log(cars)
                 getDataForGraph(cars[changeCar])
                 getExpensesForMonth(cars[changeCar]);
             } catch (e) {
@@ -411,11 +412,11 @@ function Dashboard(props): JSX.Element {
                                 <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>{_.capitalize(Trans.t('odometer'))}:</Text>
                                 <Text style={{ fontSize: RFValue(17), color: DefaultStyles.colors.tabBar, }}> {carsThisUser[changeCar]?.vehicle?.km} km</Text>
                             </View>
-                            <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center', }}>
+                            {/* <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center', }}>
                                 <Media width={RFValue(25)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
                                 <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>{_.capitalize(Trans.t('average'))}: </Text>
                                 <Text style={{ fontSize: RFValue(17), color: DefaultStyles.colors.tabBar, }}>10km / {Trans.t('liter')}</Text>
-                            </View>
+                            </View> */}
                             <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center', }}>
                                 <Oil width={RFValue(21)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
                                 <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>{_.capitalize(Trans.t('next oil change'))}: </Text>
