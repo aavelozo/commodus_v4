@@ -390,7 +390,7 @@ function Dashboard(props): JSX.Element {
 
                                 < View style={{ alignSelf: 'center', borderBottomWidth: RFValue(1), borderBottomColor: DefaultStyles.colors.tabBar, height: height * 0.06, justifyContent: 'center', alignItems: 'center', width: '60%', paddingBottom: RFValue(3) }}>
                                     <Text style={style.textSummary}>{carsThisUser[changeCar]?.vehicle?.vehicleName}</Text>
-                                    <Text style={[style.textSummary, { fontSize: RFValue(16), paddingBottom: RFValue(5) }]}>
+                                    <Text style={[style.textSummary, { fontSize: RFValue(16), paddingBottom: RFValue(5) }]} numberOfLines={1} adjustsFontSizeToFit>
                                         {_.capitalize(Trans.t('expenses of the month'))}: {((expensesFirstGraph[1] || {}).y || 0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}
                                     </Text>
 
