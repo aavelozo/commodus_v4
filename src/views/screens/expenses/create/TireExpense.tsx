@@ -16,7 +16,7 @@ import Trans from '../../../../controllers/internatiolization/Trans';
 /******************************************************
 ** COMPONENTE DA VIEW PRINCIPAL                      **
 ******************************************************/
-function TyreExpense(props): JSX.Element {
+function TireExpense(props): JSX.Element {
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -27,7 +27,7 @@ function TyreExpense(props): JSX.Element {
     const [totalValue, setTotalValue] = useState(0);
 
     //specific properties
-    const [tyreService, setTyreService] = useState(null);
+    const [tireService, setTireService] = useState(null);
     const [isReminderAlignmentEnabled, setIsReminderAlignmentEnabled] = useState(false);
     const [isReminderBalancingEnabled, setIsReminderBalancingEnabled] = useState(false);
     const [dateReminderAlignment, setDateReminderAlignment] = useState(null);
@@ -35,7 +35,7 @@ function TyreExpense(props): JSX.Element {
 
 
     useFocusEffect(useCallback(() => {
-        console.log('INIT TyreExpense.useFocusEffect.useCallBack');
+        console.log('INIT TireExpense.useFocusEffect.useCallBack');
         if (!loaded) {
             if (!loading) setLoading(true);
 
@@ -52,7 +52,7 @@ function TyreExpense(props): JSX.Element {
                         setTotalValue(dataExpense.totalValue || 0);
 
                         //specific properties
-                        setTyreService(dataExpense.othersdatas.typeService || null);
+                        setTireService(dataExpense.othersdatas.typeService || null);
                         console.log(new Date(dataExpense.othersdatas.dateReminderAlignment.seconds * 1000 + dataExpense.othersdatas.dateReminderAlignment.nanoseconds / 1000000))
                         console.log(dataExpense.othersDatas.dateReminderAlignment.seconds, dataExpense.othersDatas.dateReminderAlignment.nanoseconds)
                         setDateReminderAlignment(new Date(dataExpense.othersDatas.dateReminderAlignment.seconds * 1000 + dataExpense.othersDatas.dateReminderAlignment.nanoseconds / 1000000) || null)
@@ -82,7 +82,7 @@ function TyreExpense(props): JSX.Element {
 
     function getOthersDatas() {
         return {
-            typeService: tyreService,
+            typeService: tireService,
             dateReminderAlignment: dateReminderAlignment,
             dateReminderBalancing: dateReminderBalancing
         }
@@ -93,7 +93,7 @@ function TyreExpense(props): JSX.Element {
         setTotalValue(0);
 
         //specific properties
-        setTyreService(null);
+        setTireService(null);
         setDateReminderAlignment(null)
         setDateReminderBalancing(null)
     }
@@ -101,7 +101,7 @@ function TyreExpense(props): JSX.Element {
     return (
         <BaseExpense
             title='tire expense'
-            type='TYRE'
+            type='TIRE'
             loading={loading}
             setLoading={setLoading}
             loaded={loaded}
@@ -121,8 +121,8 @@ function TyreExpense(props): JSX.Element {
                 style={DefaultStyles.textInput}
                 keyboardType='default'
                 label={_.capitalize(Trans.t('service description'))}
-                onChangeText={value => setTyreService(value)}
-                value={tyreService}
+                onChangeText={value => setTireService(value)}
+                value={tireService}
             />
             <HelperText
                 style={DefaultStyles.defaultHelperText}            
@@ -180,4 +180,4 @@ function TyreExpense(props): JSX.Element {
     );
 };
 
-export default TyreExpense;
+export default TireExpense;

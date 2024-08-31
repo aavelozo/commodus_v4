@@ -17,15 +17,17 @@ import _ from 'lodash'
 
 
 function PercentageExpenses({ data, monthlyExpenses }): JSX.Element {
+    console.log('data')
+    console.log(data)
     return (
         monthlyExpenses.current > 0 ?
-            <View style={{ marginHorizontal: RFValue(3), borderWidth: 1, borderRadius: RFValue(10), marginTop: RFValue(10), paddingBottom: RFValue(10), alignItems: "flex-start" }}>
+            <View style={{ marginHorizontal: RFValue(3), borderWidth: 1, borderRadius: RFValue(10), marginTop: RFValue(10), paddingBottom: RFValue(10), alignItems: "flex-start", backgroundColor: '#F4F4F4' }}>
                 <Text style={style.titleGraph}>{_.capitalize(Trans.t('percentage of expenses'))}</Text>
 
 
                 <VictoryPie
-                    innerRadius={60}
-                    height={320}
+                    innerRadius={RFValue(60)}
+                    height={RFValue(350)}
                     colorScale={data.map(({ color }) => color)}
                     data={data}
                     animate={{
@@ -37,20 +39,21 @@ function PercentageExpenses({ data, monthlyExpenses }): JSX.Element {
                     //     style={{ alignSelf: 'flex-end', justifyContent: 'flex-end', alignItems: 'flex-end' }} />}
                     labelRadius={({ innerRadius }) => innerRadius + RFValue(15)}
                     labels={({ datum }) => {
+                        console.log(datum.y)
                         if (datum.y > 0) {
-                            return `${(datum.y / monthlyExpenses.current * 100).toFixed(0)}%`
+                            return `${(datum.y / monthlyExpenses.current * 100).toFixed(2)}%`
                             // return `${(datum.y).toFixed(0)}%`
                         } else {
                             return
                         }
                     }}
-                    cornerRadius={({ datum }) => 5}
+                    cornerRadius={({ datum }) => RFValue(5)}
                 />
                 {
                     data.length > 0 ?
                         data.map((data, index) => {
                             var Icon = ''
-                            if (data.x == 'tyre') {
+                            if (data.x == 'tire') {
                                 Icon = <Pneu width={RFValue(20)} height={RFValue(20)} fill={DefaultStyles.colors.tabBar} />
                             } else if (data.x == 'fuel') {
                                 Icon = <Fuel width={RFValue(20)} height={RFValue(20)} fill={DefaultStyles.colors.tabBar} />

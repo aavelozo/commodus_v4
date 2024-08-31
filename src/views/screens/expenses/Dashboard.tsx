@@ -223,7 +223,7 @@ function Dashboard(props): JSX.Element {
                         gastoMecanica += despesa.totalValue
                     } else if (despesa.type == 'DOCUMENT') {
                         gastoDocumentos += despesa.totalValue
-                    } else if (despesa.type == 'RUBBER') {
+                    } else if (despesa.type == 'TIRE') {
                         gastoBorracharia += despesa.totalValue
                     } else if (despesa.type == 'APPEARANCE') {
                         gastoAparencia += despesa.totalValue
@@ -254,7 +254,7 @@ function Dashboard(props): JSX.Element {
             }, {
                 x: `31/${date?.slice(0, 2)}`, y: totalizador31 + totalizador25 + totalizador20 + totalizador15 + totalizador10 + totalizador05 + totalizador01
             }])
-            setExpensesThirdGraph([{ x: 'fuel', y: gastoCombustivel, color: "#F28CBA" }, { x: 'oil', y: gastoOleo, color: "#F2E18C" }, { x: 'document', y: gastoDocumentos, color: "#F2B48C" }, { x: 'mechanic', y: gastoMecanica, color: "#A1D6A1" }, { x: 'appearance', y: gastoAparencia, color: "#8CC2F2" }, { x: 'others', y: gastoOutros, color: "#F28C8C" }, { x: 'tyre', y: gastoBorracharia, color: "#C18CF2" }])
+            setExpensesThirdGraph([{ x: 'fuel', y: gastoCombustivel, color: "#F28CBA" }, { x: 'oil', y: gastoOleo, color: "#F2E18C" }, { x: 'document', y: gastoDocumentos, color: "#F2B48C" }, { x: 'mechanic', y: gastoMecanica, color: "#A1D6A1" }, { x: 'appearance', y: gastoAparencia, color: "#8CC2F2" }, { x: 'others', y: gastoOutros, color: "#F28C8C" }, { x: 'tire', y: gastoBorracharia, color: "#C18CF2" }])
         } catch (e) {
             console.log('e1', e);
         }

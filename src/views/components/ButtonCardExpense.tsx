@@ -40,8 +40,8 @@ function ButtonCardExpense(props): JSX.Element {
         case 'MECHANIC':
             routeName = 'MechanicExpense';
             break;
-        case 'TYRE':
-            routeName = 'TyreExpense';
+        case 'TIRE':
+            routeName = 'TireExpense';
             console.log(item?.data())
             break;
         case 'OTHER':
@@ -81,7 +81,7 @@ function ButtonCardExpense(props): JSX.Element {
                         {item?.data().type == 'MECHANIC' &&
                             <Mec width={RFValue(40)} height={RFValue(40)} fill={DefaultStyles.colors.tabBar} />
                         }
-                        {item?.data().type == 'TYRE' &&
+                        {item?.data().type == 'TIRE' &&
                             <Tyr width={RFValue(40)} height={RFValue(40)} fill={DefaultStyles.colors.tabBar} />
                         }
                         {item?.data().type == 'OTHER' &&

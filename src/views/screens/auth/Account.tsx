@@ -19,10 +19,10 @@ import _ from 'lodash';
 
 
 function Account(props): JSX.Element {
-    const [saving,setSaving] = useState(false);
+    const [saving, setSaving] = useState(false);
     const navigation = useNavigation();
-    const [loading,setLoading] = useState(false);
-    const [loaded,setLoaded] = useState(false);   
+    const [loading, setLoading] = useState(false);
+    const [loaded, setLoaded] = useState(false);
     const [foto, setFoto] = useState('')
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
@@ -42,27 +42,29 @@ function Account(props): JSX.Element {
 
                     const currentAuthUser = auth().currentUser;
                     if (currentAuthUser) {
-                        console.log('currentAuthUser',currentAuthUser);
+                        console.log('currentAuthUser', currentAuthUser);
                         let userData = AuthController.getLoggedUser();//await firestore().collection('Users').where('authUserId','==',currentAuthUser.uid).get();
+                        console.log(userData.data())
                         if (userData) {
                             setEmail(userData.data().email)
                             setPassword(userData.data().password)
                             setName(userData.data().name)
                             setFoto(userData.data().photo)
-                        }                       
+                     
+                        }
                     }
-                                        
+
                     console.log('loading user... ok');
                 } catch (e) {
-                    console.log(e);                    
+                    console.log(e);
                 } finally {
                     setLoaded(true);
-                    setLoading(false);                
+                    setLoading(false);
                 }
             })();
 
         }
-    },[navigation]); 
+    }, [navigation]);
 
 
     // mostra alert para selecionar camera ou galeria
@@ -112,21 +114,21 @@ function Account(props): JSX.Element {
         }
     }
 
-    async function saveUser(){
+    async function saveUser() {
         try {
             const currentAuthUser = auth().currentUser;
             if (currentAuthUser) {
                 setSaving(true);
-                console.log('currentAuthUser',currentAuthUser);
-                let userData = await firestore().collection('Users').where('authUserId','==',currentAuthUser.uid).get();
+                console.log('currentAuthUser', currentAuthUser);
+                let userData = await firestore().collection('Users').where('authUserId', '==', currentAuthUser.uid).get();
                 if (userData && userData.docs && userData.docs.length) {
                     await firestore().collection('Users').doc(userData.docs[0].id).update({
-                        name: name||null,
-                        photo: foto||null
+                        name: name || null,
+                        photo: foto || null
                     });
-                    showToast(`${_.capitalize(Trans.t('successfull updated data'))}.`); 
+                    showToast(`${_.capitalize(Trans.t('successfull updated data'))}.`);
                 }
-                               
+
             }
         } catch (e) {
             console.log(e);
@@ -143,16 +145,16 @@ function Account(props): JSX.Element {
 
     return (
         <View style={style.container}>
-            <Header 
-                withButtons={true} 
-                onPressConclude={saveUser} 
-                onPressCancel={goBack} 
+            <Header
+                withButtons={true}
+                onPressConclude={saveUser}
+                onPressCancel={goBack}
                 saving={saving}
             />
             <View style={style.title}>
                 <TitleView title={_.capitalize(Trans.t('user'))}></TitleView>
                 <View style={style.espacoCentral}>
-                    <View style={{ height: '30%', justifyContent: 'flex-end', marginTop: RFValue(10), alignItems: 'center' }}>
+                    <View style={{ height: '30%', justifyContent: 'flex-end', marginTop: RFValue(10), alignItems: 'center', }}>
                         <TouchableOpacity
                             onPress={() => {
                                 handleImageUser()
@@ -160,10 +162,11 @@ function Account(props): JSX.Element {
                             {
                                 foto ?
                                     <Image
-                                        style={{ height: 130, width: 130, borderRadius: RFValue(75), borderWidth: 2, borderColor: DefaultStyles.colors.tabBar}}
+                                        style={{ height: RFValue(130), width: RFValue(130), borderRadius: RFValue(75), borderWidth: 2, borderColor: DefaultStyles.colors.tabBar }}
                                         resizeMode="cover"
                                         source={{ uri: foto }}
-                                    /> : <Image
+                                    /> :
+                                    <Image
                                         style={{ height: 100, width: 100 }}
                                         resizeMode="contain"
                                         source={require('../../assets/user.png')}

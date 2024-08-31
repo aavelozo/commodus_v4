@@ -6,7 +6,7 @@ import OilExpense from '../expenses/create/OilExpense';
 import DocumentationExpense from '../expenses/create/DocumentationExpense';
 import OthersExpense from '../expenses/create/OthersExpense';
 import MechanicExpense from '../expenses/create/MechanicExpense';
-import TyreExpense from '../expenses/create/TyreExpense';
+import TireExpense from '../expenses/create/TireExpense';
 import AppearanceExpense from '../expenses/create/AppearanceExpense';
 
 const Stack = createNativeStackNavigator()
@@ -21,7 +21,7 @@ function StackIncludeExpense(props: React.PropsWithChildren): JSX.Element {
             <Stack.Screen name='DocumentationExpense' component={DocumentationExpense} />
             <Stack.Screen name='OthersExpense' component={OthersExpense} />
             <Stack.Screen name='MechanicExpense' component={MechanicExpense} />
-            <Stack.Screen name='TyreExpense' component={TyreExpense} />
+            <Stack.Screen name='TireExpense' component={TireExpense} />
             <Stack.Screen name='AppearanceExpense' component={AppearanceExpense} />
         </Stack.Navigator>
     )

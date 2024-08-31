@@ -9,7 +9,7 @@ import _ from 'lodash'
 
 function ExpenseLastYear({ data }): JSX.Element {
     return (
-        <View style={{ marginHorizontal: RFValue(3), borderWidth: 1, borderRadius: RFValue(10), marginTop: RFValue(10), alignItems: "center" }}>
+        <View style={{ marginHorizontal: RFValue(3), borderWidth: 1, borderRadius: RFValue(10), marginTop: RFValue(10), alignItems: "center", backgroundColor: '#F4F4F4' }}>
             <Text style={[style.titleGraph, {paddingLeft: RFValue(-10)}]}>{_.capitalize(Trans.t('spending from the last 365 days'))}</Text>
 
             <VictoryChart
@@ -27,11 +27,11 @@ function ExpenseLastYear({ data }): JSX.Element {
                     tickFormat={data.x}
                     tickLabelComponent={<VictoryLabel angle={-30} textAnchor="end" style={{ fontSize: RFValue(10) }} />}
                 />
-                {/* <VictoryAxis
+                <VictoryAxis
                     dependentAxis
                     tickFormat={(x) => (x||0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}
                     tickLabelComponent={<VictoryLabel angle={RFValue(-45)} textAnchor="end" style={{ fontSize: RFValue(10) }} />}
-                /> */}
+                />
             </VictoryChart>
 
 

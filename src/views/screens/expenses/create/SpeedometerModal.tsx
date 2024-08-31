@@ -98,7 +98,7 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                         </Text>
                         <TouchableWithoutFeedback onPress={() => {
                             setVisibleModal(false)
-                            navigation.navigate('TyreExpense')
+                            navigation.navigate('TireExpense')
 
                         }}>
                             <View style={[style.iconTouch, { bottom: height * 0.25, right: width * 0.21 }]} />
