@@ -40,11 +40,11 @@ function CashFlow({ data, monthlyExpenses }): JSX.Element {
                     <VictoryAxis
                         dependentAxis
                         tickFormat={(x) => (x || 0).toLocaleString(Trans.getDeviceLocale().replace("_", "-"), { style: 'currency', currency: Trans.getLocaleCurrency(), minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        tickLabelComponent={<VictoryLabel angle={RFValue(-45)} textAnchor="end" style={{ fontSize: RFValue(10) }} />}
+                        tickLabelComponent={<VictoryLabel angle={RFValue(-45)} textAnchor="end" style={{ fontSize: RFValue(8) }} />}
                     />
                     <VictoryAxis
                         // tickFormat={total.name}
-                        tickLabelComponent={<VictoryLabel angle={RFValue(-20)} textAnchor="end" style={{ fontSize: RFValue(10) }} />}
+                        tickLabelComponent={<VictoryLabel angle={RFValue(-20)} textAnchor="end" style={{ fontSize: RFValue(8) }} />}
                     />
 
                 </VictoryChart>

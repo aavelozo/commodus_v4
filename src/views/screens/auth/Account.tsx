@@ -67,7 +67,7 @@ function Account(props): JSX.Element {
 
     // mostra alert para selecionar camera ou galeria
     const handleImageUser = () => {
-        Alert.alert(_.upper(Trans.t('image')), `${_.capitalize(Trans.t('select the location where your photo is'))}:`, [
+        Alert.alert(_.capitalize(Trans.t('image')), `${_.capitalize(Trans.t('select the location where your photo is'))}:`, [
             {
                 text: _.capitalize(Trans.t('galery')),
                 onPress: () => pickImageGalery(),
