@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid } from 'react-native'
+import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid, Button } from 'react-native'
 import TitleView from '../../components/TitleView'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { RFValue } from 'react-native-responsive-fontsize'
@@ -10,7 +10,8 @@ import { TextInput } from 'react-native-paper'
 import { DefaultStyles } from '../../DefaultStyles'
 import { DefaultProps } from '../../DefaultProps'
 import Edit from '../../assets/iconSvg/edit.svg'
-import Exit from '../../assets/iconSvg/exit.svg';
+import { utils } from '@react-native-firebase/app';
+import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import AuthController from '../../../controllers/AuthController'
@@ -27,7 +28,7 @@ function Account(props): JSX.Element {
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
     const [password, setPassword] = useState('')
-    // const [user, setUser] = useState(null)
+    const reference = storage().ref('black-t-shirt-sm.png');
     var user;
 
 
@@ -50,7 +51,7 @@ function Account(props): JSX.Element {
                             setPassword(userData.data().password)
                             setName(userData.data().name)
                             setFoto(userData.data().photo)
-                     
+
                         }
                     }
 
@@ -202,6 +203,18 @@ function Account(props): JSX.Element {
                             value={password}
                             secureTextEntry={true}
                             disabled
+                        />
+                        <Button
+                            title='btn'
+                            onPress={async () => {
+                                // path to existing file on filesystem
+                                const pathToFile = `${utils.FilePath.PICTURES_DIRECTORY}/black-t-shirt-sm.png`;
+                                console.log(pathToFile)
+                                console.log('pathToFile')
+                                // uploads file
+                                await reference.putFile(pathToFile);
+                                console.log('Button')
+                            }}
                         />
                     </View>
 
