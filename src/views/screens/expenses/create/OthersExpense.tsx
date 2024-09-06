@@ -11,6 +11,7 @@ import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 import { RFValue } from 'react-native-responsive-fontsize';
+import Utils from '../../../../controllers/Utils';
 
 /******************************************************
 ** COMPONENTE DA VIEW PRINCIPAL                      **
@@ -23,7 +24,7 @@ function OthersExpense(props): JSX.Element {
 
     //default properties
     const [currentExpense, setCurrentExpense] = useState(null);
-    const [totalValue, setTotalValue] = useState(0);
+    const [totalValue, setTotalValue] = useState('');
 
     //specific properties
     const [dateReminder, setDateReminder] = useState('')
@@ -46,7 +47,7 @@ function OthersExpense(props): JSX.Element {
                         //default properties    
                         setCurrentExpense(EditExpenseController.currentExpense);  
                         let dataExpense = EditExpenseController.currentExpense.data();
-                        setTotalValue(dataExpense.totalValue||0);
+                        setTotalValue(Utils.toNumericText(dataExpense.totalValue||''));
 
                         //specific properties
                         setDescription(dataExpense.othersdatas.description || null);
@@ -84,7 +85,7 @@ function OthersExpense(props): JSX.Element {
 
     function clearStates(){
         setCurrentExpense(null);                
-        setTotalValue(0);
+        setTotalValue('');
 
         //specific properties
         setDescription(null);

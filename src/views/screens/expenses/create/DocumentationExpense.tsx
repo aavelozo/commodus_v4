@@ -10,6 +10,7 @@ import { BaseExpense } from './BaseExpense';
 import _ from 'lodash';
 import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
+import Utils from '../../../../controllers/Utils';
 
 
 
@@ -41,7 +42,7 @@ function DocumentationExpense(props): JSX.Element {
 
     //default properties
     const [currentExpense, setCurrentExpense] = useState(null);
-    const [totalValue, setTotalValue] = useState(0);    
+    const [totalValue, setTotalValue] = useState('');    
 
     //specific properties
     
@@ -65,7 +66,7 @@ function DocumentationExpense(props): JSX.Element {
                         //default properties    
                         setCurrentExpense(EditExpenseController.currentExpense);
                         let dataExpense = EditExpenseController.currentExpense.data();
-                        setTotalValue(dataExpense.totalValue || 0);
+                        setTotalValue(Utils.toNumericText(dataExpense.totalValue || ''));
 
                         //specific properties
                         setDocumentName(dataExpense.othersdatas.documentName || null);
@@ -104,7 +105,7 @@ function DocumentationExpense(props): JSX.Element {
 
     function clearStates() {
         setCurrentExpense(null);
-        setTotalValue(0);
+        setTotalValue('');
 
         //specific properties
         setDocumentName(null);

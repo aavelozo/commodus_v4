@@ -30,12 +30,12 @@ function FuelExpense(props): JSX.Element {
 
     //default properties
     const [currentExpense,setCurrentExpense] = useState(null); 
-    const [totalValue, setTotalValue] = useState(0);
+    const [totalValue, setTotalValue] = useState('');
 
     //specific properties
     const [selectedFuel, setSelectedFuel] = useState(null);
-    const [unValue, setUnValue] = useState(0);
-    const [liters, setLiters] = useState(0);
+    const [unValue, setUnValue] = useState('');
+    const [liters, setLiters] = useState('');
 
     useFocusEffect(useCallback(() => {
         console.log('INIT FuelExpense.useFocusEffect.useCallBack',loading,loaded);
@@ -52,11 +52,11 @@ function FuelExpense(props): JSX.Element {
                         console.log('loading states...2');
                         let dataExpense = EditExpenseController.currentExpense.data();
                         console.log('loading states...2.1');
-                        setTotalValue(Utils.toNumber(dataExpense.totalValue||0));
+                        setTotalValue(Utils.toNumericText(dataExpense.totalValue||''));
                         //specific properties
-                        setUnValue(Utils.toNumber(dataExpense.othersdatas.unValue||0));
+                        setUnValue(Utils.toNumericText(dataExpense.othersdatas.unValue||''));
                         console.log('loading states...2.3');
-                        setLiters(Utils.toNumber(dataExpense.othersdatas.liters||0));
+                        setLiters(Utils.toNumericText(dataExpense.othersdatas.liters||''));
                         setSelectedFuel(dataExpense.othersdatas.fuel||null);
                         console.log('loading states...3');
                     } else {
@@ -87,8 +87,8 @@ function FuelExpense(props): JSX.Element {
     function getOthersDatas() {
         return {
             fuel: selectedFuel,
-            unValue: unValue,
-            liters: liters
+            unValue: Utils.hasValue(unValue) ? Utils.toNumber(unValue) : null,
+            liters: Utils.hasValue(liters) ? Utils.toNumber(liters) : null
         }
     }
 
@@ -175,25 +175,15 @@ function FuelExpense(props): JSX.Element {
                     <TextInput
                         {...DefaultProps.textInput}
                         style={[DefaultStyles.textInput, { width: width * 0.27, marginTop: RFValue(12)  }]}
-                        keyboardType='decimal-pad'
+                        keyboardType='numeric'
                         label={Trans.t('Price/L')}
                         placeholder={Trans.getCurrencySymbol()}
                         placeholderTextColor='#666'
                         //color={DefaultStyles.colors.tabBar}
                         onChangeText={valorunitario => {
-                            if (valorunitario.includes(',')) return
-                            if (valorunitario.includes('-')) return
-                            if (valorunitario.includes(' ')) return
-                            if (valorunitario.includes('/')) return
-                            if (valorunitario.includes('+')) return
-                            if (valorunitario.includes('(')) return
-                            if (valorunitario.includes(')')) return
-                            if (valorunitario.includes('-')) return
-                            if (valorunitario.includes(';')) return
-                            if (valorunitario.includes('#')) return
-                            if (valorunitario.includes('*')) return
-                            setUnValue(Utils.toNumericText(valorunitario));
-                            setTotalValue(Utils.toNumber(liters) * Utils.toNumber(Utils.toNumericText(valorunitario)));
+                            valorunitario = Utils.toNumericText(valorunitario);
+                            setUnValue(valorunitario);
+                            setTotalValue(Utils.toNumericText(Utils.toNumber(liters) * Utils.toNumber(valorunitario)));
                         }}
                         value={unValue ? unValue.toString() : null}
                         maxLength={6}
@@ -210,26 +200,15 @@ function FuelExpense(props): JSX.Element {
                     <TextInput
                         {...DefaultProps.textInput}
                         style={[DefaultStyles.textInput, { marginLeft: RFValue(15), width: width * 0.27 , marginTop: RFValue(12) }]}
-                        keyboardType='decimal-pad'
+                        keyboardType='numeric'
                         label={_.capitalize(Trans.t('liters'))}
                         onChangeText={litros => {
-                            if (litros.includes(',')) return
-                            if (litros.includes('-')) return
-                            if (litros.includes(' ')) return
-                            if (litros.includes('/')) return
-                            if (litros.includes('+')) return
-                            if (litros.includes('(')) return
-                            if (litros.includes(')')) return
-                            if (litros.includes('-')) return
-                            if (litros.includes(';')) return
-                            if (litros.includes('#')) return
-                            if (litros.includes('*')) return
-
-                            setLiters(Utils.toNumericText(litros));
-                            setTotalValue(Utils.toNumber(Utils.toNumericText(litros)) * Utils.toNumber(unValue));
+                            litros = Utils.toNumericText(litros);
+                            setLiters(litros);
+                            setTotalValue(Utils.toNumericText(Utils.toNumber(litros) * Utils.toNumber(unValue)));
                         }}
                         value={liters ? liters.toString() : null}
-                        maxLength={3}
+                        maxLength={6}
                     />
                     <HelperText
                         style={DefaultStyles.defaultHelperText}            

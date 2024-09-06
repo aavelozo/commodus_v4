@@ -11,6 +11,7 @@ import { BaseExpense } from './BaseExpense';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 import { TotalValue } from '../../../components/expenses/TotalValue';
+import Utils from '../../../../controllers/Utils';
 const { width, height } = Dimensions.get('window')
 
 
@@ -43,7 +44,7 @@ function AppearanceExpense(props): JSX.Element {
 
     //default properties
     const [currentExpense,setCurrentExpense] = useState(null);    
-    const [totalValue, setTotalValue] = useState(0);
+    const [totalValue, setTotalValue] = useState('');
 
     //specific properties
     const [regularWashing, setRegularWashing] = useState(false);
@@ -66,7 +67,7 @@ function AppearanceExpense(props): JSX.Element {
                         
                         console.log('loading states...2');
                         let dataExpense = EditExpenseController.currentExpense.data();
-                        setTotalValue(dataExpense.totalValue||0);
+                        setTotalValue(Utils.toNumericText(dataExpense.totalValue||''));
 
                         //specific properties
                         setRegularWashing(dataExpense.othersdatas.regularWashing ? true : false);
@@ -105,7 +106,7 @@ function AppearanceExpense(props): JSX.Element {
 
     function clearStates(){
         setCurrentExpense(null);                
-        setTotalValue(0);
+        setTotalValue('');
 
         //specific properties
         setRegularWashing(false);

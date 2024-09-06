@@ -12,17 +12,25 @@ function TotalValue(props) {
     if (Utils.hasValue(props.maxLength||null)) {
         otherProps.maxLength = props.maxLength
     }
+
+    function handleChange(newValue) {
+        console.log(newValue);
+        newValue = Utils.toNumericText(newValue);
+        console.log(newValue);
+        props.setTotalValue(newValue);
+    }
     
     return <View>
         <TextInput
             {...DefaultProps.textInput}
             style={[DefaultStyles.textInput,props.style || {}]}
-            keyboardType='decimal-pad'
+            keyboardType="numeric"
             label={`* ${_.capitalize(Trans.t(props.label || 'total value'))}`}
-            onChangeText={value=>props.setTotalValue(Utils.toNumericText(value))}
+            onChangeText={handleChange}
             placeholder={Trans.getCurrencySymbol()}
             placeholderTextColor='#666'
             value={props.totalValue ? props.totalValue.toString() : null}
+            inputMode="decimal"
             {...otherProps}
         />
         <HelperText

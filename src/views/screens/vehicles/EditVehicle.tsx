@@ -98,7 +98,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         setSelectedFuel(currentVehicle.data().preferedFuel);
                         setColor(currentVehicle.data().color||'');
                         setIsColorEnabled(currentVehicle.data().color ? true : false);
-                        setKm(currentVehicle.data().km ? currentVehicle.data().km.toString() : '');
+                        setKm(Utils.toNumericText(currentVehicle.data()?.km || ''));
                         setPlate(currentVehicle.data().plate||'');
                         setPhoto(currentVehicle.data().photo||'');
                         setIdEngineType(currentVehicle.data().idEngineType || 0);
@@ -134,7 +134,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         model: dbModel?.ref,
                         idEngineType: idEngineType,
                         year: selectedYear,
-                        km: Utils.toNumber(km),
+                        km: Utils.hasValue(km) ? Utils.toNumber(km) : null,
                         plate: plate,
                         color: color,
                         preferedFuel: selectedFuel,
@@ -151,7 +151,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         model: dbModel.ref,
                         idEngineType: idEngineType,
                         year: selectedYear,                        
-                        km: Utils.toNumber(km),
+                        km: Utils.hasValue(km) ? Utils.toNumber(km) : null,
                         plate: plate,
                         color: color,
                         preferedFuel: selectedFuel,
@@ -401,17 +401,14 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         <TextInput
                             {...DefaultProps.textInput}
                             style={DefaultStyles.textInput}                            
-                            keyboardType='decimal-pad'
+                            keyboardType='numeric'
+                            inputMode='decimal'
                             label={`* ${_.capitalize(Trans.t('actual kilometers'))}`}
                             onChangeText={km => {
-                                //if (km.includes('.')) return
-                                //if (km.includes(',')) return
-                                if (km.includes('-')) return
-                                if (km.includes(' ')) return
-                                setKm(Utils.toNumber(Utils.toNumericText(km)));
+                                setKm(Utils.toNumericText(km||''));
                             }}
-                            maxLength={7}
-                            value={km ? km.toString() : null}
+                            maxLength={10}
+                            value={km}
                         />
                         <HelperText
                             style={DefaultStyles.defaultHelperText}            

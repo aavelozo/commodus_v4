@@ -1,5 +1,6 @@
 import { Alert } from "react-native";
 import { ToasterHelper } from "react-native-customizable-toast";
+import Trans from "./internatiolization/Trans";
 
 /**
  * utilitis javascripts
@@ -8,6 +9,7 @@ import { ToasterHelper } from "react-native-customizable-toast";
  */
 export default class Utils{
     static logActive = (typeof Utils.logActive !== "undefined"? Utils.logActive : true);
+    static decimalDigits = [',','.']; 
 
     static abbreviatedMonths = [
         "jan", "feb", "mar", "apr", "mai", "jun",
@@ -190,19 +192,12 @@ export default class Utils{
           });
     }
 
-    static toNumericText(value) {
-        if (Utils.hasValue(value)) {
-            let decimalDigits = [',','.']; //Trans.getDecimalSeparator();
-            for (let k in decimalDigits) {
-                let p1 = value.indexOf(decimalDigits[k]);
-                if (p1 > -1) {
-                    let p2 = value.indexOf(decimalDigits[k],p1+1);
-                    if (p2 > -1) {
-                        value = value.substring(0,p1+1) + value.substring(p1+1).replaceAll(decimalDigits[k],'');                    
-                    }
-                }
-            }
+    static toNumericText(value,allowNegative) {
+        if (Utils.hasValue(value)) { 
+            value = typeof value == 'string' ? value : value.toString();           
+            let isNegative = allowNegative === true && value.indexOf('-') === 0;
+            value = `${isNegative ? '-' : ''}${value.replace(/[^0-9.,]/g,'').replaceAll(".",'_').replaceAll(",","_").replace('_',Trans.getDecimalSeparator()).replaceAll("_","")}`;
         } 
-        return value || null;
+        return value || '';
     }
 }

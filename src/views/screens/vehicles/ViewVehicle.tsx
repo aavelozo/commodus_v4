@@ -17,6 +17,7 @@ import Vehicles from '../../../database/models/Vehicles';
 import { setCurrentVehicle } from './EditVehicle'
 import Trans from '../../../controllers/internatiolization/Trans'
 import _ from 'lodash'
+import Utils from '../../../controllers/Utils'
 
 
 const { width, height } = Dimensions.get('window');
@@ -69,7 +70,7 @@ function ViewVehicle(props): JSX.Element {
 
                             </View>
                             <Text style={[style.text, style.textBold]}>{_.capitalize(Trans.t('mileage'))}: </Text>
-                            <Text style={style.text}>{vehicle?.data().km}</Text>
+                            <Text style={style.text}>{Utils.hasValue(vehicle?.data()?.km) ? Utils.toNumber(vehicle?.data()?.km).toLocaleString({maximumFractionDigits:2}) : ''}</Text>
                         </View>
                         {/* Ano */}
                         <View style={style.viewEachInfo}>

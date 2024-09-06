@@ -67,7 +67,7 @@ function BaseExpense(props): JSX.Element {
                         } else {
                             setDate(new Date());
                         }                        
-                        setKM(dataExpense.actualkm||'');
+                        setKM(Utils.toNumericText(dataExpense.actualkm||''));
                         console.log('loading states...2.1');
                         setEstablishment(dataExpense.establishment||'');
                         setIsEnabledEstablishment(dataExpense.establishment?true:false);
@@ -102,8 +102,8 @@ function BaseExpense(props): JSX.Element {
                     await props.currentExpense.ref.update({
                         type: props.type || 'BASE',
                         date: date,
-                        actualkm: km,
-                        totalValue: props.totalValue,
+                        actualkm: Utils.hasValue(km) ? Utils.toNumber(km) : null,
+                        totalValue: Utils.hasValue(props.totalValue) ? Utils.toNumber(props.totalValue) : null,
                         establishment: establishment,
                         observations: observations,
                         othersdatas: props.getOthersDatas()
@@ -113,8 +113,8 @@ function BaseExpense(props): JSX.Element {
                     let newExpense = await vehicle.ref.collection('expenses').add({
                         type: props.type || 'BASE',
                         date: date,
-                        actualkm: km,
-                        totalValue: props.totalValue,
+                        actualkm: Utils.hasValue(km) ? Utils.toNumber(km) : null,
+                        totalValue: Utils.hasValue(props.totalValue) ? Utils.toNumber(props.totalValue) : null,
                         establishment: establishment,
                         observations: observations,
                         othersdatas: props.getOthersDatas()
@@ -206,7 +206,7 @@ function BaseExpense(props): JSX.Element {
                                 </View>);
                             }}
                             onSelect={(selectedItem, index) => {
-                                setKM(selectedItem.km)
+                                setKM(Utils.toNumericText(selectedItem.km||''));
                                 setSelectedVehicle(selectedItem);
                             }}
                             ref={selectVehicleRef}

@@ -27,7 +27,7 @@ function OilExpense(props): JSX.Element {
 
     //default properties
     const [currentExpense, setCurrentExpense] = useState(null);
-    const [totalValue, setTotalValue] = useState(0);
+    const [totalValue, setTotalValue] = useState('');
 
     //specific properties
     const [codOil, setCodOil] = useState(null);
@@ -59,7 +59,7 @@ function OilExpense(props): JSX.Element {
                         setCurrentExpense(EditExpenseController.currentExpense);  
                         let dataExpense = EditExpenseController.currentExpense.data();
                         //date in firestore is object {"nanoseconds": 743000000, "seconds": 1713185626}
-                        setTotalValue(dataExpense.totalValue||0);
+                        setTotalValue(Utils.toNumericText(dataExpense.totalValue||''));
                     
                         //specific properties
                         setCodOil(dataExpense.othersdatas.codOil || null);
@@ -68,11 +68,11 @@ function OilExpense(props): JSX.Element {
                         setReminderKM(dataExpense.othersdatas.reminderKM || null);
                         setIsFiltersEnabled((dataExpense?.othersdatas?.oilFilterPrice || dataExpense?.othersdatas?.fuelFilterPrice || dataExpense?.othersdatas?.airFilterPrice) ? true : false);
                         setIsOilFilterChecked((dataExpense?.othersdatas?.oilFilterPrice) ? true : false);
-                        setOilFilterPrice(dataExpense.othersdatas.oilFilterPrice || null);
+                        setOilFilterPrice(Utils.toNumericText(dataExpense.othersdatas.oilFilterPrice || ''));
                         setIsFuelFilterChecked((dataExpense?.othersdatas?.fuelFilterPrice) ? true : false);
-                        setFuelFilterPrice(dataExpense.othersdatas.fuelFilterPrice || null);
+                        setFuelFilterPrice(Utils.toNumericText(dataExpense.othersdatas.fuelFilterPrice || ''));
                         setIsAirFilterChecked((dataExpense?.othersdatas?.airFilterPrice) ? true : false);
-                        setAirFilterPrice(dataExpense.othersdatas.airFilterPrice || null);
+                        setAirFilterPrice(Utils.toNumericText(dataExpense.othersdatas.airFilterPrice || ''));
                         setIsOilBrandEnabled((dataExpense?.othersdatas?.oilBrand) ? true : false);
                         setOilBrand(dataExpense.othersdatas.oilBrand || null);
                     } else {
@@ -104,17 +104,17 @@ function OilExpense(props): JSX.Element {
         return {
             codOil: codOil,
             reminderMonths: reminderMonths,
-            reminderKM: reminderKM,
-            oilFilterPrice: oilFilterPrice,
-            fuelFilterPrice: fuelFilterPrice,
-            airFilterPrice: airFilterPrice,
+            reminderKM: Utils.hasValue(reminderKM) ? Utils.toNumber(reminderKM) : null,
+            oilFilterPrice: Utils.hasValue(oilFilterPrice) ? Utils.toNumber(oilFilterPrice) : null,
+            fuelFilterPrice: Utils.hasValue(fuelFilterPrice) ? Utils.toNumber(fuelFilterPrice) : null,
+            airFilterPrice: Utils.hasValue(airFilterPrice) ? Utils.toNumber(airFilterPrice) : null,
             oilBrand: oilBrand
         }
     }
 
     function clearStates(){
         setCurrentExpense(null);                
-        setTotalValue(0);
+        setTotalValue('');
 
         //specific properties
         setCodOil('');
@@ -240,7 +240,7 @@ function OilExpense(props): JSX.Element {
                     style={DefaultStyles.textInput}
                     label={_.capitalize(Trans.t('oil filter price'))}
                     value={oilFilterPrice ? oilFilterPrice.toString() : null}
-                    keyboardType='decimal-pad'
+                    keyboardType='numeric'
                     onChangeText={filtroOleo => setOilFilterPrice(Utils.toNumber(Utils.toNumericText(filtroOleo)))}
                 /> : false}
 
@@ -265,7 +265,7 @@ function OilExpense(props): JSX.Element {
                     style={DefaultStyles.textInput}
                     label={_.capitalize(Trans.t('fuel filter price'))}
                     value={fuelFilterPrice ? fuelFilterPrice.toString() : null}
-                    keyboardType='decimal-pad'
+                    keyboardType='numeric'
                     onChangeText={filtroCombustivel => setFuelFilterPrice(Utils.toNumber(Utils.toNumericText(filtroCombustivel)))}
                 /> : false}
 
@@ -290,7 +290,7 @@ function OilExpense(props): JSX.Element {
                     style={DefaultStyles.textInput}
                     label={_.capitalize(Trans.t('air filter price'))}
                     value={airFilterPrice ? airFilterPrice.toString() : null}
-                    keyboardType='decimal-pad'
+                    keyboardType='numeric'
                     onChangeText={filtroAr => setAirFilterPrice(Utils.toNumber(Utils.toNumericText(filtroAr)))}
                 /> : false}
 

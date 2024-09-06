@@ -21,24 +21,13 @@ function InputKM(props: InputKMProps) : JSX.Element {
                 {...DefaultProps.textInput}            
                 style={DefaultStyles.textInput}
                 ref={props?.ref}
-                keyboardType='decimal-pad' 
+                keyboardType='numeric' 
+                inputMode="decimal"
                 label={`${_.capitalize(Trans.t('actual kilometers'))}`} 
                 maxLength={7}
                 //color={defaultStyle.colors.tabBar}                             
                 onChangeText={(text:string) => {
-                    //if (text.includes(',')) return
-                    //if (text.includes('.')) return
-                    if (text.includes('-')) return
-                    if (text.includes(' ')) return
-                    if (text.includes('/')) return
-                    if (text.includes('+')) return
-                    if (text.includes('(')) return
-                    if (text.includes(')')) return
-                    if (text.includes('-')) return
-                    if (text.includes(';')) return
-                    if (text.includes('#')) return
-                    if (text.includes('*')) return
-                    props.setKM(Utils.toNumber(Utils.toNumericText(text)));
+                    props.setKM(Utils.toNumericText(text||''));
                 }}
                 value={(props?.km||0).toString()} />
             <HelperText

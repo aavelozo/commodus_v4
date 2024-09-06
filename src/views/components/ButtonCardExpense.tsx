@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native'
 import EditExpenseController from '../../controllers/EditExpenseController'
 import Trans from '../../controllers/internatiolization/Trans'
 import _ from 'lodash'
+import Utils from '../../controllers/Utils'
 
 function ButtonCardExpense(props): JSX.Element {
     const item = props.data
@@ -102,7 +103,7 @@ function ButtonCardExpense(props): JSX.Element {
                     <View style={{ justifyContent: 'space-between', alignItems: 'flex-end', width: '30%', paddingVertical: 5 }}>
                         <Text style={style.textExpense}> {dateFormatted}</Text>
                         <Icon name="angle-right" size={RFValue(25)} color={DefaultStyles.colors.tabBar} />
-                        <Text style={style.textExpense}>{Number(item?.data()?.totalValue || 0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}</Text>
+                        <Text style={style.textExpense}>{Utils.toNumber(item?.data()?.totalValue || 0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}</Text>
                     </View>
                 </View>
                 <View style={{ borderWidth: 1, borderColor: '#ccc' }} />

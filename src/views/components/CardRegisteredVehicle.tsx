@@ -8,6 +8,7 @@ import { DefaultStyles } from '../DefaultStyles'
 import { setCurrentViewVehicle } from '../screens/vehicles/ViewVehicle'
 import Trans from '../../controllers/internatiolization/Trans'
 import _ from 'lodash';
+import Utils from '../../controllers/Utils'
 const { width, height } = Dimensions.get('window')
 
 function CardRegisteredVehicle(props: React.PropsWithChildren): JSX.Element {
@@ -47,7 +48,7 @@ function CardRegisteredVehicle(props: React.PropsWithChildren): JSX.Element {
                 <View style={style.info}>
                     <Text numberOfLines={1} adjustsFontSizeToFit style={[style.textInfo, { fontSize: RFValue(17) }]}>{_.capitalize(Trans.t('vehicle'))}: {`${vehicle.data().model?.id}`}</Text>
                     <Text numberOfLines={1} adjustsFontSizeToFit style={style.textInfo}>{_.capitalize(Trans.t('color'))}: {vehicle.data().color}</Text>
-                    <Text style={style.textInfo}>KM: {vehicle.data().km}</Text>
+                    <Text style={style.textInfo}>KM: {Utils.hasValue(vehicle?.data()?.km) ? Utils.toNumber(vehicle?.data()?.km).toLocaleString({maximumFractionDigits:2}) : ''}</Text>
                     <Text style={style.textInfo}>{_.capitalize(Trans.t(type))}</Text>
                 </View>
                 <View style={style.icon}>

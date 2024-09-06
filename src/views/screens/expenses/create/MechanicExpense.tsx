@@ -11,6 +11,7 @@ import { BaseExpense } from './BaseExpense';
 import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
+import Utils from '../../../../controllers/Utils';
 
 
 const serviceList = [
@@ -37,7 +38,7 @@ function MechanicsExpense(props): JSX.Element {
 
     //default properties
     const [currentExpense, setCurrentExpense] = useState(null);
-    const [totalValue, setTotalValue] = useState(0);
+    const [totalValue, setTotalValue] = useState('');
 
     //specific properties    
     const [service, setService] = useState(null);
@@ -59,7 +60,7 @@ function MechanicsExpense(props): JSX.Element {
                         setCurrentExpense(EditExpenseController.currentExpense);
                         let dataExpense = EditExpenseController.currentExpense.data();
 
-                        setTotalValue(dataExpense.totalValue || 0);
+                        setTotalValue(Utils.toNumericText(dataExpense.totalValue || ''));
 
                         //specific properties             
                         setService(dataExpense.othersdatas.service || null);
@@ -88,7 +89,7 @@ function MechanicsExpense(props): JSX.Element {
     function clearStates() {
         console.log('clearing states ...');
         setCurrentExpense(null);
-        setTotalValue(0);
+        setTotalValue('');
 
         //specific properties
         setService(null);
