@@ -12,17 +12,17 @@ const { height, width } = Dimensions.get('window')
 function ExpenseComparison({ data, monthlyExpenses }): JSX.Element {
     return (
         monthlyExpenses.current > 0 ?
-            <View style={{ marginHorizontal: RFValue(3), borderWidth: 1, borderRadius: RFValue(10), marginTop: RFValue(10), alignItems: "center", backgroundColor: '#F4F4F4'}}>
+            <View style={{ marginHorizontal: RFValue(3), elevation: RFValue(3), borderRadius: RFValue(15), marginTop: RFValue(10), alignItems: "center", backgroundColor: DefaultStyles.colors.fundoInput }}>
                 <Text style={style.titleGraph}>{_.capitalize(Trans.t('comparasion of expenses'))}</Text>
 
                 <View style={{ flexDirection: 'row', marginTop: RFValue(10) }}>
-                    <View style={{ paddingTop: RFValue(20), alignItems: 'center',width: width * 0.33 }}>
-                        <Text style={{ fontSize: RFValue(14), color: DefaultStyles.colors.tabBar, }} numberOfLines={1} adjustsFontSizeToFit>{Trans.t('previous month')}: </Text>
+                    <View style={{ paddingTop: RFValue(20), alignItems: 'center', width: width * 0.33 }}>
+                        <Text style={{ fontSize: RFValue(14), color: DefaultStyles.colors.tabBar, }} numberOfLines={1} adjustsFontSizeToFit>{Trans.t('previous month')}:</Text>
                         <Text style={{ fontWeight: 'bold', fontSize: RFValue(15), color: DefaultStyles.colors.tabBar, }} numberOfLines={1} adjustsFontSizeToFit>
                             {(data[0]?.y || 0).toLocaleString(Trans.getDeviceLocale().replace("_", "-"), { style: 'currency', currency: Trans.getLocaleCurrency(), minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Text>
                     </View>
-                    <View style={{ alignItems: 'center',width: width * 0.33 }}>
+                    <View style={{ alignItems: 'center', width: width * 0.33 }}>
                         <VictoryPie
                             innerRadius={RFValue(60)}
 
@@ -62,7 +62,7 @@ function ExpenseComparison({ data, monthlyExpenses }): JSX.Element {
                             </View>}
                     </View>
                     <View style={{ paddingTop: RFValue(20), alignItems: 'center', width: width * 0.33 }}>
-                        <Text style={{ fontSize: RFValue(14), color: DefaultStyles.colors.tabBar, }} numberOfLines={1} adjustsFontSizeToFit>{Trans.t('actual month')}: </Text>
+                        <Text style={{ fontSize: RFValue(14), color: DefaultStyles.colors.tabBar, }} numberOfLines={1} adjustsFontSizeToFit>{Trans.t('actual month')}:</Text>
                         <Text style={{ fontWeight: 'bold', fontSize: RFValue(15), color: DefaultStyles.colors.tabBar, }} numberOfLines={1} adjustsFontSizeToFit>
                             {(data[1]?.y || 0).toLocaleString(Trans.getDeviceLocale().replace("_", "-"), { style: 'currency', currency: Trans.getLocaleCurrency(), minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Text>

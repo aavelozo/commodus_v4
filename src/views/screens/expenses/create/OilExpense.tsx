@@ -20,9 +20,9 @@ const { width, height } = Dimensions.get('window')
 ** COMPONENTE PRINCIPAL                             **
 ******************************************************/
 function OilExpense(props): JSX.Element {
-    const [loading,setLoading] = useState(false);    
-    const [loaded,setLoaded] = useState(false);  
-    const [saving,setSaving] = useState(false); 
+    const [loading, setLoading] = useState(false);
+    const [loaded, setLoaded] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [missingData, setMissingData] = useState(false);
 
     //default properties
@@ -49,18 +49,18 @@ function OilExpense(props): JSX.Element {
         console.log('INIT OilExpense.useFocusEffect.useCallBack');
         if (!loaded) {
             if (!loading) setLoading(true);
-            (async()=>{
+            (async () => {
                 try {
                     console.log('loading expense...');
-                    console.log('EditExpenseController.currentExpense',EditExpenseController.currentExpense);
-                    if (EditExpenseController.currentExpense) { 
-                        console.log('loading states...');             
+                    console.log('EditExpenseController.currentExpense', EditExpenseController.currentExpense);
+                    if (EditExpenseController.currentExpense) {
+                        console.log('loading states...');
                         //default properties    
-                        setCurrentExpense(EditExpenseController.currentExpense);  
+                        setCurrentExpense(EditExpenseController.currentExpense);
                         let dataExpense = EditExpenseController.currentExpense.data();
                         //date in firestore is object {"nanoseconds": 743000000, "seconds": 1713185626}
-                        setTotalValue(Utils.toNumericText(dataExpense.totalValue||''));
-                    
+                        setTotalValue(Utils.toNumericText(dataExpense.totalValue || ''));
+
                         //specific properties
                         setCodOil(dataExpense.othersdatas.codOil || null);
                         setIsReminderEnabled((dataExpense?.othersdatas?.reminderMonths || dataExpense?.othersdatas?.reminderKM) ? true : false);
@@ -81,10 +81,10 @@ function OilExpense(props): JSX.Element {
 
                     console.log('loading expense... ok');
                 } catch (e) {
-                    console.log(e);                    
+                    console.log(e);
                 } finally {
                     setLoaded(true);
-                    setLoading(false);                    
+                    setLoading(false);
                 }
             })();
         }
@@ -95,7 +95,7 @@ function OilExpense(props): JSX.Element {
         let result = false;
         if (!totalValue || !codOil) {
             result = true;
-        } 
+        }
         setMissingData(result);
         return result;
     }
@@ -112,8 +112,8 @@ function OilExpense(props): JSX.Element {
         }
     }
 
-    function clearStates(){
-        setCurrentExpense(null);                
+    function clearStates() {
+        setCurrentExpense(null);
         setTotalValue('');
 
         //specific properties
@@ -131,7 +131,7 @@ function OilExpense(props): JSX.Element {
         setIsOilBrandEnabled(false);
         setOilBrand('');
     }
-  
+
 
     return (
         <BaseExpense
@@ -150,25 +150,26 @@ function OilExpense(props): JSX.Element {
             getOthersDatas={getOthersDatas}
             totalValue={totalValue}
         >
-        
+
             {/* CÓDIGO DO ÓLEO */}
             <TextInput
                 {...DefaultProps.textInput}
-                style={DefaultStyles.textInput}                
+                style={DefaultStyles.textInput}
                 keyboardType='default'
                 label={`* ${_.capitalize(Trans.t('oil code'))}`}
-                onChangeText={value => setCodOil(value)}
+                onChangeText={value => setCodOil(_.toUpper(value))}
                 value={codOil}
+                maxLength={10}
             />
             <HelperText
-                style={DefaultStyles.defaultHelperText}            
+                style={DefaultStyles.defaultHelperText}
                 type="error"
                 visible={missingData && !codOil}
             >
                 {_.capitalize(Trans.t('enter a oil code'))}
             </HelperText>
 
-            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
+            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData} />
 
             {/*LEMBRETE*/}
             <View style={style.viewSwitch}>
@@ -192,14 +193,18 @@ function OilExpense(props): JSX.Element {
                     style={DefaultStyles.textInput}
                     label={_.capitalize(Trans.t('oil validity (months)'))}
                     value={reminderMonths ? reminderMonths.toString() : null}
-                    onChangeText={lembreteMeses => setReminderMonths(lembreteMeses)}
+                    onChangeText={lembreteMeses => setReminderMonths(Utils.toNumber(Utils.toNumericText(lembreteMeses)))}
+                    keyboardType='decimal-pad'
+                    maxLength={3}
                 />
                 <TextInput
                     {...DefaultProps.textInput}
                     style={DefaultStyles.textInput}
                     label={Trans.t('Next exchange (KM)')}
                     value={reminderKM ? reminderKM.toString() : null}
-                    onChangeText={lembreteKm => setReminderKM(lembreteKm)}
+                    onChangeText={lembreteKm => setReminderKM(Utils.toNumber(Utils.toNumericText(lembreteKm)))}
+                    keyboardType='decimal-pad'
+                    maxLength={7}
                 />
             </> : false}
 
@@ -317,15 +322,16 @@ function OilExpense(props): JSX.Element {
                     label={_.capitalize(Trans.t('oil brand'))}
                     onChangeText={marcaOleo => setOilBrand(marcaOleo)}
                     value={oilBrand}
+                    maxLength={25}
                 /> : false
             }
 
-            
+
         </BaseExpense>
     );
 }
 
-const style = StyleSheet.create({    
+const style = StyleSheet.create({
     viewCheckBox: {
         // borderWidth: 1,
         width: '65%',

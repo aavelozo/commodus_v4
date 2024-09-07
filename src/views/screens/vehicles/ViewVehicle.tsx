@@ -28,12 +28,13 @@ function setCurrentViewVehicle(newCurrentViewVehicle) {
 }
 
 function ViewVehicle(props): JSX.Element {
-    const navigation = useNavigation();    
-    const [vehicle,setVehicle] = useState(null);
+    const navigation = useNavigation();
+    const [vehicle, setVehicle] = useState(null);
 
-    useFocusEffect(useCallback(()=>{
+    useFocusEffect(useCallback(() => {
         setVehicle(currentViewVehicle);
-    },[props.navigation]));
+        console.log(currentViewVehicle.data().idEngineType)
+    }, [props.navigation]));
 
     return (
         <View style={style.container}>
@@ -81,13 +82,16 @@ function ViewVehicle(props): JSX.Element {
                             <Text style={style.text}>{vehicle?.data().year}</Text>
                         </View>
                         {/* Combustivel */}
-                        <View style={style.viewEachInfo}>
-                            <View style={style.viewIcon}>
-                                <Fuel width={RFValue(30)} height={RFValue(22)} fill={DefaultStyles.colors.tabBar} />
-                            </View>
-                            <Text style={[style.text, style.textBold]}>{_.capitalize(Trans.t('fuel'))}: </Text>
-                            <Text adjustsFontSizeToFit numberOfLines={1} style={style.text}>{vehicle?.data().preferedFuel}</Text>
-                        </View>
+                        {vehicle?.data().preferedFuel ?
+                            <View style={style.viewEachInfo}>
+                                <View style={style.viewIcon}>
+                                    <Fuel width={RFValue(30)} height={RFValue(22)} fill={DefaultStyles.colors.tabBar} />
+                                </View>
+                                <Text style={[style.text, style.textBold]}>{_.capitalize(Trans.t('fuel'))}: </Text>
+                                <Text adjustsFontSizeToFit numberOfLines={1} style={style.text}>{_.capitalize(Trans.t(vehicle?.data().preferedFuel))}</Text>
+                            </View> : false
+                        }
+
                         {/* Cor */}
                         {vehicle?.data().color ?
                             <View style={style.viewEachInfo}>
@@ -186,6 +190,6 @@ const style = StyleSheet.create({
     }
 });
 
-export {ViewVehicle,setCurrentViewVehicle};
+export { ViewVehicle, setCurrentViewVehicle };
 
 

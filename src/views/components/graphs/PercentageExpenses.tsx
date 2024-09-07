@@ -21,7 +21,7 @@ function PercentageExpenses({ data, monthlyExpenses }): JSX.Element {
     console.log(data)
     return (
         monthlyExpenses.current > 0 ?
-            <View style={{ marginHorizontal: RFValue(3), borderWidth: 1, borderRadius: RFValue(10), marginTop: RFValue(10), paddingBottom: RFValue(10), alignItems: "flex-start", backgroundColor: '#F4F4F4' }}>
+            <View style={{ marginHorizontal: RFValue(3), elevation: RFValue(3), borderRadius: RFValue(15), marginTop: RFValue(10), paddingBottom: RFValue(10), alignItems: "flex-start", backgroundColor: DefaultStyles.colors.fundoInput }}>
                 <Text style={style.titleGraph}>{_.capitalize(Trans.t('percentage of expenses'))}</Text>
 
 
@@ -70,11 +70,11 @@ function PercentageExpenses({ data, monthlyExpenses }): JSX.Element {
                             }
                             return (
                                 data.y > 0 ?
-                                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginLeft: RFValue(20), marginBottom: RFValue(5),  }}>
+                                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginLeft: RFValue(20), marginBottom: RFValue(5), }}>
                                         {Icon}
-                                        <View style={{ borderWidth: 0.5, height: RFValue(10), width: RFValue(10), backgroundColor: data.color, marginHorizontal: RFValue(10) }}/>
+                                        <View style={{ borderWidth: 0.5, height: RFValue(10), width: RFValue(10), backgroundColor: data.color, marginHorizontal: RFValue(10) }} />
                                         <Text style={[style.textButton, style.textLegend]}>
-                                            {Trans.t(data.x)}: {(data?.y || 0).toLocaleString(Trans.getDeviceLocale().replace("_", "-"), { style: 'currency', currency: Trans.getLocaleCurrency(), minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            {_.capitalize(Trans.t(data.x))}: {(data?.y || 0).toLocaleString(Trans.getDeviceLocale().replace("_", "-"), { style: 'currency', currency: Trans.getLocaleCurrency(), minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </Text>
                                     </View>
                                     : false

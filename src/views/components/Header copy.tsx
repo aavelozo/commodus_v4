@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, Image, Dimensions, StyleSheet, TouchableWithoutFeedback, Modal, TouchableOpacity } from 'react-native'
+import { View, Text, Image, Dimensions, StyleSheet, TouchableWithoutFeedback, Modal } from 'react-native'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { DefaultStyles } from '../DefaultStyles'
 import ButtonCancel from './ButtonCancel'
@@ -11,10 +11,10 @@ import { useNavigation } from '@react-navigation/native'
 import auth from '@react-native-firebase/auth';
 import Brands from '../../database/models/Brands'
 import Vehicles from '../../database/models/Vehicles'
-import firestore from '@react-native-firebase/firestore'
-import Trans from '../../controllers/internatiolization/Trans'
 import AuthController from '../../controllers/AuthController'
+import Trans from '../../controllers/internatiolization/Trans'
 import _ from 'lodash';
+
 
 function Header(props): JSX.Element {
     const navigation = useNavigation()
@@ -22,7 +22,6 @@ function Header(props): JSX.Element {
     const [user, setUser] = useState(null)
     const showModal = () => setVisible(true)
     const hideModal = () => setVisible(false);
-    console.log(visible)
 
     const styles = props.withButtons ? {
         width: RFValue(RFValue(35)),
@@ -30,33 +29,25 @@ function Header(props): JSX.Element {
     } : false
 
     useEffect(() => {
-        const loadUserData = async () => {
-            try {
+        try {
+            if (!user) {
                 console.log('loading user...');
                 const currentAuthUser = auth().currentUser;
                 if (currentAuthUser) {
-                    console.log('currentAuthUser header', currentAuthUser);
-                    const userDataSnapshot = await firestore()
-                        .collection('Users')
-                        .where('authUserId', '==', currentAuthUser.uid)
-                        .get();
-                    if (!userDataSnapshot.empty) {
-                        const userDoc = userDataSnapshot.docs[0];
-                        const userData = userDoc.data();
-                        setUser(userData);
-                        console.log('userData loaded',userData);
-                    } else {
-                        console.log('No user found with the given authUserId');
+                    console.log('currentAuthUser', currentAuthUser);
+                    let userData = AuthController.getLoggedUser();//await firestore().collection('Users').where('authUserId','==',currentAuthUser.uid).get();
+                    if (userData) {
+                        setUser(userData.data())
+                        console.log(userData.data())
                     }
                 }
                 console.log('loading user... ok');
-            } catch (e) {
-                console.log(e);
             }
-        };
+        } catch (e) {
+            console.log(e);
+        } 
+    },[navigation]);
 
-        loadUserData();
-    }, [props.navigation, navigation, visible]);
 
     const unloggingUser = async () => {
         try {
@@ -75,10 +66,9 @@ function Header(props): JSX.Element {
             <View style={{ width: '25%', justifyContent: 'center', alignItems: 'flex-start' }}>
                 {props.withButtons ?
                     <ButtonCancel onPress={() => props.onPressCancel()} /> :
-                    !props.noBars ?
-                        <TouchableWithoutFeedback onPress={() => showModal()}>
-                            <Icon name="bars" size={30} color={DefaultStyles.colors.tabBar} style={{ marginLeft: RFValue(10) }} />
-                        </TouchableWithoutFeedback> : false
+                    !props.noBars ? <TouchableWithoutFeedback onPress={() => showModal()}>
+                        <Icon name="bars" size={30} color={DefaultStyles.colors.tabBar} style={{ marginLeft: RFValue(10) }} />
+                    </TouchableWithoutFeedback> : false
                 }
 
             </View>
@@ -117,9 +107,7 @@ function Header(props): JSX.Element {
                                     />
                             }
                             <Text adjustsFontSizeToFit style={{ color: '#F4F4F4', fontSize: RFValue(18), marginTop: RFValue(5), fontFamily: 'verdana', }}>{user?.name}</Text>
-                            <TouchableOpacity onPress={() => console.log(user)}>
-                                <Text adjustsFontSizeToFit style={{ color: '#F4F4F4', fontFamily: 'verdana', }}>{user?.email}</Text>
-                            </TouchableOpacity>
+                            <Text adjustsFontSizeToFit style={{ color: '#F4F4F4', fontFamily: 'verdana', }}>{user?.email}</Text>
 
                         </View>
 

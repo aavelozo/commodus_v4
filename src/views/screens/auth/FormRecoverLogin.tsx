@@ -39,7 +39,7 @@ function FormRecoverLogin(props): JSX.Element {
                         setErrorMessage(result);
                     } else {
                         setErrorMessage('');
-                        Alert.alert(Trans.t('msg_password_recover_check_email'));
+                        Alert.alert('',Trans.t('msg_password_recover_check_email'));
                     }
                 } else {
                     setErrorMessage(Trans.t('not registered e-mail'));

@@ -13,7 +13,7 @@ function CashFlow({ data, monthlyExpenses }): JSX.Element {
 
     return (
         monthlyExpenses.current > 0 ?
-            <View style={{ marginHorizontal: RFValue(3), borderWidth: 1, borderRadius: RFValue(10), marginTop: RFValue(10), alignItems: "center", backgroundColor: '#F4F4F4' }}>
+            <View style={{ marginHorizontal: RFValue(3), elevation: RFValue(3), borderRadius: RFValue(15), marginTop: RFValue(10), alignItems: "center", backgroundColor: DefaultStyles.colors.fundoInput }}>
                 <Text style={style.titleGraph}>{_.capitalize(Trans.t('cash flow'))}</Text>
 
                 <VictoryChart

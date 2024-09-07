@@ -78,11 +78,11 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
             }).catch(error => {
                 setSaving(false);
                 if (error.code === 'auth/email-already-in-use') {
-                    Alert.alert(Trans.t('msg_email_already_registered'));
+                    Alert.alert('',Trans.t('msg_email_already_registered'));
                 }
 
                 if (error.code === 'auth/invalid-email') {
-                    Alert.alert(Trans.t('invalid email'));
+                    Alert.alert('',Trans.t('invalid email'));
                 }
 
                 console.error(error);

@@ -3,16 +3,15 @@ import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid, B
 import TitleView from '../../components/TitleView'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { RFValue } from 'react-native-responsive-fontsize'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Header from '../../components/Header'
 import { TextInput } from 'react-native-paper'
 import { DefaultStyles } from '../../DefaultStyles'
 import { DefaultProps } from '../../DefaultProps'
 import Edit from '../../assets/iconSvg/edit.svg'
-import { utils } from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
+import { getAuth } from '@react-native-firebase/auth';
 import auth from '@react-native-firebase/auth';
 import AuthController from '../../../controllers/AuthController'
 import Trans from '../../../controllers/internatiolization/Trans'
@@ -28,8 +27,6 @@ function Account(props): JSX.Element {
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
     const [password, setPassword] = useState('')
-    const reference = storage().ref('black-t-shirt-sm.png');
-    var user;
 
 
     useEffect(() => {
@@ -51,7 +48,6 @@ function Account(props): JSX.Element {
                             setPassword(userData.data().password)
                             setName(userData.data().name)
                             setFoto(userData.data().photo)
-
                         }
                     }
 
@@ -78,7 +74,7 @@ function Account(props): JSX.Element {
             },
             {
                 text: _.capitalize(Trans.t('camera')),
-                onPress: () => pickImageCamera(),
+                onPress: () =>  pickImageCamera(),
                 style: 'default'
             }
         ])
@@ -88,12 +84,38 @@ function Account(props): JSX.Element {
         const options = {
             mediaType: 'photo'
         }
-        const result = await launchImageLibrary(options)
-        if (result.assets) {
-            setFoto(result.assets[0].uri.toString());
-            // showToast("Imagem inserida com sucesso!")
-            return
+        try {
+            const result = await launchImageLibrary(options)
+
+            if (result.assets) {
+                setFoto(result.assets[0].uri.toString());
+                console.log(result.assets[0].uri.toString())
+                // showToast("Imagem inserida com sucesso!")
+                return
+            }
+        } catch (error) {
+            console.log(error)
         }
+
+    }
+
+    const uploadPhoto = async () => {
+        const authUserId = await getAuth().currentUser.uid
+        const filenameFull = `images/${authUserId}/${authUserId}`
+        const uri = foto.replace('file://', '')
+        const task = storage().ref(filenameFull).putFile(uri)
+        return new Promise((resolve, reject) => {
+            task.on(
+                'state_changed',
+                null,
+                (error) => reject(error),
+                async () => {
+                    const downloadURL = await task.snapshot.ref.getDownloadURL();
+                    resolve(downloadURL);
+                }
+            );
+        });
+
     }
 
     const showToast = (msg) => {
@@ -102,6 +124,7 @@ function Account(props): JSX.Element {
 
 
     const pickImageCamera = async () => {
+        console.log('click')
         const options = {
             mediaType: 'photo',
             saveToPhotos: false,
@@ -121,15 +144,15 @@ function Account(props): JSX.Element {
             if (currentAuthUser) {
                 setSaving(true);
                 console.log('currentAuthUser', currentAuthUser);
+                const fullPath = await uploadPhoto()
                 let userData = await firestore().collection('Users').where('authUserId', '==', currentAuthUser.uid).get();
-                if (userData && userData.docs && userData.docs.length) {
+                if (userData && userData.docs && userData.docs.length) {                   
                     await firestore().collection('Users').doc(userData.docs[0].id).update({
                         name: name || null,
-                        photo: foto || null
+                        photo: `${fullPath}` || null
                     });
                     showToast(`${_.capitalize(Trans.t('successfull updated data'))}.`);
                 }
-
             }
         } catch (e) {
             console.log(e);
@@ -204,18 +227,7 @@ function Account(props): JSX.Element {
                             secureTextEntry={true}
                             disabled
                         />
-                        <Button
-                            title='btn'
-                            onPress={async () => {
-                                // path to existing file on filesystem
-                                const pathToFile = `${utils.FilePath.PICTURES_DIRECTORY}/black-t-shirt-sm.png`;
-                                console.log(pathToFile)
-                                console.log('pathToFile')
-                                // uploads file
-                                await reference.putFile(pathToFile);
-                                console.log('Button')
-                            }}
-                        />
+                     
                     </View>
 
 

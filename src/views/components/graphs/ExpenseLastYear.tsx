@@ -9,7 +9,7 @@ import _ from 'lodash'
 
 function ExpenseLastYear({ data }): JSX.Element {
     return (
-        <View style={{ marginHorizontal: RFValue(3), borderWidth: 1, borderRadius: RFValue(10), marginTop: RFValue(10), alignItems: "center", backgroundColor: '#F4F4F4' }}>
+        <View style={{ marginHorizontal: RFValue(3), elevation: RFValue(3), borderRadius: RFValue(15), marginTop: RFValue(10), alignItems: "center", backgroundColor: DefaultStyles.colors.fundoInput }}>
             <Text style={[style.titleGraph, {paddingLeft: RFValue(-10)}]}>{_.capitalize(Trans.t('spending from the last 365 days'))}</Text>
 
             <VictoryChart

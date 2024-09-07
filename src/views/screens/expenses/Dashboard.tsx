@@ -426,7 +426,7 @@ function Dashboard(props): JSX.Element {
 
                         </View>
                         {loading ?
-                            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.0)', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'black' }}>
+                            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.0)', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
                                 <ActivityIndicator size="large" color={DefaultStyles.colors.tabBar} />
                             </View> :
                             <ScrollView >
