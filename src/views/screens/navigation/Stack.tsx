@@ -6,6 +6,7 @@ import UserRegistration from '../auth/UserRegistration';
 import Tab from './Tab';
 import RecoverLogin from '../auth/RecoverLogin';
 import Terms from '../auth/Terms';
+import Privacy from '../auth/Privacy';
 
 const StackNative = createNativeStackNavigator()
 
@@ -24,6 +25,7 @@ function Stack(props:Object) : JSX.Element {
             <StackNative.Screen name='RecoverLogin' component={RecoverLogin} />                   
             <StackNative.Screen name='Tab' component={Tab} />            
             <StackNative.Screen name='Terms' component={Terms} />            
+            <StackNative.Screen name='Privacy' component={Privacy} />            
         </StackNative.Navigator>
     )
 }
