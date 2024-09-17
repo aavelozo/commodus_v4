@@ -217,33 +217,51 @@ function BaseExpense(props): JSX.Element {
 
                         {/* QUILOMETRAGEM ATUAL */}
                         <InputKM km={km} setKM={setKM} />  
-                        {!props.childrenAfterEstablishment && props.children}
-                        {Utils.firstValid([props.hasEstablishment,true]) && <Establishment
-                            isEnabled={isEnabledEstablishment}
-                            establishment={establishment}
-                            setIsEnabled={setIsEnabledEstablishment}
-                            setEstablishment={setEstablishment}
-                        /> && <HelperText
-                            style={DefaultStyles.defaultHelperText}            
-                            type="error"
-                            visible={false}
-                        >
-                            {_.capitalize(Trans.t('enter a value'))}
-                        </HelperText>
+                        {!props.childrenAfterEstablishment 
+                            ? props.children
+                            : null
                         }
-                        {props.childrenAfterEstablishment && props.children}
-                        {Utils.firstValid([props.hasObservations,true]) && <Observations
-                            isEnabled={isEnabledObservations}
-                            observations={observations}
-                            setIsEnabled={setIsEnabledObservations}
-                            setObservations={setObservations}
-                        /> && <HelperText
-                            style={DefaultStyles.defaultHelperText}            
-                            type="error"
-                            visible={false}
-                        >
-                            {_.capitalize(Trans.t('enter a value'))}
-                        </HelperText>}                      
+                        {Utils.firstValid([props.hasEstablishment,true]) 
+                            ? <Establishment
+                                isEnabled={isEnabledEstablishment}
+                                establishment={establishment}
+                                setIsEnabled={setIsEnabledEstablishment}
+                                setEstablishment={setEstablishment}
+                            />:null
+                        } 
+                        {Utils.firstValid([props.hasEstablishment,true]) 
+                            ? <HelperText
+                                style={DefaultStyles.defaultHelperText}            
+                                type="error"
+                                visible={false}
+                            >
+                                {_.capitalize(Trans.t('enter a value'))}
+                            </HelperText>
+                            :null
+                        }
+                        {props.childrenAfterEstablishment 
+                            ? props.children
+                            : null
+                        }
+                        {Utils.firstValid([props.hasObservations,true]) 
+                            ? <Observations
+                                isEnabled={isEnabledObservations}
+                                observations={observations}
+                                setIsEnabled={setIsEnabledObservations}
+                                setObservations={setObservations}
+                            />
+                            :null
+                        }
+                        {Utils.firstValid([props.hasObservations,true]) 
+                            ? <HelperText
+                                style={DefaultStyles.defaultHelperText}            
+                                type="error"
+                                visible={false}
+                            >
+                                {_.capitalize(Trans.t('enter a value'))}
+                            </HelperText>
+                            : null
+                        }                      
                     </ScrollView>
                 </ContentContainer>
             </View >
