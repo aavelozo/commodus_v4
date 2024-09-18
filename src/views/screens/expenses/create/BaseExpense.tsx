@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback } from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
+import { View, StyleSheet, ScrollView, Alert } from 'react-native'
 import TitleView from '../../../components/TitleView';
 import Header from '../../../components/Header';
 import ContentContainer from '../../../components/ContentContainer';
@@ -95,8 +95,26 @@ function BaseExpense(props): JSX.Element {
         try {
             if (!props.isMissingData() && date && selectedVehicle) {      
                 props.setSaving(true);     
-                console.log('idVehicle',selectedVehicle.id);
-                let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);
+                console.log('idVehicle',selectedVehicle.id);                
+                let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);                
+
+                //COM-75 SAVE NEXT OIL CHANGE REMINDER
+                if (typeof props.getVehicleReminders == 'function') {
+                    let vehicleReminders = props.getVehicleReminders();                    
+                    if (Utils.hasValue(vehicleReminders)) {
+                        if (Utils.hasValue(vehicle.reminders)) {                            
+                            vehicleReminders = {...vehicle.reminders,...vehicleReminders};
+                        }
+                        if (Utils.toNumber(vehicleReminders.nextOilChange?.reminderKM||0) < Utils.toNumber(vehicle.data().km || 0)) {
+                            throw new Error(Trans.t('msg_error_on_save_reminder_km'));
+                        }
+                        await vehicle.ref.update({
+                            reminders:vehicleReminders
+                        });                        
+                    }                    
+                }
+
+
                 if (props.currentExpense) {
                     //update                    
                     await props.currentExpense.ref.update({

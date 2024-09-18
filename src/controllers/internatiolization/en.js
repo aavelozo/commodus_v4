@@ -10,6 +10,7 @@ export default {
     'msg_email_or_password_invalids':'invalid email or password',
     'msg_enter_full_name':'enter your full name',
     'msg_enter_password':'enter your password',
+    'msg_error_on_save_reminder_km':'Unable to save a future km reminder for km less than the vehicle\'s current km',
     'msg_passords_not_match':'Passwords entered are different',
     'msg_password_recover_check_email':'Check the email you received to change your password, then try to log in again with the new password.',
     'msg_successfull_image_inserted':'Image inserted successfully!'

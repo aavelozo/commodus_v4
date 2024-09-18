@@ -104,6 +104,7 @@ export default {
     'msg_enter_email':'informe seu email',
     'msg_enter_full_name':'informe seu nome completo',   
     'msg_enter_password':'informe sua senha',
+    'msg_error_on_save_reminder_km':'Impossível salvar um lembrete futuro de km para km inferior a km atual do veículo',
     'msg_password_recover_check_email':'Verifique o email recebido para poder aterar sua senha, depois tente logar novamente com a nova senha.',
     'msg_passords_not_match':'Senhas informadas são divergentes',
     'msg_successfull_image_inserted':'Imagem inserida com sucesso!',    

@@ -70,7 +70,7 @@ function Dashboard(props): JSX.Element {
                 getDataForGraph(cars[changeCar])
                 getExpensesForMonth(cars[changeCar])
                 console.log('cars', cars[changeCar])
-                setLoading(false);
+                setLoading(false);                    
             } catch (e) {
                 console.log('error in Dashboard.useFocusEffect -> async getExpenses', e);
             }
@@ -123,6 +123,7 @@ function Dashboard(props): JSX.Element {
                 color: newVehicles.docs[k].data().color,
                 photo: newVehicles.docs[k].data().photo,
                 vehicleName: `${newVehicles.docs[k].data().model.id}-${newVehicles.docs[k].data().plate}`,
+                reminders: newVehicles.docs[k].data().reminders,
                 expenses: []
             };
             let despesas = []
@@ -419,8 +420,8 @@ function Dashboard(props): JSX.Element {
                             </View> */}
                             <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center', }}>
                                 <Oil width={RFValue(21)} height={RFValue(25)} fill={DefaultStyles.colors.tabBar} />
-                                <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>{_.capitalize(Trans.t('next oil change'))}: </Text>
-                                <Text style={{ fontSize: RFValue(17), color: DefaultStyles.colors.tabBar, }}>{carsThisUser[changeCar]?.vehicle?.oilChange != null ? carsThisUser[changeCar]?.vehicle?.oilChange : '--'} km</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: RFValue(17), marginLeft: RFValue(5), color: DefaultStyles.colors.tabBar, }}>{_.capitalize(Trans.t('next oil change'))}: </Text>                                
+                                <Text style={{ fontSize: RFValue(17), color: DefaultStyles.colors.tabBar, }}>{Utils.hasValue(carsThisUser[changeCar]?.vehicle?.reminders?.nextOilChange?.reminderKM) ? carsThisUser[changeCar].vehicle.reminders.nextOilChange.reminderKM : '--'} km</Text>
                             </View>
 
 

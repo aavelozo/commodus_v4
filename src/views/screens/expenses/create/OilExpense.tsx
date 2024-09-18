@@ -112,6 +112,24 @@ function OilExpense(props): JSX.Element {
         }
     }
 
+    function getVehicleReminders() {
+        let result = null;
+        if (Utils.hasValue(reminderMonths)) {
+            result = {
+                nextOilChange:{
+                    reminderMonths: reminderMonths
+                }
+            }
+        } 
+        if (Utils.hasValue(reminderKM)) {
+            result = result || {
+                nextOilChange:{}
+            }
+            result.nextOilChange.reminderKM = Utils.toNumber(reminderKM);
+        }
+        return result;
+    }
+
     function clearStates() {
         setCurrentExpense(null);
         setTotalValue('');
@@ -148,6 +166,7 @@ function OilExpense(props): JSX.Element {
             clearStates={clearStates}
             isMissingData={isMissingData}
             getOthersDatas={getOthersDatas}
+            getVehicleReminders={getVehicleReminders}
             totalValue={totalValue}
         >
 
