@@ -43,7 +43,7 @@ function ViewExpense(props): JSX.Element {
                     let expensesCollection = await newVehiclesCollection.docs[k].ref.collection('expenses').get();
                     console.log('expenses of vehicle size', expensesCollection.size);
                     newVehiclesCollection.docs[k].expenses = expensesCollection.docs || [];
-                    newVehiclesCollection.docs[k].vehicleName = `${newVehiclesCollection.docs[k].data().model.id}-${newVehiclesCollection.docs[k].data().plate}`;
+                    newVehiclesCollection.docs[k].vehicleName = `${newVehiclesCollection.docs[k].data().model.id}-${newVehiclesCollection.docs[k].data().plate?.toUpperCase()}`;
                     newVehiclesCollection.docs[k].totalValue = 0;
                     for (let i in newVehiclesCollection.docs[k].expenses) {
                         newVehiclesCollection.docs[k].totalValue += Utils.toNumber(newVehiclesCollection.docs[k].expenses[i].data().totalValue);

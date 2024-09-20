@@ -109,7 +109,7 @@ function ViewVehicle(props): JSX.Element {
                                 <Plate width={RFValue(30)} height={RFValue(35)} fill={DefaultStyles.colors.tabBar} />
                             </View>
                             <Text style={[style.text, style.textBold]}>{_.capitalize(Trans.t('plate'))}: </Text>
-                            <Text style={style.text}>{vehicle?.data().plate}</Text>
+                            <Text style={style.text}>{vehicle?.data().plate?.toUpperCase()}</Text>
                         </View>
 
                     </View>

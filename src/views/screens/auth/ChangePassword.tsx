@@ -36,7 +36,9 @@ function ChangePassword(props): JSX.Element {
                         console.log(updateResult);
                         await auth().currentUser?.reload();
                         setSaving(false);
-                        Alert.alert('',_.capitalize(Trans.t('successfull updated password')));
+                        //Alert.alert('',_.capitalize(Trans.t('successfull updated password')));
+                        goBack();
+                        Utils.toast("success",_.capitalize(Trans.t("successfull updated password")));
                     }).catch(updateError=>{
                         setSaving(false);
                         Utils.showError(updateError);
@@ -54,7 +56,7 @@ function ChangePassword(props): JSX.Element {
     }
 
     const goBack = () => {
-        navigation.navigate('Account')
+        navigation.goBack();
     }
 
     return (

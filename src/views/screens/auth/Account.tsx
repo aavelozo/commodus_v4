@@ -16,6 +16,7 @@ import auth from '@react-native-firebase/auth';
 import AuthController from '../../../controllers/AuthController'
 import Trans from '../../../controllers/internatiolization/Trans'
 import _ from 'lodash';
+import Utils from '../../../controllers/Utils'
 
 
 function Account(props): JSX.Element {
@@ -102,20 +103,24 @@ function Account(props): JSX.Element {
     const uploadPhoto = async () => {
         const authUserId = await getAuth().currentUser.uid
         const filenameFull = `images/${authUserId}/${authUserId}`
-        const uri = foto.replace('file://', '')
-        const task = storage().ref(filenameFull).putFile(uri)
-        return new Promise((resolve, reject) => {
-            task.on(
-                'state_changed',
-                null,
-                (error) => reject(error),
-                async () => {
-                    const downloadURL = await task.snapshot.ref.getDownloadURL();
-                    resolve(downloadURL);
-                }
-            );
-        });
-
+        if (Utils.hasValue(foto) && foto != 'null') {
+            //Alert.alert(foto);
+            const uri = foto.replace('file://', '')
+            const task = storage().ref(filenameFull).putFile(uri)
+            return new Promise((resolve, reject) => {
+                task.on(
+                    'state_changed',
+                    null,
+                    (error) => reject(error),
+                    async () => {
+                        const downloadURL = await task.snapshot.ref.getDownloadURL();
+                        resolve(downloadURL);
+                    }
+                );
+            });
+        } else {
+            return null;
+        }
     }
 
     const showToast = (msg) => {
@@ -149,7 +154,7 @@ function Account(props): JSX.Element {
                 if (userData && userData.docs && userData.docs.length) {                   
                     await firestore().collection('Users').doc(userData.docs[0].id).update({
                         name: name || null,
-                        photo: `${fullPath}` || null
+                        photo: fullPath || null
                     });
                     showToast(`${_.capitalize(Trans.t('successfull updated data'))}.`);
                 }
@@ -163,7 +168,7 @@ function Account(props): JSX.Element {
 
 
     const goBack = () => {
-        navigation.navigate('SpeedometerModal')
+        navigation.goBack();
     }
 
 

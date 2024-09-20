@@ -66,7 +66,7 @@ class Vehicles {
             this.#dbData?.forEach(docSnapshot=>{         
                 let newVehicle = {
                     id:docSnapshot.id,
-                    plate:docSnapshot.data().plate,
+                    plate:docSnapshot.data().plate?.toUpperCase(),
                     idEngineType:docSnapshot.data().idEngineType,
                     km:docSnapshot.data().km,                    
                     model:docSnapshot.data().model.id,
@@ -74,7 +74,7 @@ class Vehicles {
                     preferedFuel:docSnapshot.data().preferedFuel,
                     color:docSnapshot.data().color,
                     photo:docSnapshot.data().photo,
-                    vehicleName : `${docSnapshot.data().model.id}-${docSnapshot.data().plate}`
+                    vehicleName : `${docSnapshot.data().model.id}-${docSnapshot.data().plate?.toUpperCase()}`
                 }; 
                 this.#singleData?.push(newVehicle);
             });

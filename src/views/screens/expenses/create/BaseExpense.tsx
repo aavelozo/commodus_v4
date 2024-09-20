@@ -204,7 +204,7 @@ function BaseExpense(props): JSX.Element {
                                             {...DefaultProps.textInput}
                                             style={DefaultStyles.textInput}
                                             label={`* ${_.capitalize(Trans.t('vehicle'))}`}
-                                            value={selectedItem ? selectedItem.vehicleName || selectedItem.plate : ''}
+                                            value={selectedItem ? selectedItem.vehicleName || selectedItem?.plate?.toUpperCase() : ''}
                                             pointerEvents="none"
                                             readOnly
                                         />
@@ -220,7 +220,7 @@ function BaseExpense(props): JSX.Element {
                             }}
                             renderItem={(item, index, isSelected) => {
                                 return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
-                                        <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate }</Text>
+                                        <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate?.toUpperCase() }</Text>
                                 </View>);
                             }}
                             onSelect={(selectedItem, index) => {

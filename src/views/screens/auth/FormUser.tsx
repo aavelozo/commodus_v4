@@ -186,7 +186,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                 <TextInput
                                     {...DefaultProps.textInput}
                                     style={DefaultStyles.textInput}
-                                    label={_.capitalize(Trans.t('passord confirm'))}
+                                    label={_.capitalize(Trans.t('password confirm'))}
                                     secureTextEntry={true}
                                     onBlur={onBlur}
                                     onChangeText={onChange}

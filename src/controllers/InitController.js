@@ -4,6 +4,7 @@ import auth from '@react-native-firebase/auth';
 import AuthController from "./AuthController";
 import Brands from "../database/models/Brands";
 import Vehicles from "../database/models/Vehicles";
+import Utils from "./Utils";
 
 const firebaseConfig = {
     // Your Firebase project configuration here
@@ -30,7 +31,8 @@ class InitController{
             await Brands.getDBData();
             
             const currentUser = auth().currentUser;
-            if (currentUser) {
+            console.log('currentUser in init',currentUser);
+            if (Utils.hasValue(currentUser)) {
 
                 //load user register of server
                 console.log('currentUser',currentUser.email); 

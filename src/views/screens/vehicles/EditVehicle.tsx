@@ -103,7 +103,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         setColor(currentVehicle.data().color || '');
                         setIsColorEnabled(currentVehicle.data().color ? true : false);
                         setKm(Utils.toNumericText(currentVehicle.data()?.km || ''));
-                        setPlate(currentVehicle.data().plate || '');
+                        setPlate((currentVehicle.data().plate || '').toUpperCase());
                         setPhoto(currentVehicle.data().photo || '');
                         setPathOldPhoto(currentVehicle.data().photo || '');
                         setIdEngineType(currentVehicle.data().idEngineType || 0);
@@ -165,7 +165,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         idEngineType: idEngineType,
                         year: selectedYear,
                         km: Utils.hasValue(km) ? Utils.toNumber(km) : null,
-                        plate: plate,
+                        plate: (plate||'').toUpperCase(),
                         color: color,
                         preferedFuel: selectedFuel,
                         photo: fullPath
@@ -182,7 +182,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         idEngineType: idEngineType,
                         year: selectedYear,
                         km: Utils.hasValue(km) ? Utils.toNumber(km) : null,
-                        plate: plate,
+                        plate: (plate||'').toUpperCase(),
                         color: color,
                         preferedFuel: selectedFuel,
                         photo: null
@@ -468,7 +468,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         style={[DefaultStyles.textInput, { marginTop: RFValue(7) }]}
                         label={`* ${_.capitalize(Trans.t('vehicle plate'))}`}
                         value={plate}
-                        onChangeText={plate => setPlate(plate)}
+                        onChangeText={plate => setPlate((plate||'').toUpperCase())}
                         maxLength={7}
                     />
                     <HelperText

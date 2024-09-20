@@ -137,7 +137,7 @@ export default {
     'painting crystallization': 'cristalização de pintura', 
     'painting revitalization': 'revitalização de pintura',
     'password':'senha',
-    'password confirm':'confirme a senha',
+    'password confirm':'confirme a senha',     
     'password not match':'senha não confere',
     'password updating':'alteração de senha',
     'percentage of expenses':'porcentagem dos gastos',

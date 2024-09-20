@@ -114,7 +114,7 @@ function Dashboard(props): JSX.Element {
         for (let k in newVehicles.docs) {
             let newVehicle = {
                 id: newVehicles.docs[k].id,
-                plate: newVehicles.docs[k].data().plate,
+                plate: newVehicles.docs[k].data().plate?.toUpperCase(),
                 idEngineType: newVehicles.docs[k].data().idEngineType,
                 km: newVehicles.docs[k].data().km,
                 model: newVehicles.docs[k].data().model.id,
@@ -122,7 +122,7 @@ function Dashboard(props): JSX.Element {
                 preferedFuel: newVehicles.docs[k].data().preferedFuel,
                 color: newVehicles.docs[k].data().color,
                 photo: newVehicles.docs[k].data().photo,
-                vehicleName: `${newVehicles.docs[k].data().model.id}-${newVehicles.docs[k].data().plate}`,
+                vehicleName: `${newVehicles.docs[k].data().model.id}-${newVehicles.docs[k].data().plate?.toUpperCase()}`,
                 reminders: newVehicles.docs[k].data().reminders,
                 expenses: []
             };

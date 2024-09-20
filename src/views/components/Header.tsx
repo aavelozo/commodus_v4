@@ -7,7 +7,7 @@ import ButtonConclude from './ButtonConclude'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FeatherIcon from 'react-native-vector-icons/Feather'
 import Fontisto from 'react-native-vector-icons/Fontisto'
-import { useNavigation } from '@react-navigation/native'
+import { CommonActions, useNavigation } from '@react-navigation/native'
 import auth from '@react-native-firebase/auth';
 import Brands from '../../database/models/Brands'
 import Vehicles from '../../database/models/Vehicles'
@@ -30,33 +30,22 @@ function Header(props): JSX.Element {
     } : false
 
     useEffect(() => {
-        const loadUserData = async () => {
-            try {
-                console.log('loading user...');
-                const currentAuthUser = auth().currentUser;
-                if (currentAuthUser) {
-                    console.log('currentAuthUser header', currentAuthUser);
-                    const userDataSnapshot = await firestore()
-                        .collection('Users')
-                        .where('authUserId', '==', currentAuthUser.uid)
-                        .get();
-                    if (!userDataSnapshot.empty) {
-                        const userDoc = userDataSnapshot.docs[0];
-                        const userData = userDoc.data();
-                        setUser(userData);
-                        console.log('userData loaded',userData);
-                    } else {
-                        console.log('No user found with the given authUserId');
-                    }
-                }
-                console.log('loading user... ok');
-            } catch (e) {
-                console.log(e);
-            }
-        };
 
-        loadUserData();
-    }, [props.navigation, navigation, visible]);
+
+
+        const subscriber = firestore()
+            .collection('Users')
+            .where('authUserId', '==', auth().currentUser?.uid)            
+            .onSnapshot(querySnapshot => {
+                console.log('User data: ', querySnapshot.docs[0].data());
+                setUser(querySnapshot.docs[0].data());
+            });
+    
+        // Stop listening for updates when no longer required
+        return () => subscriber();
+          
+    }, [auth().currentUser?.uid, navigation,visible]);
+
 
     const unloggingUser = async () => {
         try {
@@ -66,7 +55,13 @@ function Header(props): JSX.Element {
         } catch (e) {
             console.log(e);
         } finally {
-            navigation.navigate('Login');
+            //navigation.navigate('Login');
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{name:'Login'}]
+                })
+            );
         }
     }
 
