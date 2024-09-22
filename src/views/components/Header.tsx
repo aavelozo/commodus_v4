@@ -54,7 +54,6 @@ function Header(props): JSX.Element {
         } catch (e) {
             console.log(e);
         } finally {
-            //navigation.navigate('Login');
             navigation.dispatch(
                 CommonActions.reset({
                     index: 0,
