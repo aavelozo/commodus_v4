@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid, Button } from 'react-native'
+import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid, Keyboard } from 'react-native'
 import TitleView from '../../components/TitleView'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { RFValue } from 'react-native-responsive-fontsize'
@@ -28,6 +28,7 @@ function Account(props): JSX.Element {
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
     const [password, setPassword] = useState('')
+    const [imageSize, setImageSize] = useState(RFValue(130))
 
 
     useEffect(() => {
@@ -64,6 +65,14 @@ function Account(props): JSX.Element {
         }
     }, [navigation]);
 
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setImageSize(RFValue(80)));
+        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setImageSize(RFValue(130)));
+        return () => {
+            keyboardDidHideListener.remove()
+            keyboardDidShowListener.remove()
+        }
+    }, [])
 
     // mostra alert para selecionar camera ou galeria
     const handleImageUser = () => {
@@ -75,7 +84,7 @@ function Account(props): JSX.Element {
             },
             {
                 text: _.capitalize(Trans.t('camera')),
-                onPress: () =>  pickImageCamera(),
+                onPress: () => pickImageCamera(),
                 style: 'default'
             }
         ])
@@ -87,7 +96,6 @@ function Account(props): JSX.Element {
         }
         try {
             const result = await launchImageLibrary(options)
-
             if (result.assets) {
                 setFoto(result.assets[0].uri.toString());
                 console.log(result.assets[0].uri.toString())
@@ -97,7 +105,6 @@ function Account(props): JSX.Element {
         } catch (error) {
             console.log(error)
         }
-
     }
 
     const uploadPhoto = async () => {
@@ -151,7 +158,7 @@ function Account(props): JSX.Element {
                 console.log('currentAuthUser', currentAuthUser);
                 const fullPath = await uploadPhoto()
                 let userData = await firestore().collection('Users').where('authUserId', '==', currentAuthUser.uid).get();
-                if (userData && userData.docs && userData.docs.length) {                   
+                if (userData && userData.docs && userData.docs.length) {
                     await firestore().collection('Users').doc(userData.docs[0].id).update({
                         name: name || null,
                         photo: fullPath || null
@@ -191,12 +198,12 @@ function Account(props): JSX.Element {
                             {
                                 foto ?
                                     <Image
-                                        style={{ height: RFValue(130), width: RFValue(130), borderRadius: RFValue(75), borderWidth: 2, borderColor: DefaultStyles.colors.tabBar }}
+                                        style={{ height: imageSize, width: imageSize, borderRadius: imageSize / 2, borderWidth: 2, borderColor: DefaultStyles.colors.tabBar }}
                                         resizeMode="cover"
                                         source={{ uri: foto }}
                                     /> :
                                     <Image
-                                        style={{ height: 100, width: 100 }}
+                                        style={{ height: imageSize * 0.8, width: imageSize * 0.8 }}
                                         resizeMode="contain"
                                         source={require('../../assets/user.png')}
                                     />
@@ -232,7 +239,7 @@ function Account(props): JSX.Element {
                             secureTextEntry={true}
                             disabled
                         />
-                     
+
                     </View>
 
 

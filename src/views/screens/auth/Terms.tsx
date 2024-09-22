@@ -5,109 +5,89 @@ import { DefaultStyles } from "../../DefaultStyles"
 import Header from "../../components/Header"
 import TitleView from "../../components/TitleView"
 import { RFValue } from "react-native-responsive-fontsize"
+import Trans from "../../../controllers/internatiolization/Trans";
+import _ from 'lodash';
 
 function Terms({ navigation }): JSX.Element {
-    const [accept, setAccept] = useState(false);
-
-    const showToast = (msg) => {
-        ToastAndroid.showWithGravity(msg, ToastAndroid.LONG, ToastAndroid.CENTER, 25, 50);
-    };
-
     return (
         <>
             <Header noBars />
             <View style={style.title}>
-                <TitleView title="Termos de uso e LGPD" />
+                <TitleView title={`${_.capitalize(Trans.t('terms of use'))} ${Trans.t('and')} LGPD`} />
                 <View style={style.menu}>
                     <View style={style.viewTop}>
                         <ScrollView >
-                            <Text style={style.text}>   Este Termo de uso é um acordo legal entre você e a empresa COMMODUS, que define os termos e condições que regem o uso do aplicativo disponibilizado pela Empresa. Ao utilizar o aplicativo, você concorda com os termos deste Termo. Se você não concordar com os termos deste Aplicativo, não utilize o aplicativo.</Text>
+                            <Text style={style.text}>   {Trans.t('This Terms of Use is a legal agreement between you and the company COMMODUS, which defines the terms and conditions that govern the use of the application made available by the Company. By using the application, you agree to the terms of this Term. If you do not agree with the terms of this Application, do not use the application.')}</Text>
                             <Text />
 
-                            <Text style={style.text}>1. Objetivo do Aplicativo</Text>
-                            <Text style={style.text}>   O aplicativo tem como objetivo facilitar a vida do usuário com o gerenciamento de despesas automotivas. Permitindo que os usuários registrem e acompanhem suas despesas relacionadas a veículos, como combustível, manutenção e seguro.</Text>
+                            <Text style={style.text}>{Trans.t('1. Purpose of the Application')}</Text>
+                            <Text style={style.text}>  {Trans.t("The application aims to make the user's life easier by managing automotive expenses. Allowing users to record and track their vehicle-related expenses such as fuel, maintenance and insurance.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>2. Elegibilidade</Text>
-                            <Text style={style.text}>   O Aplicativo é destinado a usuários com 16 anos ou mais. Ao utilizar o Aplicativo, você declara que tem pelo menos 16 anos.</Text>
+                            <Text style={style.text}>{Trans.t('2. Eligibility')}</Text>
+                            <Text style={style.text}>   {Trans.t("The Application is intended for user's aged 16 or over. By using the Application, you declare that you are at least 16 years old.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>3. Disposições Gerais</Text>
-                            <Text style={style.text}>   Este Termo é regido pelas leis brasileiras e quaisquer disputas decorrentes do uso do aplicativo serão resolvidas pelos tribunais brasileiros competentes. Se qualquer disposição deste Termo for considerada inválida ou inexequível.</Text>
+                            <Text style={style.text}>{Trans.t('3. General Provisions')}</Text>
+                            <Text style={style.text}>   {Trans.t('This Term is governed by Brazilian law and any disputes arising from the use of the application will be resolved by the competent Brazilian courts. If any provision of these Terms is considered invalid or unenforceable.')}</Text>
                             <Text />
 
-                            <Text style={style.text}>4. Uso do Aplicativo</Text>
-                            <Text style={style.text}>   O uso do aplicativo é de responsabilidade exclusiva do usuário, que deve utilizá-lo de acordo com a legislação brasileira e com as regras estabelecidas neste Termo. O usuário é o único responsável pelo conteúdo que postar no aplicativo e deve garantir que não infrinja os direitos de terceiros.</Text>
+                            <Text style={style.text}>{Trans.t('4. Use of the Application')}</Text>
+                            <Text style={style.text}>   {Trans.t('The use of the application is the exclusive responsibility of the user, who must use it in accordance with Brazilian legislation and the rules established in these Terms. The user is solely responsible for the content they post on the application and must ensure that it does not infringe the rights of third parties.')}</Text>
                             <Text />
 
-                            <Text style={style.text}>5. Propriedade Intelectual</Text>
-                            <Text style={style.text}>   O aplicativo, incluindo o seu conteúdo e design, é protegido por leis de propriedade intelectual, incluindo direitos autorais, marcas registradas e patentes. O usuário concorda em não copiar, reproduzir, distribuir ou criar obras derivadas do aplicativo sem autorização prévia e por escrito da Empresa.</Text>
+                            <Text style={style.text}>{Trans.t('5. Intellectual Property')}</Text>
+                            <Text style={style.text}>   {Trans.t("The application, including its content and design, is protected by intellectual property laws, including copyrights, trademarks and patents. The user agrees not to copy, reproduce, distribute or create derivative works of the application without the Company's prior written authorization.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>6. Registro</Text>
-                            <Text style={style.text}>   O acesso ao aplicativo pode ser feito através de um cadastro, no qual o usuário deve fornecer informações precisas e atualizadas, incluindo seu nome, endereço de e-mail e senha. O usuário é o único responsável por manter a confidencialidade de sua senha e por todas as atividades realizadas em sua conta.</Text>
+                            <Text style={style.text}>{Trans.t('6. Registration')}</Text>
+                            <Text style={style.text}>   {Trans.t('Access to the application can be done through registration, in which the user must provide accurate and updated information, including their name, email address and password. The user is solely responsible for maintaining the confidentiality of their password and for all activities carried out under their account.')}</Text>
                             <Text />
 
-                            <Text style={style.text}>7. Responsabilidades do Usuário</Text>
-                            <Text style={style.text}>   Ao usar o Aplicativo, você é responsável por:</Text>
-                            <Text style={style.text}>    - Garantir que as informações fornecidas sejam precisas e atualizadas.</Text>
-                            <Text style={style.text}>    - Manter a segurança de sua conta de usuário e senha.</Text>
-                            <Text style={style.text}>    - Garantir que as informações fornecidas não violem os direitos de propriedade intelectual do Provedor ou de terceiros.</Text>
-                            <Text style={style.text}>    - Cumprir as leis aplicáveis ao usar o Aplicativo.</Text>
-                            <Text style={style.text}>    - Não tentar acessar ou interferir com o Aplicativo ou seus sistemas ou redes relacionados.</Text>
+                            <Text style={style.text}>{Trans.t('7. User Responsibilities')}</Text>
+                            <Text style={style.text}>   {Trans.t('When using the Application, you are responsible for:')}</Text>
+                            <Text style={style.text}>    {Trans.t('- Ensure that the information provided is accurate and up to date.')}</Text>
+                            <Text style={style.text}>    {Trans.t('- Maintain the security of your user account and password.')}</Text>
+                            <Text style={style.text}>    {Trans.t('- Ensure that the information provided does not violate the intellectual property rights of the Provider or third parties.')}</Text>
+                            <Text style={style.text}>    {Trans.t('- Comply with applicable laws when using the Application.')}</Text>
+                            <Text style={style.text}>    {Trans.t('')}</Text>
                             <Text />
 
-                            <Text style={style.text}>8. Responsabilidades da Empresa</Text>
-                            <Text style={style.text}>   A Empresa COMMODUS se responsabiliza a:</Text>
-                            <Text style={style.text}>    - Manter a segurança e privacidade das informações do usuário.</Text>
-                            <Text style={style.text}>    - Fornecer suporte técnico e atualizações do Aplicativo.</Text>
-                            <Text style={style.text}>    - Fornecer informações precisas sobre o Aplicativo e seus serviços.</Text>
-                            <Text style={style.text}>   A Empresa COMMODUS não se responsabiliza por quaisquer danos diretos, indiretos, especiais ou consequentes decorrentes do uso do aplicativo, incluindo perda de dados ou lucros.</Text>                         
+                            <Text style={style.text}>{Trans.t('8. Company Responsibilities')}</Text>
+                            <Text style={style.text}>   {Trans.t('The COMMODUS Company is responsible for:')}</Text>
+                            <Text style={style.text}>    {Trans.t('- Maintain the security and privacy of user information.')}</Text>
+                            <Text style={style.text}>    {Trans.t('- Provide technical support and Application updates.')}</Text>
+                            <Text style={style.text}>    {Trans.t('- Provide accurate information about the Application and its services.')}</Text>
+                            <Text style={style.text}>   {Trans.t('COMMODUS Company is not responsible for any direct, indirect, special or consequential damages arising from the use of the application, including loss of data or profits.')}</Text>
                             <Text />
 
-                            <Text style={style.text}>9. Atualizações do Aplicativo e Site</Text>
-                            <Text style={style.text}>   O COMMODUS atualiza tanto o aplicativo quanto o site a fim de proporcionar melhorias de desempenho, correção de bugs e disponibilização de novas funcionalidades, porém, não há uma periodicidade específica, dependendo da decisão única e exclusiva de seus gestores.</Text>
+                            <Text style={style.text}>{Trans.t('9. Application and Website Updates')}</Text>
+                            <Text style={style.text}>   {Trans.t('COMMODUS updates both the application and the website in order to provide performance improvements, fix bugs and make new features available, however, there is no specific frequency, depending on the sole and exclusive decision of its managers.')}</Text>
                             <Text />
 
-                            <Text style={style.text}>10. Rescisão</Text>
-                            <Text style={style.text}>   A Empresa pode rescindir o acesso do usuário ao aplicativo a qualquer momento, sem aviso prévio, se o usuário violar este Termo.</Text>
+                            <Text style={style.text}>{Trans.t('10. Termination')}</Text>
+                            <Text style={style.text}>   {Trans.t("The Company may terminate the user's access to the application at any time, without prior notice, if the user violates these Terms.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>11. Atualizações nos Termos e Condições de uso</Text>
-                            <Text style={style.text}>   Este Termo pode ser atualizado a qualquer momento sem aviso prévio. As atualizações serão efetivas assim que o novo Termo for publicado no aplicativo. É responsabilidade do usuário revisar periodicamente este Termo para estar ciente de quaisquer alterações.
-                            </Text>
+                            <Text style={style.text}>{Trans.t('11. Updates to Terms and Conditions of Use')}</Text>
+                            <Text style={style.text}>   {Trans.t("This Term may be updated at any time without prior notice. Updates will be effective as soon as the new Term is published in the application. It is the user's responsibility to periodically review these Terms to be aware of any changes.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>12. Contato</Text>
-                            <Text style={style.text}>   Se o usuário tiver dúvidas sobre este Termo e Condições de Uso do aplicativo COMMODUS, entre em contato conosco por e-mail no endereço contato.commodus@gmail.com. </Text>
-                            <Text style={style.text}>   Ao concordar com este Termo, o usuário reconhece que leu e entendeu seus termos e concorda em obedecer a todas as regras e regulamentos estabelecidos neste documento.
-                            </Text>
+                            <Text style={style.text}>{Trans.t('12. Contact')}</Text>
+                            <Text style={style.text}>   {Trans.t('If the user has questions about these Terms and Conditions of Use of the COMMODUS application, please contact us by email at contato.commodus@gmail.com.')} </Text>
+                            <Text style={style.text}>   {Trans.t('By agreeing to these Terms, the user acknowledges that they have read and understood its terms and agrees to comply with all rules and regulations established in this document.')}</Text>
 
 
                         </ScrollView>
                     </View>
                     <View style={style.viewBottom}>
-                        <View style={style.viewCheckBox}>
-                            <Checkbox
-                                status={accept ? 'checked' : 'unchecked'}
-                                onPress={() => setAccept(!accept)}
-                            />
-                            <TouchableWithoutFeedback onPress={() => { }}>
-                                <Text style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Eu aceito os termos de uso e LGPD</Text>
-                            </TouchableWithoutFeedback>
-                        </View>
+
 
                         <TouchableWithoutFeedback
-                            onPress={() => {
-                                if (accept) {
-                                    navigation.navigate('Privacy')
-                                } else {
-                                    showToast('Para avançar, deve ser feito o aceite dos termos')
-                                }
-                            }}
+                            onPress={() => navigation.navigate('UserRegistration')}
                         >
                             <View style={style.button}>
-                                <Text style={style.textButton}>Confirmar</Text>
+                                <Text style={style.textButton}>{_.capitalize(Trans.t('back'))}</Text>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>

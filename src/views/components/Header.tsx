@@ -30,21 +30,20 @@ function Header(props): JSX.Element {
     } : false
 
     useEffect(() => {
+        if (auth().currentUser?.uid) {
+            const subscriber = firestore()
+                .collection('Users')
+                .where('authUserId', '==', auth().currentUser?.uid)
+                .onSnapshot(querySnapshot => {
+                    console.log('User data: ', querySnapshot.docs[0].data());
+                    setUser(querySnapshot.docs[0].data());
+                });
 
+            // Stop listening for updates when no longer required
+            return () => subscriber();
+        }
+    }, [auth().currentUser?.uid, navigation, visible]);
 
-
-        const subscriber = firestore()
-            .collection('Users')
-            .where('authUserId', '==', auth().currentUser?.uid)            
-            .onSnapshot(querySnapshot => {
-                console.log('User data: ', querySnapshot.docs[0].data());
-                setUser(querySnapshot.docs[0].data());
-            });
-    
-        // Stop listening for updates when no longer required
-        return () => subscriber();
-          
-    }, [auth().currentUser?.uid, navigation,visible]);
 
 
     const unloggingUser = async () => {
@@ -59,7 +58,7 @@ function Header(props): JSX.Element {
             navigation.dispatch(
                 CommonActions.reset({
                     index: 0,
-                    routes: [{name:'Login'}]
+                    routes: [{ name: 'Login' }]
                 })
             );
         }

@@ -1,6 +1,7 @@
 export default { 
     'ask_dont_registered':"Don't have a registration yet?",
     'ask_forgot_password':'Forgot password?',
+    'confirm_terms':'Terms required',
     'info_first_expense_register':'To register your first expense, simply click on the icon indicated by the arrow below.',
     'info_first_vehicle_register':'To register your first vehicle, simply click on the one indicated by the arrow below',
     'info_require_email':'To help keep your account secure, COMMODUS needs to know which email address was used so we can send you a password recovery.',

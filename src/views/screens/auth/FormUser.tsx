@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react'
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Alert, ScrollView } from 'react-native'
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Alert, ScrollView, TouchableWithoutFeedback } from 'react-native'
+import { Checkbox } from 'react-native-paper'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -15,6 +16,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import _ from 'lodash'
 import Trans from '../../../controllers/internatiolization/Trans'
+import { getAuth, fetchSignInMethodsForEmail } from 'firebase/auth';
 
 const schema = yup.object({
     fullName: yup.string().required(_.capitalize(Trans.t('msg_enter_full_name'))),
@@ -25,7 +27,8 @@ const schema = yup.object({
 
 
 function FormUser(props: React.PropsWithChildren): JSX.Element {
-    const [ saving,setSaving] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [accept, setAccept] = useState(false);
     const { control, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema)
     })
@@ -45,62 +48,57 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                 Alert.alert(_.capitalize(Trans.t('error')), Trans.t('msg_passords_not_match'))
                 return;
             }
+            if (!accept) {
+                Alert.alert(_.capitalize(Trans.t('error')), Trans.t('confirm_terms'))
+                return;
+            }
 
             setSaving(true);
-
-
             Dados.user = data;
+
 
             //firebase user registration
             auth().createUserWithEmailAndPassword(data.email.trim().toLowerCase(), data.password).then((responseUserData) => {
                 console.log(responseUserData);
                 console.log('User account created & signed in!');
-
                 //save user register on user collections (<> auth.user)
                 const user = firestore().collection('Users').add({
                     name: data.fullName,
                     email: data.email.trim().toLowerCase(),
                     authUserId: responseUserData.user.uid
-                }).then(succ=>{
+                }).then(succ => {
                     console.log(succ);
-                }).catch(err=>{
+                }).catch(err => {
                     console.log(err);
                 });
-
                 setSaving(false);
-
                 props.navigation.dispatch(
                     CommonActions.reset({
                         index: 0,
-                        routes: [{ name: 'Terms', params: data }]
+                        routes: [{ name: 'Login', params: data }]
                     })
                 );
             }).catch(error => {
                 setSaving(false);
                 if (error.code === 'auth/email-already-in-use') {
-                    Alert.alert('',Trans.t('msg_email_already_registered'));
+                    Alert.alert('', Trans.t('msg_email_already_registered'));
                 }
-
                 if (error.code === 'auth/invalid-email') {
-                    Alert.alert('',Trans.t('invalid email'));
+                    Alert.alert('', Trans.t('invalid email'));
                 }
-
-                console.error(error);
             });
-
-
-            
         } catch (e) {
             setSaving(false);
             console.log(e);
             Utils.showError(e);
-        } 
+        }
     }
 
     return (
+
         <View style={style.container}>
             <ScrollView>
-                <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, paddingTop: '30%' }}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, paddingTop: '20%' }}>
                     <Controller
                         control={control}
                         render={({ field: { onChange, onBlur, value } }) => (
@@ -116,17 +114,17 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                     value={value}
                                 />
                                 <HelperText
-                                    style={DefaultStyles.defaultHelperText}            
+                                    style={DefaultStyles.defaultHelperText}
                                     type="error"
                                     visible={errors.fullName ? true : false}
                                 >
                                     {errors.fullName?.message}
                                 </HelperText>
                             </>
-                            
+
                         )}
                         name="fullName"
-                    />                    
+                    />
                     <Controller
                         control={control}
                         render={({ field: { onChange, onBlur, value } }) => (
@@ -144,7 +142,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                     disabled={saving}
                                 />
                                 <HelperText
-                                    style={DefaultStyles.defaultHelperText}            
+                                    style={DefaultStyles.defaultHelperText}
                                     type="error"
                                     visible={errors.email ? true : false}
                                 >
@@ -153,7 +151,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                             </>
                         )}
                         name="email"
-                    />                   
+                    />
                     <Controller
                         control={control}
                         render={({ field: { onChange, onBlur, value } }) => (
@@ -169,7 +167,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                     disabled={saving}
                                 />
                                 <HelperText
-                                    style={DefaultStyles.defaultHelperText}            
+                                    style={DefaultStyles.defaultHelperText}
                                     type="error"
                                     visible={errors.password ? true : false}
                                 >
@@ -178,7 +176,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                             </>
                         )}
                         name="password"
-                    />                   
+                    />
                     <Controller
                         control={control}
                         render={({ field: { onChange, onBlur, value } }) => (
@@ -194,7 +192,7 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                                     disabled={saving}
                                 />
                                 <HelperText
-                                    style={DefaultStyles.defaultHelperText}            
+                                    style={DefaultStyles.defaultHelperText}
                                     type="error"
                                     visible={errors.confirmPassword ? true : false}
                                 >
@@ -203,23 +201,44 @@ function FormUser(props: React.PropsWithChildren): JSX.Element {
                             </>
                         )}
                         name="confirmPassword"
-                    />                    
+                    />
+
+                    <View style={style.viewCheckBox}>
+                        <View>
+                            <Checkbox
+                                status={accept ? 'checked' : 'unchecked'}
+                                onPress={() => setAccept(!accept)}
+                            />
+                        </View>
+                        <View>
+                            <View style={{ flexDirection: 'row' }}>
+                                <Text style={style.textCheckBox}>{_.capitalize(Trans.t('i agree with the'))}</Text>
+                                <TouchableOpacity onPress={() => props.navigation.navigate('Terms')}>
+                                    <Text style={style.link}> {_.capitalize(Trans.t('terms of use'))} </Text>
+                                </TouchableOpacity>
+                                <Text style={style.textCheckBox}>{Trans.t('and')}</Text>
+                                <TouchableOpacity onPress={() => props.navigation.navigate('Privacy')}>
+                                    <Text style={style.link}> {_.capitalize(Trans.t('privacy policy'))}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
                     <TouchableOpacity
                         activeOpacity={0.9}
                         onPress={handleSubmit(onSubmit)}
                         style={style.button}
                         disabled={saving}
                     >
-                        <Text style={style.textButton}>                            
-                            {saving 
+                        <Text style={style.textButton}>
+                            {saving
                                 ? <ActivityIndicator />
                                 : _.capitalize(Trans.t('confirm'))
                             }
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </ScrollView>
-        </View>
+            </ScrollView >
+        </View >
     )
 }
 
@@ -231,7 +250,6 @@ const style = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        // paddingTop:20
     },
     button: {
         alignItems: "center",
@@ -248,7 +266,29 @@ const style = StyleSheet.create({
         color: DefaultStyles.colors.tabBar,
         fontWeight: 'bold',
         fontSize: 20,
-    }
+    },
+    viewBottom: {
+        flex: 3,
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        width: '100%',
+        paddingTop: RFValue(5)
+    },
+    textCheckBox: {
+        fontSize: RFValue(12),
+        color: DefaultStyles.colors.tabBar,
+    },
+    link: {
+        color: 'blue',
+        fontSize: RFValue(12)
+    },
+    viewCheckBox: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        marginLeft: RFValue(-15),
+        alignItems: 'center',
+    },
 });
 
 export default FormUser;

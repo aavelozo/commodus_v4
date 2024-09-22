@@ -5,88 +5,69 @@ import { DefaultStyles } from "../../DefaultStyles"
 import Header from "../../components/Header"
 import TitleView from "../../components/TitleView"
 import { RFValue } from "react-native-responsive-fontsize"
+import Trans from "../../../controllers/internatiolization/Trans";
+import _ from 'lodash';
 
 function Privacy({ navigation }): JSX.Element {
-    const [accept, setAccept] = useState(false);
-
-    const showToast = (msg) => {
-        ToastAndroid.showWithGravity(msg, ToastAndroid.LONG, ToastAndroid.CENTER, 25, 50);
-    };
 
     return (
         <>
             <Header noBars />
             <View style={style.title}>
-                <TitleView title="Política de Privacidade" />
+            <TitleView title={_.capitalize(Trans.t('privacy policy'))} />
                 <View style={style.menu}>
                     <View style={style.viewTop}>
                         <ScrollView >
-                            <Text style={style.text}>   Esta política de privacidade descreve como o aplicativo COMMODUS de Gerenciamento de Despesas Automotivas coleta, usa e compartilha informações pessoais dos usuários. O aplicativo tem como objetivo ajudar os usuários a gerenciar suas despesas automotivas de forma fácil e eficiente. Sua privacidade é importante para nós e estamos empenhados em protegê-la.</Text>
+                            <Text style={style.text}>   {Trans.t("This privacy policy describes how the COMMODUS Automotive Expense Management application collects, uses and shares users' personal information. The app aims to help users manage their automotive expenses easily and efficiently. Your privacy is important to us and we are committed to protecting it.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>1. Coleta de Informações</Text>
-                            <Text style={style.text}>   O aplicativo COMMODUS coleta as seguintes informações pessoais dos usuários:</Text>
-                            <Text style={style.text}>    - Informações de registro: o aplicativo pode solicitar que o usuário forneça seu nome, endereço de e-mail, senha e outras informações de registro relevantes.</Text>
-                            <Text style={style.text}>    - Informações do veículo: o aplicativo pode coletar informações sobre o veículo do usuário, incluindo o modelo, ano, marca e outras informações relacionadas.</Text>
-                            <Text style={style.text}>    - Informações de valores: o aplicativo pode coletar informações sobre as despesas do usuário relacionadas ao veículo, como combustível, manutenção e outras despesas.</Text>
-                            <Text style={style.text}>   Além disso, o aplicativo COMMODUS pode coletar informações não pessoais, como informações do dispositivo, informações do navegador e outras informações técnicas para melhorar a experiência do usuário.</Text>
-                            <Text/>
-
-                            <Text style={style.text}>2. Uso de Informações</Text>
-                            <Text style={style.text}>   O aplicativo COMMODUS usa as informações coletadas para os seguintes fins:</Text>
-                            <Text style={style.text}>    - Fornecer serviços personalizados ao usuário.</Text>
-                            <Text style={style.text}>    - Enviar notificações e alertas ao usuário sobre as despesas do veículo.</Text>
-                            <Text style={style.text}>    - Fornecer análises e relatórios sobre as despesas do veículo do usuário.</Text>
-                            <Text style={style.text}>    - Melhorar a qualidade do aplicativo e os serviços oferecidos.</Text>
-                            <Text style={style.text}>    - Cumprir obrigações legais e regulatórias.</Text>
+                            <Text style={style.text}>{Trans.t("1. Information Collection")}</Text>
+                            <Text style={style.text}>   {Trans.t("The COMMODUS application collects the following personal information from users:")}</Text>
+                            <Text style={style.text}>    {Trans.t("- Registration information: The application may ask the user to provide their name, email address, password and other relevant registration information.")}</Text>
+                            <Text style={style.text}>    {Trans.t("- Vehicle information: The application may collect information about the user's vehicle, including the model, year, brand and other related information.")}</Text>
+                            <Text style={style.text}>    {Trans.t("- Value information: the application can collect information about the user's expenses related to the vehicle, such as fuel, maintenance and other expenses.")}</Text>
+                            <Text style={style.text}>   {Trans.t( "Additionally, the COMMODUS app may collect non-personal information such as device information, browser information, and other technical information to improve the user experience.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>3. Compartilhamento de Informações</Text>
-                            <Text style={style.text}>   O aplicativo COMMODUS pode compartilhar informações pessoais do usuário com terceiros apenas nas seguintes circunstâncias:</Text>
-                            <Text style={style.text}> - Com consentimento do usuário.</Text>
-                            <Text style={style.text}> - Para cumprir obrigações legais e regulatórias.</Text>
-                            <Text style={style.text}> - Para proteger os direitos, propriedade e segurança do aplicativo, dos usuários e de outras partes interessadas.</Text>
-                            <Text style={style.text}>   O aplicativo não venderá, alugará ou trocará informações pessoais do usuário para fins de marketing ou publicidade.</Text>
+                            <Text style={style.text}>{Trans.t('2. Use of Informartion')}</Text>
+                            <Text style={style.text}>   {Trans.t("The COMMODUS application uses the information collected for the following purposes:")}</Text>
+                            <Text style={style.text}>    {Trans.t("- Provide personalized services to the user.")}</Text>
+                            <Text style={style.text}>    {Trans.t("- Send notifications and alerts to the user about vehicle expenses.")}</Text>
+                            <Text style={style.text}>    {Trans.t("- Provide analysis and reports on user's vehicle expenses.")}</Text>
+                            <Text style={style.text}>    {Trans.t("- Improve the quality of the application and the services offered.")}</Text>
+                            <Text style={style.text}>    {Trans.t("- Comply with legal and regulatory obligations.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>4. Segurança de Informações</Text>
-                            <Text style={style.text}>   O aplicativo COMMODUS usa medidas técnicas e organizacionais adequadas para proteger as informações pessoais do usuário contra acesso não autorizado, uso, divulgação ou destruição. O aplicativo adota políticas de segurança de informações apropriadas para garantir a confidencialidade e integridade das informações pessoais do usuário.</Text>
+                            <Text style={style.text}>{Trans.t("3. Information Sharing")}</Text>
+                            <Text style={style.text}>   {Trans.t("The COMMODUS application may share user personal information with third parties only in the following circumstances:")}</Text>
+                            <Text style={style.text}> {Trans.t("- With user consent.")}</Text>
+                            <Text style={style.text}> {Trans.t("- To comply with legal and regulatory obligations.")}</Text>
+                            <Text style={style.text}> {Trans.t("- To protect the rights, property and security of the application, users and other interested parties.")}</Text>
+                            <Text style={style.text}>   {Trans.t("The application will not sell, rent or exchange user personal information for marketing or advertising purposes.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>5. Atualizações na Política de Privacidade</Text>
-                            <Text style={style.text}>   Esta política de privacidade pode ser atualizada a qualquer momento sem aviso prévio. As atualizações serão efetivas assim que a nova política de privacidade for publicada no aplicativo. É responsabilidade do usuário revisar periodicamente esta política de privacidade para estar ciente de quaisquer alterações.</Text>
+                            <Text style={style.text}>{Trans.t("4. Information Security")}</Text>
+                            <Text style={style.text}>   {Trans.t("The COMMODUS application uses appropriate technical and organizational measures to protect the user's personal information against unauthorized access, use, disclosure or destruction. The application adopts appropriate information security policies to ensure the confidentiality and integrity of the user's personal information.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>6. Contato</Text>
-                            <Text style={style.text}>   Se o usuário tiver dúvidas ou preocupações sobre esta política de privacidade ou sobre o uso das informações pessoais pelo aplicativo COMMODUS, entre em contato conosco por e-mail no endereço contato.commodus@gmail.com.</Text>
+                            <Text style={style.text}>{Trans.t("5. Updates to the Privacy Policy")}</Text>
+                            <Text style={style.text}>   {Trans.t("This privacy policy may be updated at any time without prior notice. Updates will be effective once the new privacy policy is published on the app. It is the user's responsibility to periodically review this privacy policy to be aware of any changes.")}</Text>
                             <Text />
-                            <Text style={style.text}>   Ao concordar o usuário reconhece que leu e entendeu a Política de Privacidade e concorda em obedecer todas as regras e regulamentos estabelecidos neste documento.</Text>
-                            <Text />                          
+
+                            <Text style={style.text}>{Trans.t("6. Contact")}</Text>
+                            <Text style={style.text}>   {Trans.t("If the user has questions or concerns about this privacy policy or the use of personal information by the COMMODUS application, please contact us by email at contato.commodus@gmail.com.")}</Text>
+                            <Text style={style.text}>   {Trans.t("By agreeing, the user acknowledges that they have read and understood the Privacy Policy and agree to comply with all rules and regulations established in this document.")}</Text>
+                            <Text />
 
                         </ScrollView>
                     </View>
-                    <View style={style.viewBottom}>
-                        <View style={style.viewCheckBox}>
-                            <Checkbox
-                                status={accept ? 'checked' : 'unchecked'}
-                                onPress={() => setAccept(!accept)}
-                            />
-                            <TouchableWithoutFeedback onPress={() => { }}>
-                                <Text adjustsFontSizeToFit style={[style.textCheckBox, { fontSize: DefaultStyles.dimensions.defaultLabelFontSize }]}>Eu aceito os termos de política de privacidade</Text>
-                            </TouchableWithoutFeedback>
-                        </View>
+                    <View style={style.viewBottom}>                     
 
                         <TouchableWithoutFeedback
-                            onPress={() => {
-                                if (accept) {
-                                    navigation.navigate('Login')
-                                } else {
-                                    showToast('Para avançar, deve ser feito o aceite das políticas de privacidade')
-                                }
-                            }}
+                            onPress={() => navigation.navigate('UserRegistration')}
                         >
                             <View style={style.button}>
-                                <Text style={style.textButton}>Confirmar</Text>
+                                <Text style={style.textButton}>{_.capitalize(Trans.t('back'))}</Text>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
