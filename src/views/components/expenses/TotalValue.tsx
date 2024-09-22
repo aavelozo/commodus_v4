@@ -4,9 +4,14 @@ import { DefaultStyles } from "../../DefaultStyles";
 import Trans from "../../../controllers/internatiolization/Trans";
 import _ from 'lodash';
 import Utils from "../../../controllers/Utils";
-import { RFValue } from "react-native-responsive-fontsize";
 import { View } from "react-native";
 
+/**
+ * Component to input total value for reuse in expenses
+ * @param props 
+ * @returns 
+ * @author Alencar
+ */
 function TotalValue(props) {
     let otherProps = {};
     if (Utils.hasValue(props.maxLength||null)) {

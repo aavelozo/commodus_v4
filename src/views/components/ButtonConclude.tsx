@@ -11,29 +11,26 @@ import _ from 'lodash';
  * @created 2022-10-06
  */
 function ButtonConclude(props) : JSX.Element {
-    return (
-        <TouchableOpacity 
-            {...props} 
-            style={[
-                DefaultStyles.buttonConclude,
-                {
-                    left: props.loading || props.saving ? RFValue(10) : undefined
-                }
-
-            ]}
-            disabled={props.loading || props.saving || false}
-        >
-            {props.loading || props.saving
-                ? <ActivityIndicator />
-                : <Text 
-                    style={DefaultStyles.textButton}
-                >
-                    {_.capitalize(Trans.t(props.text || 'conclude'))}
-                </Text>
+    return <TouchableOpacity 
+        {...props} 
+        style={[
+            DefaultStyles.buttonConclude,
+            {
+                left: props.loading || props.saving ? RFValue(10) : undefined
             }
-        </TouchableOpacity>
-    );
-       
+
+        ]}
+        disabled={props.loading || props.saving || false}
+    >
+        {props.loading || props.saving
+            ? <ActivityIndicator />
+            : <Text 
+                style={DefaultStyles.textButton}
+            >
+                {_.capitalize(Trans.t(props.text || 'conclude'))}
+            </Text>
+        }
+    </TouchableOpacity>       
 } 
 
 export default ButtonConclude;

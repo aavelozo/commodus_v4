@@ -7,6 +7,12 @@ import Trans from '../../../controllers/internatiolization/Trans';
 import _ from 'lodash'
 
 
+/**
+ * Graph component
+ * @param param0 
+ * @returns 
+ * @author Bruno
+ */
 function ExpenseLastYear({ data }): JSX.Element {
     return (
         <View style={{ marginHorizontal: RFValue(3), elevation: RFValue(3), borderRadius: RFValue(15), marginTop: RFValue(10), alignItems: "center", backgroundColor: DefaultStyles.colors.fundoInput }}>

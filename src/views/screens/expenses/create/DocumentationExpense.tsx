@@ -30,9 +30,12 @@ const recurrenceList = [
     'biannual'
 ];
 
-/******************************************************
-** COMPONENTE DA VIEW PRINCIPAL                      **
-******************************************************/
+/**
+ * Create/edit Documentation expense
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function DocumentationExpense(props): JSX.Element {
     const selectRecurrenceRef = useRef();
     const [loading, setLoading] = useState(false);

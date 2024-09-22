@@ -14,8 +14,12 @@ import Trans from '../../../controllers/internatiolization/Trans';
 import _ from 'lodash'
 
 
-
-
+/**
+ * Graph component
+ * @param param0 
+ * @returns 
+ * @author Bruno
+ */
 function PercentageExpenses({ data, monthlyExpenses }): JSX.Element {
     console.log('data')
     console.log(data)

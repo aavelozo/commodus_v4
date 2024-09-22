@@ -12,6 +12,12 @@ import auth from '@react-native-firebase/auth';
 import Trans from '../../../controllers/internatiolization/Trans'
 import _ from 'lodash';
 
+/**
+ * Password management screen
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function ChangePassword(props): JSX.Element {
     const [saving,setSaving] = useState(false);
     const navigation = useNavigation()

@@ -1,14 +1,18 @@
 import React from 'react'
-import { View, StyleSheet, FlatList, Dimensions, ScrollView } from 'react-native'
+import { View, StyleSheet, ScrollView } from 'react-native'
 
+/**
+ * Generic form layout to use with scroll view in edit fields
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function FormLayout(props: React.PropsWithChildren) : JSX.Element {
-    return (
-        <ScrollView>
-            <View style={styles.container}>
+    return <ScrollView>
+        <View style={styles.container}>
             {props.children}
-            </View>
-        </ScrollView>
-    )
+        </View>
+    </ScrollView>
 }
 
 const styles = StyleSheet.create({

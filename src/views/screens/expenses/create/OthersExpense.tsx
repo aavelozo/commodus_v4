@@ -10,12 +10,14 @@ import { BaseExpense } from './BaseExpense';
 import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
-import { RFValue } from 'react-native-responsive-fontsize';
 import Utils from '../../../../controllers/Utils';
 
-/******************************************************
-** COMPONENTE DA VIEW PRINCIPAL                      **
-******************************************************/
+/**
+ * Create/edit Others expense
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function OthersExpense(props): JSX.Element {
     const [loading,setLoading] = useState(false);    
     const [loaded,setLoaded] = useState(false); 

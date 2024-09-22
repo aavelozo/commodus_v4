@@ -17,6 +17,12 @@ import { ActivityIndicator } from 'react-native-paper'
 import Trans from '../../../controllers/internatiolization/Trans'
 const { height, width } = Dimensions.get('window');
 
+/**
+ * View expense screen
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function ViewExpense(props): JSX.Element {
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(false);

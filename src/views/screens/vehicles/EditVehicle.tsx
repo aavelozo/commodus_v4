@@ -34,9 +34,12 @@ function setCurrentVehicle(newCurrentVehicle) {
 }
 
 
-/*********************************************************************************************************
- *                                      TELA EDITVEICULO
- **********************************************************************************************************/
+/**
+ * Create/edit vehicle record
+ * @param props 
+ * @returns 
+ * @author Alencar
+ */
 function EditVehicle(props: React.PropsWithChildren): JSX.Element {
     const theme = useTheme();
     const [loading, setLoading] = useState(false);

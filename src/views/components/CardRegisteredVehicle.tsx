@@ -11,6 +11,12 @@ import _ from 'lodash';
 import Utils from '../../controllers/Utils'
 const { width, height } = Dimensions.get('window')
 
+/**
+ * Component to show vehicle as button in list
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function CardRegisteredVehicle(props: React.PropsWithChildren): JSX.Element {
     const navigator = useNavigation();
     var type;

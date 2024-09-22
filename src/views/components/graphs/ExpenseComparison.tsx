@@ -8,7 +8,12 @@ import _ from 'lodash';
 const { height, width } = Dimensions.get('window')
 
 
-
+/**
+ * Graph component
+ * @param param0 
+ * @returns 
+ * @author Bruno
+ */
 function ExpenseComparison({ data, monthlyExpenses }): JSX.Element {
     return (
         monthlyExpenses.current > 0 ?

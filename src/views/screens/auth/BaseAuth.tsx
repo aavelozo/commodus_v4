@@ -7,42 +7,46 @@ import Trans from '../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 import { ScrollView } from 'react-native-gesture-handler';
 
+/**
+ * Base auth componente to reuse in login and password recover
+ * @param props 
+ * @returns 
+ * @author Alencar
+ */
 function BaseAuth(props: Object): JSX.Element {
 
-    return (
-        <ScrollView>
-            <View style={style.container}>
-                <View style={[style.imagem]}>
-                    <Image
-                        style={{ height: RFValue(130), width: RFValue(130) }}
-                        resizeMode='contain'
-                        source={require('../../assets/logoCommodusEscuro.png')}
-                    />
-                </View>
-
-                <View style={[style.content]}>
-                    {props.children}
-                </View>
-
-                <View style={style.bottomView}>
-                    <TouchableOpacity
-                        activeOpacity={0.9}
-                        disabled={props.loading}
-                        onPress={props.onConfirm}
-                        style={style.button}
-                    >
-                        <Text style={style.textButton}>
-                            {props.loading 
-                                ? <ActivityIndicator />
-                                : _.capitalize(Trans.t(props.textConfirm || 'sig in'))
-                            }
-                        </Text>
-                    </TouchableOpacity>
-                    {props.afterConfirmButton||false}
-                </View>
+    return <ScrollView>
+        <View style={style.container}>
+            <View style={[style.imagem]}>
+                <Image
+                    style={{ height: RFValue(130), width: RFValue(130) }}
+                    resizeMode='contain'
+                    source={require('../../assets/logoCommodusEscuro.png')}
+                />
             </View>
-        </ScrollView>
-    )
+
+            <View style={[style.content]}>
+                {props.children}
+            </View>
+
+            <View style={style.bottomView}>
+                <TouchableOpacity
+                    activeOpacity={0.9}
+                    disabled={props.loading}
+                    onPress={props.onConfirm}
+                    style={style.button}
+                >
+                    <Text style={style.textButton}>
+                        {props.loading 
+                            ? <ActivityIndicator />
+                            : _.capitalize(Trans.t(props.textConfirm || 'sig in'))
+                        }
+                    </Text>
+                </TouchableOpacity>
+                {props.afterConfirmButton||false}
+            </View>
+        </View>
+    </ScrollView>
 }
 
 const style = StyleSheet.create({

@@ -3,7 +3,12 @@ import {Text, View, StyleSheet} from 'react-native'
 import { DefaultStyles } from '../../DefaultStyles'
 import FormRecoverLogin from './FormRecoverLogin'
 
-
+/**
+ * Recover Login screen
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function RecoverLogin(props) : JSX.Element {
     const user = (props.route||{}).params
     

@@ -8,6 +8,12 @@ import EditExpenseController from '../../../../controllers/EditExpenseController
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 
+/**
+ * root component as speedometer for choice expense type to create
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
     const [visibleModal, setVisibleModal] = useState(true)
     const navigation = useNavigation();

@@ -6,6 +6,12 @@ import { RFValue } from "react-native-responsive-fontsize"
 import Trans from "../../../controllers/internatiolization/Trans"
 import _ from 'lodash';
 
+/**
+ * User registration screen
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function UserRegistration(props: React.PropsWithChildren) : JSX.Element {
     return (
         <View style={style.container}>

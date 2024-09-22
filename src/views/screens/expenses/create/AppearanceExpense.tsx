@@ -31,9 +31,13 @@ const serviceList = [
     'others services'
 ];
 
-/******************************************************
-** COMPONENTE PRINCIPAL                             **
-******************************************************/
+
+/**
+ * Create/edit Appearence expense
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function AppearanceExpense(props): JSX.Element {
     const theme = useTheme();
     const selectServiceRef = useRef();

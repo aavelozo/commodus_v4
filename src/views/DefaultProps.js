@@ -1,5 +1,9 @@
 import { DefaultStyles } from "./DefaultStyles"
 
+/**
+ * Default props to simplify components reuse commonly props
+ * @author Alencar
+ */
 class DefaultProps {
     static textInput = {
         color:DefaultStyles.colors.tabBar,

@@ -21,7 +21,12 @@ import Vehicles from '../../../database/models/Vehicles'
 import Trans from '../../../controllers/internatiolization/Trans'
 const { height, width } = Dimensions.get('window')
 
-
+/**
+ * Dashboard (charts) screen
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function Dashboard(props): JSX.Element {
     const [expensesFirstGraph, setExpensesFirstGraph] = useState([])
     const [expensesSecondGraph, setExpensesSecondGraph] = useState([])

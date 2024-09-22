@@ -1,6 +1,10 @@
 import { Dimensions} from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 
+/**
+ * Default styles to simplify reuse components commonly styles
+ * @author Alencar
+ */
 class DefaultStyles {
 
     static windowWidth =  Dimensions.get('window').width;

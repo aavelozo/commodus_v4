@@ -1,11 +1,20 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * Commodus App
+ * https://github.com/aavelozo/commodus_v4
+ * Faculdade Assis Gurgacz
+ * Egenharia de Software 2021
+ * TCC
+ * 
+ * @author Antonio Alencar Velozo
+ * @author Bruno Romão
+ * @author Carlos Henrique Rosa
+ * @author Lucas Henrique do Nascimento
+ * @author Richardison Korp
  *
  * @format
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { SafeAreaView, useColorScheme,  StatusBar } from 'react-native';
 import { NavigationContainer,DefaultTheme, DarkTheme  } from '@react-navigation/native'
 import Stack from './src/views/screens/navigation/Stack';
@@ -24,30 +33,22 @@ function App(): React.JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  useEffect(()=>{
-    console.log('INIT App.useEffect');
-    console.log('END App.useEffect');
-  });
-
-
-  return (   
-    <GestureHandlerRootView style={{ flex: 1 }}>   
-        <ThemeProvider theme={theme}>
-          <SafeAreaProvider>
-            <SafeAreaView style={backgroundStyle}>
-              <StatusBar
-                barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-                backgroundColor={backgroundStyle.backgroundColor}
-              />
-              <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme }>
-                <Stack />
-              </NavigationContainer>
-              <Toaster useSafeArea={true} displayFromBottom={true} />
-            </SafeAreaView>
-          </SafeAreaProvider>
-        </ThemeProvider>
-      </GestureHandlerRootView>
-  );
+  return <GestureHandlerRootView style={{ flex: 1 }}>   
+    <ThemeProvider theme={theme}>
+      <SafeAreaProvider>
+        <SafeAreaView style={backgroundStyle}>
+          <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={backgroundStyle.backgroundColor}
+          />
+          <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme }>
+            <Stack />
+          </NavigationContainer>
+          <Toaster useSafeArea={true} displayFromBottom={true} />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </ThemeProvider>
+  </GestureHandlerRootView>
 }
 
 

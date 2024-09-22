@@ -9,22 +9,22 @@ import MechanicExpense from '../expenses/create/MechanicExpense';
 import TireExpense from '../expenses/create/TireExpense';
 import AppearanceExpense from '../expenses/create/AppearanceExpense';
 
+/**
+ * Include Expense stack
+ * @author Bruno
+ */
 const Stack = createNativeStackNavigator()
-
 function StackIncludeExpense(props: React.PropsWithChildren): JSX.Element {
-
-    return (
-        <Stack.Navigator {...props} initialRouteName={'SpeedometerModal'} screenOptions={{ headerShown: false }} detachInactiveScreens={false}>
-            <Stack.Screen name='SpeedometerModal' component={SpeedometerModal} />
-            <Stack.Screen name='FuelExpense' component={FuelExpense} />
-            <Stack.Screen name='OilExpense' component={OilExpense} />
-            <Stack.Screen name='DocumentationExpense' component={DocumentationExpense} />
-            <Stack.Screen name='OthersExpense' component={OthersExpense} />
-            <Stack.Screen name='MechanicExpense' component={MechanicExpense} />
-            <Stack.Screen name='TireExpense' component={TireExpense} />
-            <Stack.Screen name='AppearanceExpense' component={AppearanceExpense} />
-        </Stack.Navigator>
-    )
+    return <Stack.Navigator {...props} initialRouteName={'SpeedometerModal'} screenOptions={{ headerShown: false }} detachInactiveScreens={false}>
+        <Stack.Screen name='SpeedometerModal' component={SpeedometerModal} />
+        <Stack.Screen name='FuelExpense' component={FuelExpense} />
+        <Stack.Screen name='OilExpense' component={OilExpense} />
+        <Stack.Screen name='DocumentationExpense' component={DocumentationExpense} />
+        <Stack.Screen name='OthersExpense' component={OthersExpense} />
+        <Stack.Screen name='MechanicExpense' component={MechanicExpense} />
+        <Stack.Screen name='TireExpense' component={TireExpense} />
+        <Stack.Screen name='AppearanceExpense' component={AppearanceExpense} />
+    </Stack.Navigator>
 }
 
 export default StackIncludeExpense;

@@ -6,6 +6,10 @@ import { DefaultProps } from '../../DefaultProps';
 import Trans from '../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 
+/**
+ * Interface to props of Observations props
+ * @author Alencar
+ */
 interface ObservationsProps {
     setObservations : (observations: string) => void,
     setIsEnabled : (enabled: boolean) => void,
@@ -14,7 +18,12 @@ interface ObservationsProps {
     isEnabled ? : boolean
 }
 
-//OBSERVACOES
+/**
+ * Component to input observations for reuse in expenses
+ * @param props 
+ * @returns 
+ * @author Alencar
+ */
 function Observations(props : ObservationsProps) : JSX.Element {    
     return (
         <>

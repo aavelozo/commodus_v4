@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Text, View, StyleSheet, TouchableWithoutFeedback, Dimensions, Switch } from 'react-native'
 import { Checkbox, HelperText, TextInput } from 'react-native-paper';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -14,11 +14,12 @@ import _ from 'lodash';
 const { width, height } = Dimensions.get('window')
 
 
-
-
-/******************************************************
-** COMPONENTE PRINCIPAL                             **
-******************************************************/
+/**
+ * Create/edit Oil expense
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function OilExpense(props): JSX.Element {
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(false);

@@ -9,6 +9,10 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import Trans from '../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 
+/**
+ * Interface to props of DateComponent props
+ * @author Alencar
+ */
 interface DateComponentProps {
     setDate : (date:any)=>void,
     date ? : any,
@@ -16,7 +20,12 @@ interface DateComponentProps {
     ref ? : React.RefObject<HTMLElement>
 }
 
-//Date
+/**
+ * Date component to input date for reuse in expenses
+ * @param props 
+ * @returns 
+ * @author Alencar
+ */
 function DateComponent(props : DateComponentProps) : JSX.Element {
     const [opened,setOpened] = useState(false);
     let date = props.date || new Date();

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid, Keyboard } from 'react-native'
+import { View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid, Keyboard } from 'react-native'
 import TitleView from '../../components/TitleView'
-import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Header from '../../components/Header'
@@ -18,7 +18,12 @@ import Trans from '../../../controllers/internatiolization/Trans'
 import _ from 'lodash';
 import Utils from '../../../controllers/Utils'
 
-
+/**
+ * Account management screen
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function Account(props): JSX.Element {
     const [saving, setSaving] = useState(false);
     const navigation = useNavigation();

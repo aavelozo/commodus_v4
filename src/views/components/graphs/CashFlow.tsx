@@ -8,7 +8,12 @@ import _ from 'lodash'
 
 
 
-
+/**
+ * Graph component
+ * @param param0 
+ * @returns 
+ * @author Bruno
+ */
 function CashFlow({ data, monthlyExpenses }): JSX.Element {
 
     return (

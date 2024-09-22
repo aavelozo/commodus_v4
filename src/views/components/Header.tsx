@@ -13,9 +13,14 @@ import Brands from '../../database/models/Brands'
 import Vehicles from '../../database/models/Vehicles'
 import firestore from '@react-native-firebase/firestore'
 import Trans from '../../controllers/internatiolization/Trans'
-import AuthController from '../../controllers/AuthController'
 import _ from 'lodash';
 
+/**
+ * Header of the app, to reuso on entire screens, contains options to title and buttons to save or cancel a action
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function Header(props): JSX.Element {
     const navigation = useNavigation()
     const [visible, setVisible] = useState(false)

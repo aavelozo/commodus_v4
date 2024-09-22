@@ -5,14 +5,24 @@ import { DefaultProps } from "../../DefaultProps";
 import { DefaultStyles } from "../../DefaultStyles";
 import Trans from '../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
-import { RFValue } from "react-native-responsive-fontsize";
 
+
+/**
+ * Interface to props of InputKM component
+ * @author Alencar
+ */
 interface InputKMProps {
     km ? : number,
     setKM : (km:number)=>void,
     ref ? : React.RefObject<HTMLElement>
 }
 
+/**
+ * Component to reuse in screens to imput km of vehicle or expense
+ * @param props 
+ * @returns 
+ * @author Alencar
+ */
 function InputKM(props: InputKMProps) : JSX.Element {
 
     return (

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback } from 'react'
-import { View, StyleSheet, ScrollView, Alert } from 'react-native'
+import { View, StyleSheet, ScrollView} from 'react-native'
 import TitleView from '../../../components/TitleView';
 import Header from '../../../components/Header';
 import ContentContainer from '../../../components/ContentContainer';
@@ -17,14 +17,13 @@ import EditExpenseController from '../../../../controllers/EditExpenseController
 import Vehicles from '../../../../database/models/Vehicles';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
-import { RFValue } from 'react-native-responsive-fontsize';
 
-
-
-
-/******************************************************
-** COMPONENTE DA VIEW PRINCIPAL                      **
-******************************************************/
+/**
+ * Create/edit base expense, to reuse in others expenses, contains default fields to reuse and save method
+ * @param props 
+ * @returns 
+ * @author Alencar
+ */
 function BaseExpense(props): JSX.Element {
     const navigation = useNavigation();
     const selectVehicleRef = useRef();
@@ -91,6 +90,10 @@ function BaseExpense(props): JSX.Element {
     }, [navigation]));
 
  
+    /**
+     * save expense on cloud and persist on app
+     * @author Alencar
+     */
     async function saveExpense() {
         try {
             if (!props.isMissingData() && date && selectedVehicle) {      

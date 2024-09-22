@@ -27,6 +27,12 @@ function setCurrentViewVehicle(newCurrentViewVehicle) {
     currentViewVehicle = newCurrentViewVehicle;
 }
 
+/**
+ * View Vehicle data
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function ViewVehicle(props): JSX.Element {
     const navigation = useNavigation();
     const [vehicle, setVehicle] = useState(null);

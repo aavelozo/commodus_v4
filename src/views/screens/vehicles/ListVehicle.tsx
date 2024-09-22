@@ -16,6 +16,12 @@ import EditExpenseController from '../../../controllers/EditExpenseController'
 import Trans from '../../../controllers/internatiolization/Trans';
 const { height } = Dimensions.get('window');
 
+/**
+ * list of vehicles
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function ListVehicle(props: React.PropsWithChildren): JSX.Element {
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);

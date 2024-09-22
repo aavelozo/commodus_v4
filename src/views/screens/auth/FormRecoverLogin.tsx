@@ -14,7 +14,12 @@ import Trans from '../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 import { BaseAuth } from './BaseAuth';
 
-
+/**
+ * Password recover screen
+ * @param props 
+ * @returns 
+ * @author Alencar
+ */
 function FormRecoverLogin(props): JSX.Element {
     const [loading,setLoading] = useState(false);
     const [email, setEmail] = useState((props.user || {}).email)

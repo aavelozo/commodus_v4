@@ -26,9 +26,12 @@ const serviceList = [
     'air conditioning service'
 ];
 
-/******************************************************
-** COMPONENTE DA VIEW PRINCIPAL                      **
-******************************************************/
+/**
+ * Create/edit Mechanic expense
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function MechanicsExpense(props): JSX.Element {
     const selectServiceRef = useRef();
     const [loading, setLoading] = useState(false);

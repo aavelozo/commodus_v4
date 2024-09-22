@@ -4,7 +4,7 @@ import { DefaultStyles } from "../DefaultStyles";
 
 
 /**
- * Componente padrao do conteudo das tabs no app
+ * Default container content to use in tabs
  * @author Alencar
  * @created 2022-10-05
  */

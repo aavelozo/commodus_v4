@@ -18,6 +18,13 @@ import Trans from '../../controllers/internatiolization/Trans'
 import _ from 'lodash'
 import Utils from '../../controllers/Utils'
 
+
+/**
+ * Component to show expense as button on lists
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function ButtonCardExpense(props): JSX.Element {
     const item = props.data
     //const navigation = useNavigation();

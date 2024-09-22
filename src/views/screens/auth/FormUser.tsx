@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react'
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Alert, ScrollView, TouchableWithoutFeedback } from 'react-native'
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Alert, ScrollView } from 'react-native'
 import { Checkbox } from 'react-native-paper'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -16,7 +16,6 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import _ from 'lodash'
 import Trans from '../../../controllers/internatiolization/Trans'
-import { getAuth, fetchSignInMethodsForEmail } from 'firebase/auth';
 
 const schema = yup.object({
     fullName: yup.string().required(_.capitalize(Trans.t('msg_enter_full_name'))),
@@ -25,7 +24,12 @@ const schema = yup.object({
     confirmPassword: yup.string().min(6, `6 ${Trans.t('digits')}`).required(_.capitalize(Trans.t('msg_enter_password'))),
 })
 
-
+/**
+ * Form to use in user registration
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function FormUser(props: React.PropsWithChildren): JSX.Element {
     const [saving, setSaving] = useState(false);
     const [accept, setAccept] = useState(false);

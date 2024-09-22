@@ -12,11 +12,12 @@ import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import Utils from '../../../../controllers/Utils';
 
-
-
-/******************************************************
-** COMPONENTE DA VIEW PRINCIPAL                      **
-******************************************************/
+/**
+ * Create/edit Tire expense
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function TireExpense(props): JSX.Element {
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(false);

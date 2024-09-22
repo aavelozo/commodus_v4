@@ -1,10 +1,13 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
 import { RFValue } from 'react-native-responsive-fontsize'
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { DefaultStyles } from '../DefaultStyles';
 
-//COM-19
+/**
+ * Generic Alert to show messages
+ * //COM-19
+ * @author Bruno
+ * */
 
 function ModalAlert(props : React.PropsWithChildren) : JSX.Element {
     const [modalVisible, setModalVisible] = React.useState(true);   
@@ -41,12 +44,5 @@ function ModalAlert(props : React.PropsWithChildren) : JSX.Element {
         />
     )
 }
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    }
-});
 
 export default ModalAlert;

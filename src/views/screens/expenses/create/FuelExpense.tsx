@@ -18,9 +18,12 @@ const { width, height } = Dimensions.get('window')
 
 
 
-/******************************************************
-** COMPONENTE DA VIEW PRINCIPAL                      **
-******************************************************/
+/**
+ * Create/edit Fuel expense
+ * @param props 
+ * @returns 
+ * @author Bruno
+ */
 function FuelExpense(props): JSX.Element {
     const selectFuelRef = useRef();
     const [loading,setLoading] = useState(false);    
