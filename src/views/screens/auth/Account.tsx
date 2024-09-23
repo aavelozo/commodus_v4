@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid, Keyboard } from 'react-native'
 import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid, Keyboard, PermissionsAndroid, Platform } from 'react-native'
 import TitleView from '../../components/TitleView'
 import { useNavigation } from '@react-navigation/native'
