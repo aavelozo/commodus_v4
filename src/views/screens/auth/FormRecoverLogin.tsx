@@ -104,7 +104,8 @@ const style = StyleSheet.create({
     title: {
         fontSize: RFValue(24),
         marginTop: RFValue(-10),
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: '#666'
     },
     description: {
         marginLeft: RFValue(50),

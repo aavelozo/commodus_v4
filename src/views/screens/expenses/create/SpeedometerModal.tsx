@@ -17,7 +17,8 @@ import _ from 'lodash';
 function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
     const [visibleModal, setVisibleModal] = useState(true)
     const navigation = useNavigation();
-    console.log(height, 'heigth')
+    console.log(height, width, Trans.getDeviceLocale() )
+    const lang = Trans.getDeviceLocale() 
     // Sempre que entrar em foco, altera o modal como true
     useFocusEffect(useCallback(() => {
         EditExpenseController.currentExpense = null;
@@ -88,7 +89,7 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                             <View style={[style.iconTouch, { bottom: height * 0.25, left: width * 0.21 }]} />
                         </TouchableWithoutFeedback>
 
-                        <Text style={[style.text,{ bottom: height * 0.34, left: height >= 700 ? width * 0.42 : width * 0.392, position: 'absolute' }]}>
+                        <Text style={[style.text,{ bottom: height * 0.345, left: height >= 700 ? width * 0.42 : lang === 'pt_BR' ? width * 0.392 : width * 0.46, position: 'absolute' }]}>
                             {_.capitalize(Trans.t('fuel'))}
                         </Text>
                         <TouchableWithoutFeedback onPress={() => {
@@ -99,7 +100,7 @@ function SpeedometerModal(props: React.PropsWithChildren): JSX.Element {
                             <View style={[style.iconTouch, { bottom: height >= 700 ? height * 0.28 : height * 0.29, left: width * 0.425 }]} />
                         </TouchableWithoutFeedback>
 
-                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.305 : height * 0.302,  right: height >= 700 ? width * 0.20 : width * 0.18, position: 'absolute' }]}>
+                        <Text style={[style.text,{ bottom: height >= 700 ? height * 0.305 : height * 0.306,  right: height >= 700 ? width * 0.20 : lang === 'pt_BR' ? width * 0.18 : width * 0.25, position: 'absolute' }]}>
                             {_.capitalize(Trans.t('tire'))}
                         </Text>
                         <TouchableWithoutFeedback onPress={() => {

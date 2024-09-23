@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react'
-import { View, StyleSheet, TouchableOpacity, Alert, ToastAndroid } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Alert, ToastAndroid, PermissionsAndroid, Platform } from 'react-native'
 import { RFValue } from "react-native-responsive-fontsize";
 import { DefaultStyles } from '../../DefaultStyles';
 import Header from '../../components/Header';
@@ -140,7 +140,31 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
 
     }
 
-
+    const requestCameraPermission = async () => {
+        if (Platform.OS === 'android') {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.CAMERA,
+                    {
+                        title: `${Trans.t('Permission to use the camera')}`,
+                        message:`${Trans.t('This app needs to access the camera to take photos.')}`,
+                        buttonNeutral: `${Trans.t('Ask later')}`,
+                        buttonNegative: `${_.capitalize(Trans.t('cancel'))}`,
+                        buttonPositive: "OK"
+                    }
+                );
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                    handleImageCar()
+                } else {
+                    Alert.alert(`${Trans.t('Permission denied')}`, `${Trans.t('You have not granted access to the camera.')}`);
+                }
+            } catch (err) {
+                console.warn(err);
+            }
+        } else {
+            handleImageCar()
+        }
+    };
 
 
     const saveVehicle = async () => {
@@ -514,7 +538,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                     <TouchableOpacity
                         style={{ alignItems: 'center', marginTop: RFValue(10), alignSelf: 'flex-end' }}
                         onPress={() => {
-                            handleImageCar()
+                            requestCameraPermission()
                         }}
                     >
                         <Camera width={RFValue(50)} height={RFValue(50)} />

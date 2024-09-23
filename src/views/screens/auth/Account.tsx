@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid, Keyboard } from 'react-native'
+import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, ToastAndroid, Keyboard, PermissionsAndroid, Platform } from 'react-native'
 import TitleView from '../../components/TitleView'
 import { useNavigation } from '@react-navigation/native'
 import { RFValue } from 'react-native-responsive-fontsize'
@@ -79,6 +80,32 @@ function Account(props): JSX.Element {
         }
     }, [])
 
+    const requestCameraPermission = async () => {
+        if (Platform.OS === 'android') {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.CAMERA,
+                    {
+                        title: `${Trans.t('Permission to use the camera')}`,
+                        message:`${Trans.t('This app needs to access the camera to take photos.')}`,
+                        buttonNeutral: `${Trans.t('Ask later')}`,
+                        buttonNegative: `${_.capitalize(Trans.t('cancel'))}`,
+                        buttonPositive: "OK"
+                    }
+                );
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                    handleImageUser()
+                } else {
+                    Alert.alert(`${Trans.t('Permission denied')}`, `${Trans.t('You have not granted access to the camera.')}`);
+                }
+            } catch (err) {
+                console.warn(err);
+            }
+        } else {
+            handleImageUser()
+        }
+    };
+
     // mostra alert para selecionar camera ou galeria
     const handleImageUser = () => {
         Alert.alert(_.capitalize(Trans.t('image')), `${_.capitalize(Trans.t('select the location where your photo is'))}:`, [
@@ -103,8 +130,7 @@ function Account(props): JSX.Element {
             const result = await launchImageLibrary(options)
             if (result.assets) {
                 setFoto(result.assets[0].uri.toString());
-                console.log(result.assets[0].uri.toString())
-                // showToast("Imagem inserida com sucesso!")
+                showToast(`${Trans.t('Image added. Need to conclude')}.`)
                 return
             }
         } catch (error) {
@@ -151,6 +177,7 @@ function Account(props): JSX.Element {
         const result = await launchCamera(options)
         if (result.assets) {
             setFoto(result.assets[0].uri.toString());
+            showToast(`${Trans.t('Image added. Need to conclude')}.`)
             return
         }
     }
@@ -198,7 +225,7 @@ function Account(props): JSX.Element {
                     <View style={{ height: '30%', justifyContent: 'flex-end', marginTop: RFValue(10), alignItems: 'center', }}>
                         <TouchableOpacity
                             onPress={() => {
-                                handleImageUser()
+                                requestCameraPermission()
                             }}>
                             {
                                 foto ?

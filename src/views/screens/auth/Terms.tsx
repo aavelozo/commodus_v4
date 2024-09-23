@@ -28,7 +28,7 @@ function Terms({ navigation }): JSX.Element {
                             <Text style={style.text}>   {Trans.t("The Application is intended for user's aged 16 or over. By using the Application, you declare that you are at least 16 years old.")}</Text>
                             <Text />
 
-                            <Text style={style.text}>{Trans.t('3. General Provisions')}</Text>
+                            <Text style={style.text}>{Trans.t("3. General Provisions")}</Text>
                             <Text style={style.text}>   {Trans.t('This Term is governed by Brazilian law and any disputes arising from the use of the application will be resolved by the competent Brazilian courts. If any provision of these Terms is considered invalid or unenforceable.')}</Text>
                             <Text />
 
