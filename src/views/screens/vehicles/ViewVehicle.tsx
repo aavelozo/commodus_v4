@@ -19,7 +19,6 @@ import Trans from '../../../controllers/internatiolization/Trans'
 import _ from 'lodash'
 import Utils from '../../../controllers/Utils'
 
-
 const { width, height } = Dimensions.get('window');
 
 let currentViewVehicle;

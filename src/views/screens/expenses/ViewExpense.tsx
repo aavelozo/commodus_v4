@@ -16,6 +16,8 @@ import EditExpenseController from '../../../controllers/EditExpenseController'
 import { ActivityIndicator } from 'react-native-paper'
 import Trans from '../../../controllers/internatiolization/Trans'
 const { height, width } = Dimensions.get('window');
+import { requestNotificationPermission } from '../../components/Notification'
+
 
 /**
  * View expense screen
@@ -64,6 +66,7 @@ function ViewExpense(props): JSX.Element {
                 console.log('newVehicles', newVehicles);
                 console.log('newAllExpenses', newAllExpenses);
                 console.log('newTotalValue', newTotalValue);
+                requestNotificationPermission()
                 setVehicles(newVehicles);
                 setExpenses(newAllExpenses);
                 setTotalValue(newTotalValue);
@@ -77,6 +80,7 @@ function ViewExpense(props): JSX.Element {
         })();
     }, []))
 
+   
     return (
         <>
             <Header />

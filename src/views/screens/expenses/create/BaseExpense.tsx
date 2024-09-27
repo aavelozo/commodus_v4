@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback } from 'react'
-import { View, StyleSheet, ScrollView} from 'react-native'
+import { View, StyleSheet, ScrollView } from 'react-native'
 import TitleView from '../../../components/TitleView';
 import Header from '../../../components/Header';
 import ContentContainer from '../../../components/ContentContainer';
@@ -17,6 +17,7 @@ import EditExpenseController from '../../../../controllers/EditExpenseController
 import Vehicles from '../../../../database/models/Vehicles';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
+import { scheduleNotification } from '../../../components/Notification';
 
 /**
  * Create/edit base expense, to reuse in others expenses, contains default fields to reuse and save method
@@ -30,7 +31,7 @@ function BaseExpense(props): JSX.Element {
     const [missingData, setMissingData] = useState(false);
 
     //default properties
-    const [vehicles, setVehicles] = useState([]);   
+    const [vehicles, setVehicles] = useState([]);
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [date, setDate] = useState(new Date());
     const [km, setKM] = useState('');
@@ -38,26 +39,26 @@ function BaseExpense(props): JSX.Element {
     const [isEnabledEstablishment, setIsEnabledEstablishment] = useState(false);
     const [observations, setObservations] = useState('');
     const [isEnabledObservations, setIsEnabledObservations] = useState(false);
-    
+
 
 
     useFocusEffect(useCallback(() => {
-        console.log('INIT BaseExpense.useFocusEffect.useCallBack',props.loading,props.loaded);
-        console.log('xxx',Utils.firstValid([props.hasEstablishment,true]),props.hasEstablishment);
+        console.log('INIT BaseExpense.useFocusEffect.useCallBack', props.loading, props.loaded);
+        console.log('xxx', Utils.firstValid([props.hasEstablishment, true]), props.hasEstablishment);
         if (!props.loading && !props.loaded) {
             props.setLoading(true);
-            (async()=>{
+            (async () => {
                 try {
                     console.log('loading expense...');
                     let newVehicles = await Vehicles.getSingleData();
-                    setVehicles(newVehicles);                                        
-                    console.log('EditExpenseController.currentExpense',EditExpenseController.currentExpense);
-                    if (EditExpenseController.currentExpense) { 
-                        console.log('loading states...');             
+                    setVehicles(newVehicles);
+                    console.log('EditExpenseController.currentExpense', EditExpenseController.currentExpense);
+                    if (EditExpenseController.currentExpense) {
+                        console.log('loading states...');
                         //default properties    
-                        props.setCurrentExpense(EditExpenseController.currentExpense);  
+                        props.setCurrentExpense(EditExpenseController.currentExpense);
                         let vehicleId = EditExpenseController.currentExpense.ref.parent.parent.id;
-                        setSelectedVehicle(newVehicles.find(el=>el.id == vehicleId));
+                        setSelectedVehicle(newVehicles.find(el => el.id == vehicleId));
                         console.log('loading states...2');
                         let dataExpense = EditExpenseController.currentExpense.data();
                         //date in firestore is object {"nanoseconds": 743000000, "seconds": 1713185626}
@@ -65,22 +66,22 @@ function BaseExpense(props): JSX.Element {
                             setDate(new Date(dataExpense.date.seconds * 1000 + dataExpense.date.nanoseconds / 1000000));
                         } else {
                             setDate(new Date());
-                        }                        
-                        setKM(Utils.toNumericText(dataExpense.actualkm||''));
+                        }
+                        setKM(Utils.toNumericText(dataExpense.actualkm || ''));
                         console.log('loading states...2.1');
-                        setEstablishment(dataExpense.establishment||'');
-                        setIsEnabledEstablishment(dataExpense.establishment?true:false);
-                        setObservations(dataExpense.observations||'');
+                        setEstablishment(dataExpense.establishment || '');
+                        setIsEnabledEstablishment(dataExpense.establishment ? true : false);
+                        setObservations(dataExpense.observations || '');
                         console.log('loading states...2.2');
-                        setIsEnabledObservations(dataExpense.observations?true:false);
+                        setIsEnabledObservations(dataExpense.observations ? true : false);
 
                     } else {
-                       clearStates();
+                        clearStates();
                     }
 
                     console.log('loading expense... ok');
                 } catch (e) {
-                    console.log(e);                    
+                    console.log(e);
                 } finally {
                     //props.setLoaded(true);
                     //props.setLoading(false);                    
@@ -89,34 +90,35 @@ function BaseExpense(props): JSX.Element {
         }
     }, [navigation]));
 
- 
+
     /**
      * save expense on cloud and persist on app
      * @author Alencar
      */
     async function saveExpense() {
         try {
-            if (!props.isMissingData() && date && selectedVehicle) {      
-                props.setSaving(true);     
-                console.log('idVehicle',selectedVehicle.id);                
-                let vehicle = (await Vehicles.getDBData())?.docs.find(el=>el.id == selectedVehicle.id);                
+            if (!props.isMissingData() && date && selectedVehicle) {
+                props.setSaving(true);
+                console.log('idVehicle', selectedVehicle.id);
+                let vehicle = (await Vehicles.getDBData())?.docs.find(el => el.id == selectedVehicle.id);
 
                 //COM-75 SAVE NEXT OIL CHANGE REMINDER
                 if (typeof props.getVehicleReminders == 'function') {
-                    let vehicleReminders = props.getVehicleReminders();                    
+                    let vehicleReminders = props.getVehicleReminders();
                     if (Utils.hasValue(vehicleReminders)) {
-                        if (Utils.hasValue(vehicle.reminders)) {                            
-                            vehicleReminders = {...vehicle.reminders,...vehicleReminders};
+                        if (Utils.hasValue(vehicle.reminders)) {
+                            vehicleReminders = { ...vehicle.reminders, ...vehicleReminders };
                         }
-                        if (Utils.toNumber(vehicleReminders.nextOilChange?.reminderKM||0) < Utils.toNumber(vehicle.data().km || 0)) {
+                        if (Utils.toNumber(vehicleReminders.nextOilChange?.reminderKM || 0) < Utils.toNumber(vehicle.data().km || 0)) {
                             throw new Error(Trans.t('msg_error_on_save_reminder_km'));
                         }
                         await vehicle.ref.update({
-                            reminders:vehicleReminders
-                        });                        
-                    }                    
+                            reminders: vehicleReminders
+                        });
+                    }
                 }
-
+                const getOthersDatas = props.getOthersDatas()
+                console.log(getOthersDatas)
 
                 if (props.currentExpense) {
                     //update                    
@@ -127,8 +129,8 @@ function BaseExpense(props): JSX.Element {
                         totalValue: Utils.hasValue(props.totalValue) ? Utils.toNumber(props.totalValue) : null,
                         establishment: establishment,
                         observations: observations,
-                        othersdatas: props.getOthersDatas()
-                    });                    
+                        othersdatas: getOthersDatas
+                    });
                 } else {
                     //create
                     let newExpense = await vehicle.ref.collection('expenses').add({
@@ -138,14 +140,17 @@ function BaseExpense(props): JSX.Element {
                         totalValue: Utils.hasValue(props.totalValue) ? Utils.toNumber(props.totalValue) : null,
                         establishment: establishment,
                         observations: observations,
-                        othersdatas: props.getOthersDatas()
-                    });                    
+                        othersdatas: getOthersDatas
+                    });
+                }
+                if (getOthersDatas.dateReminder) {
+                    scheduleNotification(getOthersDatas.dateReminder, 'reminder')
                 }
                 goBack();
-                Utils.toast("success",_.capitalize(Trans.t("successfull saved data")));
+                Utils.toast("success", _.capitalize(Trans.t("successfull saved data")));
             } else {
                 setMissingData(true);
-                Utils.toast("error",_.capitalize(Trans.t("missing data")));
+                Utils.toast("error", _.capitalize(Trans.t("missing data")));
             }
         } catch (e) {
             Utils.showError(e);
@@ -154,9 +159,9 @@ function BaseExpense(props): JSX.Element {
         }
     }
 
-    function clearStates(){
+    function clearStates() {
         console.log('clearing states ...');
-        props.setCurrentExpense(null);                
+        props.setCurrentExpense(null);
         setSelectedVehicle(null);
         setDate(new Date());
         setKM('');
@@ -182,10 +187,10 @@ function BaseExpense(props): JSX.Element {
 
     return (
         <View style={style.container}>
-            <Header 
-                withButtons={true} 
-                onPressConclude={saveExpense} 
-                onPressCancel={goBack} 
+            <Header
+                withButtons={true}
+                onPressConclude={saveExpense}
+                onPressCancel={goBack}
                 saving={props.loading || props.saving}
             />
             <View style={style.espacoCentral}>
@@ -193,11 +198,11 @@ function BaseExpense(props): JSX.Element {
 
                 <ContentContainer >
                     <ScrollView>
-                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}                        
+                        {/* SELECIONE VEICULO (Caso tenha mais que 1 veiculo) */}
                         <SelectDropdown
                             dropdownStyle={DefaultStyles.dropdownMenuStyle}
                             search={true}
-                            showsVerticalScrollIndicator={true}                            
+                            showsVerticalScrollIndicator={true}
                             data={vehicles}
                             defaultValue={selectedVehicle}
                             renderButton={(selectedItem, isOpened) => {
@@ -212,22 +217,22 @@ function BaseExpense(props): JSX.Element {
                                             readOnly
                                         />
                                         <HelperText
-                                            style={DefaultStyles.defaultHelperText}            
+                                            style={DefaultStyles.defaultHelperText}
                                             type="error"
                                             visible={missingData && !selectedVehicle}
                                         >
                                             {_.capitalize(Trans.t('select a vehicle'))}
-                                        </HelperText> 
+                                        </HelperText>
                                     </View>
                                 );
                             }}
                             renderItem={(item, index, isSelected) => {
-                                return (<View style={{...DefaultStyles.dropdownTextView, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
-                                        <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate?.toUpperCase() }</Text>
+                                return (<View style={{ ...DefaultStyles.dropdownTextView, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                                    <Text style={DefaultStyles.dropdownText}>{item.vehicleName || item.plate?.toUpperCase()}</Text>
                                 </View>);
                             }}
                             onSelect={(selectedItem, index) => {
-                                setKM(Utils.toNumericText(selectedItem.km||''));
+                                setKM(Utils.toNumericText(selectedItem.km || ''));
                                 setSelectedVehicle(selectedItem);
                             }}
                             ref={selectVehicleRef}
@@ -237,52 +242,52 @@ function BaseExpense(props): JSX.Element {
                         <DateComponent date={date} setDate={setDate} error={missingData && !date} />
 
                         {/* QUILOMETRAGEM ATUAL */}
-                        <InputKM km={km} setKM={setKM} />  
-                        {!props.childrenAfterEstablishment 
+                        <InputKM km={km} setKM={setKM} />
+                        {!props.childrenAfterEstablishment
                             ? props.children
                             : null
                         }
-                        {Utils.firstValid([props.hasEstablishment,true]) 
+                        {Utils.firstValid([props.hasEstablishment, true])
                             ? <Establishment
                                 isEnabled={isEnabledEstablishment}
                                 establishment={establishment}
                                 setIsEnabled={setIsEnabledEstablishment}
                                 setEstablishment={setEstablishment}
-                            />:null
-                        } 
-                        {Utils.firstValid([props.hasEstablishment,true]) 
+                            /> : null
+                        }
+                        {Utils.firstValid([props.hasEstablishment, true])
                             ? <HelperText
-                                style={DefaultStyles.defaultHelperText}            
+                                style={DefaultStyles.defaultHelperText}
                                 type="error"
                                 visible={false}
                             >
                                 {_.capitalize(Trans.t('enter a value'))}
                             </HelperText>
-                            :null
+                            : null
                         }
-                        {props.childrenAfterEstablishment 
+                        {props.childrenAfterEstablishment
                             ? props.children
                             : null
                         }
-                        {Utils.firstValid([props.hasObservations,true]) 
+                        {Utils.firstValid([props.hasObservations, true])
                             ? <Observations
                                 isEnabled={isEnabledObservations}
                                 observations={observations}
                                 setIsEnabled={setIsEnabledObservations}
                                 setObservations={setObservations}
                             />
-                            :null
+                            : null
                         }
-                        {Utils.firstValid([props.hasObservations,true]) 
+                        {Utils.firstValid([props.hasObservations, true])
                             ? <HelperText
-                                style={DefaultStyles.defaultHelperText}            
+                                style={DefaultStyles.defaultHelperText}
                                 type="error"
                                 visible={false}
                             >
                                 {_.capitalize(Trans.t('enter a value'))}
                             </HelperText>
                             : null
-                        }                      
+                        }
                     </ScrollView>
                 </ContentContainer>
             </View >
@@ -303,4 +308,4 @@ const style = StyleSheet.create({
     }
 });
 
-export {BaseExpense};
+export { BaseExpense };
