@@ -1,4 +1,4 @@
-import notifee, { TimestampTrigger, TriggerType, AuthorizationStatus } from '@notifee/react-native';
+import notifee, { TimestampTrigger, TriggerType, AuthorizationStatus, AndroidStyle } from '@notifee/react-native';
 import { useState } from 'react'
 import { Appearance } from 'react-native';
 import Trans from "../../controllers/internatiolization/Trans";
@@ -8,18 +8,18 @@ import _ from 'lodash';
 // const [colorScheme, setColorScheme] = useState(Appearance.getColorScheme());
 
 
-const createChannelId = async (type) => {
+const createChannelId = async (type: string) => {
 	if (type == 'insights') {
 		const channelId = await notifee.createChannel({
 			id: 'financial-insights',
-			name: 'Insights financeiros',
+			name: Trans.t('Financial insights'),
 		});
 		return channelId
 
 	} else if (type == 'reminder') {
 		const channelId = await notifee.createChannel({
 			id: 'expense-reminder',
-			name: 'Lembrete de despesa',
+			name: Trans.t('Lembrete de despesa'),
 		});
 		return channelId
 	} else {
@@ -33,13 +33,15 @@ const createChannelId = async (type) => {
 	}
 }
 
-const createTrigger = (date) => {
-	const now = new Date()
-	const nowInMs = now.getTime()
-	const futureInMs = nowInMs + 3000
+const createTrigger = (date: any) => {
+	console.log(date.getTime())
+	console.log('createTrigger date.getTime()')
+	const now = new Date();
+
+	now.setTime(now.getTime() + 5 * 1000);
 	const trigger: TimestampTrigger = {
 		type: TriggerType.TIMESTAMP,
-		timestamp: futureInMs, // fire at 11:10am (10 minutes before meeting)
+		timestamp: now.getTime()
 	};
 	return trigger
 }
@@ -53,25 +55,32 @@ export const requestNotificationPermission = async () => {
 	}
 }
 
-
-
-
-export const scheduleNotification = async (date, type) => {
-	const channelId = await createChannelId(type)
-	const color = Appearance.getColorScheme()
-	const trigger = createTrigger(date)
-	console.log(trigger)
-	await notifee.createTriggerNotification(
-		{
-			title: `${_.capitalize(Trans.t('revision reminder'))} ⚠️`,
-			body: _.capitalize(Trans.t(`today is the day to do the job again`)),
-			android: {
-				channelId: channelId,
-				largeIcon: color == 'dark' ? require('../assets/logoCommodus.png') : require('../assets/logoCommodusEscuro.png'),
-				color: '#1B2040'
-			},
+const createAndroid = (channelId: any, colorDefault: any, body: any) => {
+	const android = {
+		channelId: channelId,
+		largeIcon: colorDefault == 'dark' ? require('../assets/logoCommodus.png') : require('../assets/logoCommodusEscuro.png'),
+		color: '#1B2040',
+		style: {
+			type: AndroidStyle.BIGTEXT,
+			text: body,
 		},
+	}
+	return android
+}
+
+export const schedulReminderNotification = async (date: any, title: string, body: string) => {
+	const channelId = await createChannelId('reminder')
+	const colorDefault = Appearance.getColorScheme()
+	const trigger = createTrigger(date)
+	const android = createAndroid(channelId, colorDefault, body)
+	await notifee.createTriggerNotification({
+		title: title,
+		body: body,
+		android: android
+	},
 		trigger
 	);
 }
+
+
 

@@ -17,7 +17,8 @@ import EditExpenseController from '../../../../controllers/EditExpenseController
 import Vehicles from '../../../../database/models/Vehicles';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
-import { scheduleNotification } from '../../../components/Notification';
+import { schedulReminderNotification } from '../../../components/Notification';
+import moment from 'moment';
 
 /**
  * Create/edit base expense, to reuse in others expenses, contains default fields to reuse and save method
@@ -97,11 +98,17 @@ function BaseExpense(props): JSX.Element {
      */
     async function saveExpense() {
         try {
+            const getOthersDatas = props.getOthersDatas()
             if (!props.isMissingData() && date && selectedVehicle) {
                 props.setSaving(true);
                 console.log('idVehicle', selectedVehicle.id);
                 let vehicle = (await Vehicles.getDBData())?.docs.find(el => el.id == selectedVehicle.id);
 
+                // if (vehicle._data.reminders.nextOilChange.reminderKM <= vehicle._data.km) {
+                //     console.log(vehicle._data.reminders.nextOilChange.reminderKM)
+                //     console.log(vehicle._data.km)
+                // }
+                // console.log('vehicle._data.reminders')
                 //COM-75 SAVE NEXT OIL CHANGE REMINDER
                 if (typeof props.getVehicleReminders == 'function') {
                     let vehicleReminders = props.getVehicleReminders();
@@ -109,7 +116,7 @@ function BaseExpense(props): JSX.Element {
                         if (Utils.hasValue(vehicle.reminders)) {
                             vehicleReminders = { ...vehicle.reminders, ...vehicleReminders };
                         }
-                        if (Utils.toNumber(vehicleReminders.nextOilChange?.reminderKM || 0) < Utils.toNumber(vehicle.data().km || 0)) {
+                        if (Utils.toNumber(vehicleReminders.nextOilChange?.reminderKM || 0) < Utils.toNumber(vehicle.data().km || 0) && getOthersDatas.reminderMonths <= 0) {
                             throw new Error(Trans.t('msg_error_on_save_reminder_km'));
                         }
                         await vehicle.ref.update({
@@ -117,8 +124,7 @@ function BaseExpense(props): JSX.Element {
                         });
                     }
                 }
-                const getOthersDatas = props.getOthersDatas()
-                console.log(getOthersDatas)
+
 
                 if (props.currentExpense) {
                     //update                    
@@ -143,8 +149,39 @@ function BaseExpense(props): JSX.Element {
                         othersdatas: getOthersDatas
                     });
                 }
-                if (getOthersDatas.dateReminder) {
-                    scheduleNotification(getOthersDatas.dateReminder, 'reminder')
+                var title;
+                console.log(getOthersDatas)
+                console.log('getOthersDatas')
+                console.log(props.type)
+                console.log('props.type')
+                var body;
+                if (getOthersDatas.reminderMonths) {
+                    const reminderDate = moment(new Date()).add(Number(getOthersDatas.reminderMonths), 'seconds')
+                    const dateFormat = moment(reminderDate).format()
+                    title = `${_.capitalize(Trans.t('time to change the oil!'))}`
+                    body = Trans.t(`It's time to change your vehicle's oil. Keep the engine running smoothly.`)
+                    schedulReminderNotification(new Date(dateFormat), title, body)
+                } else if (getOthersDatas.dateReminder && props.type == 'MECHANIC') {
+                    const dateFormat = moment(getOthersDatas.dateReminder).format()
+                    title = `${_.capitalize(Trans.t('pending mechanical review'))}`
+                    body = Trans.t(`It's time to schedule a review! Check brakes, engine and other essential components.`)
+                    schedulReminderNotification(new Date(dateFormat), title, body)
+                } else if (getOthersDatas.dateReminderAlignment) {
+                    const dateFormat = moment(getOthersDatas.dateReminderAlignment).format()
+                    title = `${_.capitalize(Trans.t('time to align your tires!'))}`
+                    body = Trans.t(`Your vehicle needs alignment. Ensure stable and safe driving.`)
+                    schedulReminderNotification(new Date(dateFormat), title, body)
+                } else if (getOthersDatas.dateReminder && props.type == 'OTHER') {
+                       const dateFormat = moment(getOthersDatas.dateReminder).format()
+                    title = `${_.capitalize(Trans.t('pending expense reminder'))}`
+                    body = Trans.t(`You registered a generic expense. Don't forget to check it or carry out the necessary maintenance.`)
+                    schedulReminderNotification(new Date(dateFormat), title, body)
+                }
+                if (getOthersDatas.dateReminderBalancing) {
+                    const dateFormat = moment(getOthersDatas.dateReminderBalancing).format()
+                    title = `${_.capitalize(Trans.t('time to balance the tires!'))}`
+                    body = Trans.t(`Schedule tire balancing to prevent uneven wear and improve driving comfort`)
+                    schedulReminderNotification(new Date(dateFormat), title, body)
                 }
                 goBack();
                 Utils.toast("success", _.capitalize(Trans.t("successfull saved data")));

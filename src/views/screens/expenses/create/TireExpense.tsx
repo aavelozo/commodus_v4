@@ -169,7 +169,7 @@ function TireExpense(props): JSX.Element {
                     onPress={() => setIsReminderBalancingEnabled(!isReminderBalancingEnabled)}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                        {_.capitalize(Trans.t('next alignment balancing'))}
+                        {_.capitalize(Trans.t('next balancing reminder'))}
                     </Text>
                 </TouchableWithoutFeedback>
             </View>
