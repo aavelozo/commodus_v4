@@ -21,7 +21,7 @@ import { BaseAuth } from './BaseAuth';
  * @author Alencar
  */
 function FormRecoverLogin(props): JSX.Element {
-    const [loading,setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState((props.user || {}).email)
     const [errorMessage, setErrorMessage] = useState('');
     const navigation = useNavigation();
@@ -33,18 +33,19 @@ function FormRecoverLogin(props): JSX.Element {
                 setLoading(true);
 
                 //check if user exists
-                let userDoc = await firestore().collection('Users').where('email','==',email.trim().toLowerCase()).get();            
+                let userDoc = await firestore().collection('Users').where('email', '==', email.trim().toLowerCase()).get();
                 if (userDoc && userDoc.size > 0) {
 
                     //firebase function to send user recover link                
-                    let result = await auth().sendPasswordResetEmail(email);                
+                    let result = await auth().sendPasswordResetEmail(email);
                     console.log(result);
                     if (result) {
                         console.log(result);
                         setErrorMessage(result);
                     } else {
                         setErrorMessage('');
-                        Alert.alert('',Trans.t('msg_password_recover_check_email'));
+                        showAlert()
+                        // Alert.alert('', Trans.t('msg_password_recover_check_email'));
                     }
                 } else {
                     setErrorMessage(Trans.t('not registered e-mail'));
@@ -60,17 +61,27 @@ function FormRecoverLogin(props): JSX.Element {
         }
     }
 
+    function showAlert() {
+        Alert.alert(Trans.t('Email sent'), Trans.t('msg_password_recover_check_email'),
+            [{
+                text: Trans.t('I understood'),
+                onPress: () => navigation.navigate('Login')
+            }],
+            { cancelable: false }
+        );
+    }
+
     return (
         <BaseAuth
-            onConfirm={()=>recoverPassword(email)}
+            onConfirm={() => recoverPassword(email)}
             textConfirm={_.capitalize(Trans.t('confirm'))}
-            afterConfirmButton={<TouchableOpacity 
-                    onPress={() => navigation.navigate('UserRegistration')}>
-                    <>
-                        <Text style={{ marginTop: 50, color: DefaultStyles.colors.tabBar }}>{Trans.t('ask_dont_registered')}</Text>
-                        <Text style={{ textAlign: 'center', color: DefaultStyles.colors.tabBar }}>{_.capitalize(Trans.t('register now'))}</Text>
-                    </>
-                </TouchableOpacity>
+            afterConfirmButton={<TouchableOpacity
+                onPress={() => navigation.navigate('UserRegistration')}>
+                <>
+                    <Text style={{ marginTop: 50, color: DefaultStyles.colors.tabBar }}>{Trans.t('ask_dont_registered')}</Text>
+                    <Text style={{ textAlign: 'center', color: DefaultStyles.colors.tabBar }}>{_.capitalize(Trans.t('register now'))}</Text>
+                </>
+            </TouchableOpacity>
             }
         >
             <Text style={style.title}>{_.capitalize(Trans.t('account recover'))}</Text>
@@ -88,7 +99,7 @@ function FormRecoverLogin(props): JSX.Element {
                     disabled={loading}
                 />
                 <HelperText
-                    style={[DefaultStyles.defaultHelperText,{marginLeft:10}]}            
+                    style={[DefaultStyles.defaultHelperText, { marginLeft: 10 }]}
                     type="error"
                     visible={errorMessage ? true : false}
                 >
@@ -100,7 +111,7 @@ function FormRecoverLogin(props): JSX.Element {
     )
 }
 
-const style = StyleSheet.create({    
+const style = StyleSheet.create({
     title: {
         fontSize: RFValue(24),
         marginTop: RFValue(-10),

@@ -66,7 +66,7 @@ function ViewExpense(props): JSX.Element {
                 console.log('newVehicles', newVehicles);
                 console.log('newAllExpenses', newAllExpenses);
                 console.log('newTotalValue', newTotalValue);
-                requestNotificationPermission()
+                // requestNotificationPermission()
                 setVehicles(newVehicles);
                 setExpenses(newAllExpenses);
                 setTotalValue(newTotalValue);

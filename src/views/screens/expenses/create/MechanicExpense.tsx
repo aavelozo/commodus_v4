@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { View, TouchableWithoutFeedback, Switch, Text } from 'react-native'
 import DateComponent from '../../../components/expenses/DateComponent';
 import { HelperText, TextInput } from 'react-native-paper';
@@ -12,6 +12,7 @@ import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 import Utils from '../../../../controllers/Utils';
+import { requestNotificationPermission } from '../../../components/Notification';
 
 
 const serviceList = [
@@ -85,9 +86,8 @@ function MechanicsExpense(props): JSX.Element {
                     setLoading(false);
                 }
             })();
-        }        
+        }
     }, []));
-
 
     function clearStates() {
         console.log('clearing states ...');
@@ -108,7 +108,7 @@ function MechanicsExpense(props): JSX.Element {
         let result = false;
         if (!totalValue) {
             result = true;
-        } 
+        }
         setMissingData(result);
         return result;
     }
@@ -137,7 +137,7 @@ function MechanicsExpense(props): JSX.Element {
             getOthersDatas={getOthersDatas}
             totalValue={totalValue}
         >
-        
+
             {/* dropdown: usado para selecionar o serviço e atualizar o txtinput */}
             <SelectDropdown
                 dropdownStyle={DefaultStyles.dropdownMenuStyle}
@@ -157,7 +157,7 @@ function MechanicsExpense(props): JSX.Element {
                                 readOnly
                             />
                             <HelperText
-                                style={DefaultStyles.defaultHelperText}            
+                                style={DefaultStyles.defaultHelperText}
                                 type="error"
                                 visible={false}
                             >
@@ -177,18 +177,24 @@ function MechanicsExpense(props): JSX.Element {
                 ref={selectServiceRef}
             />
 
-            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
+            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData} />
 
             <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
                 <Switch
                     trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
                     thumbColor={isEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
                     ios_backgroundColor="#3e3e3e"
-                    onValueChange={enabled => setIsEnabled(enabled)}
+                    onValueChange={enabled => {
+                        if (enabled == true) requestNotificationPermission()
+                        setIsEnabled(enabled)
+                    }}
                     value={isEnabled}
                 />
                 <TouchableWithoutFeedback
-                    onPress={() => setIsEnabled(!isEnabled)}
+                    onPress={() => {
+                        if (!isEnabled) requestNotificationPermission()
+                        setIsEnabled(!isEnabled)
+                    }}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
                         {_.capitalize(Trans.t('service review reminder'))}

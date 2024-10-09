@@ -12,7 +12,7 @@ import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 const { width, height } = Dimensions.get('window')
-
+import { requestNotificationPermission } from '../../../components/Notification';
 
 /**
  * Create/edit Oil expense
@@ -197,10 +197,14 @@ function OilExpense(props): JSX.Element {
                     trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
                     thumbColor={isReminderEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
                     ios_backgroundColor="#3e3e3e"
-                    onValueChange={enabled => setIsReminderEnabled(enabled)}
+                    onValueChange={enabled => {
+                        if (enabled == true) requestNotificationPermission()
+                        setIsReminderEnabled(enabled)}}
                     value={isReminderEnabled}
                 />
-                <TouchableWithoutFeedback onPress={() => setIsReminderEnabled(!isReminderEnabled)}>
+                <TouchableWithoutFeedback onPress={() => {
+                      if (!isReminderEnabled) requestNotificationPermission()
+                    setIsReminderEnabled(!isReminderEnabled)}}>
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
                         {_.capitalize(Trans.t('next exchange reminder'))}
                     </Text>

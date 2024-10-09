@@ -11,6 +11,7 @@ import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import _ from 'lodash';
 import Utils from '../../../../controllers/Utils';
+import { requestNotificationPermission } from '../../../components/Notification';
 
 /**
  * Create/edit Others expense
@@ -19,9 +20,9 @@ import Utils from '../../../../controllers/Utils';
  * @author Bruno
  */
 function OthersExpense(props): JSX.Element {
-    const [loading,setLoading] = useState(false);    
-    const [loaded,setLoaded] = useState(false); 
-    const [saving,setSaving] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [loaded, setLoaded] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [missingData, setMissingData] = useState(false);
 
     //default properties
@@ -43,20 +44,20 @@ function OthersExpense(props): JSX.Element {
             (async () => {
                 try {
                     console.log('loading expense...');
-                    console.log('EditExpenseController.currentExpense',EditExpenseController.currentExpense);
-                    if (EditExpenseController.currentExpense) { 
-                        console.log('loading states...');             
+                    console.log('EditExpenseController.currentExpense', EditExpenseController.currentExpense);
+                    if (EditExpenseController.currentExpense) {
+                        console.log('loading states...');
                         //default properties    
-                        setCurrentExpense(EditExpenseController.currentExpense);  
+                        setCurrentExpense(EditExpenseController.currentExpense);
                         let dataExpense = EditExpenseController.currentExpense.data();
-                        setTotalValue(Utils.toNumericText(dataExpense.totalValue||''));
+                        setTotalValue(Utils.toNumericText(dataExpense.totalValue || ''));
 
                         //specific properties
                         setDescription(dataExpense.othersdatas.description || null);
                         setDateReminder(dataExpense.othersdatas.dateReminder || null);
                     } else {
-                       clearStates();
-                    }                          
+                        clearStates();
+                    }
                     console.log('loading expense... ok');
                 } catch (e) {
                     console.log(e);
@@ -64,7 +65,7 @@ function OthersExpense(props): JSX.Element {
                     setLoaded(true);
                     setLoading(false);
                 }
-            })();            
+            })();
         }
     }, [props.navigation]));
 
@@ -73,7 +74,7 @@ function OthersExpense(props): JSX.Element {
         let result = false;
         if (!totalValue || !description) {
             result = true;
-        } 
+        }
         setMissingData(result);
         return result;
     }
@@ -85,15 +86,15 @@ function OthersExpense(props): JSX.Element {
         }
     }
 
-    function clearStates(){
-        setCurrentExpense(null);                
+    function clearStates() {
+        setCurrentExpense(null);
         setTotalValue('');
 
         //specific properties
         setDescription(null);
         setDateReminder(null);
     }
-    
+
     return (
         <BaseExpense
             title='other expense'
@@ -111,10 +112,10 @@ function OthersExpense(props): JSX.Element {
             getOthersDatas={getOthersDatas}
             totalValue={totalValue}
         >
-        
+
             <TextInput
                 {...DefaultProps.textInput}
-                style={DefaultStyles.textInput}                
+                style={DefaultStyles.textInput}
                 keyboardType='default'
                 label={`* ${_.capitalize(Trans.t('expense description'))}`}
                 onChangeText={value => setDescription(value)}
@@ -122,25 +123,31 @@ function OthersExpense(props): JSX.Element {
                 maxLength={20}
             />
             <HelperText
-                style={DefaultStyles.defaultHelperText}            
+                style={DefaultStyles.defaultHelperText}
                 type="error"
                 visible={missingData && !description}
             >
                 {_.capitalize(Trans.t('enter a description'))}
             </HelperText>
 
-            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
+            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData} />
 
             <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
                 <Switch
                     trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
                     thumbColor={isReminder ? "#007C76" : DefaultStyles.colors.fundoInput}
                     ios_backgroundColor="#3e3e3e"
-                    onValueChange={enabled => setIsReminder(enabled)}
+                    onValueChange={enabled => {
+                        if (enabled == true) requestNotificationPermission()
+                        setIsReminder(enabled)
+                    }}
                     value={isReminder}
                 />
                 <TouchableWithoutFeedback
-                    onPress={() => setIsReminder(!isReminder)}
+                    onPress={() => {
+                        if (!isReminder) requestNotificationPermission()
+                        setIsReminder(!isReminder)
+                    }}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
                         {_.capitalize(Trans.t('service review reminder'))}

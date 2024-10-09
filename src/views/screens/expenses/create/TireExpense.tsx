@@ -11,6 +11,7 @@ import { BaseExpense } from './BaseExpense';
 import { TotalValue } from '../../../components/expenses/TotalValue';
 import Trans from '../../../../controllers/internatiolization/Trans';
 import Utils from '../../../../controllers/Utils';
+import { requestNotificationPermission } from '../../../components/Notification';
 
 /**
  * Create/edit Tire expense
@@ -58,7 +59,7 @@ function TireExpense(props): JSX.Element {
                         console.log(new Date(dataExpense.othersdatas.dateReminderAlignment.seconds * 1000 + dataExpense.othersdatas.dateReminderAlignment.nanoseconds / 1000000))
                         console.log(dataExpense.othersDatas.dateReminderAlignment.seconds, dataExpense.othersDatas.dateReminderAlignment.nanoseconds)
                         setDateReminderAlignment(new Date(dataExpense.othersDatas.dateReminderAlignment.seconds * 1000 + dataExpense.othersDatas.dateReminderAlignment.nanoseconds / 1000000) || null)
-                        setDateReminderBalancing(new Date(dataExpense.othersdatas.dateReminderBalancing.seconds * 1000 + dataExpense.othersdatas.dateReminderBalancing.nanoseconds / 1000000)|| null)
+                        setDateReminderBalancing(new Date(dataExpense.othersdatas.dateReminderBalancing.seconds * 1000 + dataExpense.othersdatas.dateReminderBalancing.nanoseconds / 1000000) || null)
                     } else {
                         clearStates();
                     }
@@ -77,7 +78,7 @@ function TireExpense(props): JSX.Element {
         let result = false;
         if (!totalValue) {
             result = true;
-        } 
+        }
         setMissingData(result);
         return result;
     }
@@ -117,7 +118,7 @@ function TireExpense(props): JSX.Element {
             getOthersDatas={getOthersDatas}
             totalValue={totalValue}
         >
-        
+
             <TextInput
                 {...DefaultProps.textInput}
                 style={DefaultStyles.textInput}
@@ -127,25 +128,31 @@ function TireExpense(props): JSX.Element {
                 value={tireService}
             />
             <HelperText
-                style={DefaultStyles.defaultHelperText}            
+                style={DefaultStyles.defaultHelperText}
                 type="error"
                 visible={false}
             >
                 {_.capitalize(Trans.t('enter a value'))}
             </HelperText>
 
-            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData}/>
+            <TotalValue totalValue={totalValue} setTotalValue={setTotalValue} missingData={missingData} />
 
             <View style={{ width: '100%', alignItems: 'flex-start', flexDirection: 'row', marginBottom: 10 }}>
                 <Switch
                     trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
                     thumbColor={isReminderAlignmentEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
                     ios_backgroundColor="#3e3e3e"
-                    onValueChange={enabled => setIsReminderAlignmentEnabled(enabled)}
+                    onValueChange={enabled => {
+                        if (enabled == true) requestNotificationPermission()
+                        setIsReminderAlignmentEnabled(enabled)
+                    }}
                     value={isReminderAlignmentEnabled}
                 />
                 <TouchableWithoutFeedback
-                    onPress={() => setIsReminderAlignmentEnabled(!isReminderAlignmentEnabled)}
+                    onPress={() => {
+                        if (!isReminderAlignmentEnabled) requestNotificationPermission()
+                        setIsReminderAlignmentEnabled(!isReminderAlignmentEnabled)
+                    }}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
                         {_.capitalize(Trans.t('next alignment reminder'))}
@@ -162,11 +169,17 @@ function TireExpense(props): JSX.Element {
                     trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
                     thumbColor={isReminderBalancingEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
                     ios_backgroundColor="#3e3e3e"
-                    onValueChange={enabled => setIsReminderBalancingEnabled(enabled)}
+                    onValueChange={enabled => {
+                        if (enabled == true) requestNotificationPermission()
+                        setIsReminderBalancingEnabled(enabled)
+                    }}
                     value={isReminderBalancingEnabled}
                 />
                 <TouchableWithoutFeedback
-                    onPress={() => setIsReminderBalancingEnabled(!isReminderBalancingEnabled)}
+                    onPress={() => {
+                        if (!isReminderBalancingEnabled) requestNotificationPermission()
+                        setIsReminderBalancingEnabled(!isReminderBalancingEnabled)
+                    }}
                 >
                     <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
                         {_.capitalize(Trans.t('next balancing reminder'))}

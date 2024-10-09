@@ -1,6 +1,6 @@
 import notifee, { TimestampTrigger, TriggerType, AuthorizationStatus, AndroidStyle } from '@notifee/react-native';
 import { useState } from 'react'
-import { Appearance } from 'react-native';
+import { Alert, Appearance, ToastAndroid } from 'react-native';
 import Trans from "../../controllers/internatiolization/Trans";
 import _ from 'lodash';
 
@@ -36,22 +36,26 @@ const createChannelId = async (type: string) => {
 const createTrigger = (date: any) => {
 	console.log(date.getTime())
 	console.log('createTrigger date.getTime()')
-	const now = new Date();
+	// const now = new Date();
 
-	now.setTime(now.getTime() + 5 * 1000);
+	// now.setTime(now.getTime() + 5 * 1000);
 	const trigger: TimestampTrigger = {
 		type: TriggerType.TIMESTAMP,
-		timestamp: now.getTime()
+		timestamp: date.getTime()
 	};
 	return trigger
 }
 
 export const requestNotificationPermission = async () => {
+	console.log('requestNotificationPermission')
 	const settings = await notifee.requestPermission();
 	if (settings.authorizationStatus === AuthorizationStatus.AUTHORIZED) {
 		console.log('Permissão de notificação concedida.');
+		return true
 	} else if (settings.authorizationStatus === AuthorizationStatus.DENIED) {
+		Alert.alert(`${Trans.t('Permission disabled')}`, `${Trans.t('You will need to enable permission to receive notification')}`)
 		console.log('Permissão de notificação negada.');
+		return false
 	}
 }
 

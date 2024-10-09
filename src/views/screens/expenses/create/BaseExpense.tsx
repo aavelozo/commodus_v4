@@ -103,12 +103,19 @@ function BaseExpense(props): JSX.Element {
                 props.setSaving(true);
                 console.log('idVehicle', selectedVehicle.id);
                 let vehicle = (await Vehicles.getDBData())?.docs.find(el => el.id == selectedVehicle.id);
+                if (Utils.hasValue(km)) {
+                    await vehicle.ref.update({
+                        km: Utils.toNumber(km)
+                    })
+                    if (Utils.toNumber(km) >= vehicle._data.reminders.nextOilChange.reminderKM) {
+                        const reminderDate = moment(new Date()).add(3, 'seconds')
+                        const dateFormat = moment(reminderDate).format()
+                        title = `${_.capitalize(Trans.t('time to change the oil!'))}`
+                        body = Trans.t(`It's time to change your vehicle's oil. Keep the engine running smoothly.`)
+                        schedulReminderNotification(new Date(dateFormat), title, body)
+                    }
+                }
 
-                // if (vehicle._data.reminders.nextOilChange.reminderKM <= vehicle._data.km) {
-                //     console.log(vehicle._data.reminders.nextOilChange.reminderKM)
-                //     console.log(vehicle._data.km)
-                // }
-                // console.log('vehicle._data.reminders')
                 //COM-75 SAVE NEXT OIL CHANGE REMINDER
                 if (typeof props.getVehicleReminders == 'function') {
                     let vehicleReminders = props.getVehicleReminders();
@@ -150,13 +157,9 @@ function BaseExpense(props): JSX.Element {
                     });
                 }
                 var title;
-                console.log(getOthersDatas)
-                console.log('getOthersDatas')
-                console.log(props.type)
-                console.log('props.type')
                 var body;
                 if (getOthersDatas.reminderMonths) {
-                    const reminderDate = moment(new Date()).add(Number(getOthersDatas.reminderMonths), 'seconds')
+                    const reminderDate = moment(new Date()).add(Number(getOthersDatas.reminderMonths), 'months')
                     const dateFormat = moment(reminderDate).format()
                     title = `${_.capitalize(Trans.t('time to change the oil!'))}`
                     body = Trans.t(`It's time to change your vehicle's oil. Keep the engine running smoothly.`)
@@ -172,7 +175,7 @@ function BaseExpense(props): JSX.Element {
                     body = Trans.t(`Your vehicle needs alignment. Ensure stable and safe driving.`)
                     schedulReminderNotification(new Date(dateFormat), title, body)
                 } else if (getOthersDatas.dateReminder && props.type == 'OTHER') {
-                       const dateFormat = moment(getOthersDatas.dateReminder).format()
+                    const dateFormat = moment(getOthersDatas.dateReminder).format()
                     title = `${_.capitalize(Trans.t('pending expense reminder'))}`
                     body = Trans.t(`You registered a generic expense. Don't forget to check it or carry out the necessary maintenance.`)
                     schedulReminderNotification(new Date(dateFormat), title, body)
