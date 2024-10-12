@@ -29,6 +29,8 @@ function ButtonCardExpense(props): JSX.Element {
     const item = props.data
     //const navigation = useNavigation();
     let routeName = '';
+    console.log(item?.data())
+    console.log('item?.data()')
 
     var dateFormatted = moment(item?.data().date.seconds * 1000).format('DD/MM/YY')
 
@@ -54,7 +56,7 @@ function ButtonCardExpense(props): JSX.Element {
             break;
         case 'OTHER':
             routeName = 'OthersExpense';
-            
+
             console.log(item?.data())
             break;
         default:
@@ -98,11 +100,11 @@ function ButtonCardExpense(props): JSX.Element {
                     </View>
                     <View style={{ justifyContent: 'center', paddingLeft: RFValue(10), width: '55%' }}>
                         <Text style={style.textExpense}>{
-                            item?.data().othersdatas.codOil 
+                            item?.data().othersdatas.codOil
                             || _.capitalize(Trans.t((item?.data().othersdatas.fuel || item?.data().othersdatas.documentName)?.toLowerCase()))
-                            || item?.data().othersdatas.othersServices 
+                            || _.capitalize(Trans.t((item?.data().othersdatas.othersServices)))
                             || _.capitalize(Trans.t((item?.data().othersdatas.service || item?.data().othersdatas.typeService)?.toLowerCase()))
-                            || item?.data().othersdatas.description 
+                            || item?.data().othersdatas.description
                         }</Text>
                         <Text style={style.textExpense}>{item?.data().establishment}</Text>
                         <Text style={style.textExpense}>{item?.vehicleName}</Text>
@@ -110,7 +112,7 @@ function ButtonCardExpense(props): JSX.Element {
                     <View style={{ justifyContent: 'space-between', alignItems: 'flex-end', width: '30%', paddingVertical: 5 }}>
                         <Text style={style.textExpense}> {dateFormatted}</Text>
                         <Icon name="angle-right" size={RFValue(25)} color={DefaultStyles.colors.tabBar} />
-                        <Text style={style.textExpense}>{Utils.toNumber(item?.data()?.totalValue || 0).toLocaleString(Trans.getDeviceLocale().replace("_","-"),{style:'currency',currency: Trans.getLocaleCurrency(), minimumFractionDigits:2,maximumFractionDigits:2})}</Text>
+                        <Text style={style.textExpense}>{Utils.toNumber(item?.data()?.totalValue || 0).toLocaleString(Trans.getDeviceLocale().replace("_", "-"), { style: 'currency', currency: Trans.getLocaleCurrency(), minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                     </View>
                 </View>
                 <View style={{ borderWidth: 1, borderColor: '#ccc' }} />

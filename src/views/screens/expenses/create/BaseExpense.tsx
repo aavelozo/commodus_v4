@@ -107,7 +107,7 @@ function BaseExpense(props): JSX.Element {
                     await vehicle.ref.update({
                         km: Utils.toNumber(km)
                     })
-                    if (Utils.toNumber(km) >= vehicle._data.reminders.nextOilChange.reminderKM) {
+                    if (Utils.toNumber(km) >= vehicle._data?.reminders?.nextOilChange?.reminderKM) {
                         const reminderDate = moment(new Date()).add(3, 'seconds')
                         const dateFormat = moment(reminderDate).format()
                         title = `${_.capitalize(Trans.t('time to change the oil!'))}`
@@ -123,7 +123,7 @@ function BaseExpense(props): JSX.Element {
                         if (Utils.hasValue(vehicle.reminders)) {
                             vehicleReminders = { ...vehicle.reminders, ...vehicleReminders };
                         }
-                        if (Utils.toNumber(vehicleReminders.nextOilChange?.reminderKM || 0) < Utils.toNumber(vehicle.data().km || 0) && getOthersDatas.reminderMonths <= 0) {
+                        if (Utils.toNumber(vehicleReminders?.nextOilChange?.reminderKM || 0) < Utils.toNumber(vehicle.data().km || 0) && getOthersDatas.reminderMonths <= 0) {
                             throw new Error(Trans.t('msg_error_on_save_reminder_km'));
                         }
                         await vehicle.ref.update({
@@ -219,9 +219,14 @@ function BaseExpense(props): JSX.Element {
     }
 
     goBack = () => {
-        EditExpenseController.currentExpense = null;
         clearStates();
-        navigation.goBack();
+        if (EditExpenseController.currentExpense) {
+            EditExpenseController.currentExpense = null;
+            navigation.navigate('SpeedometerModal');
+        } else {
+            EditExpenseController.currentExpense = null;
+            navigation.goBack();
+        }
     };
 
 

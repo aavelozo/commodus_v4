@@ -72,11 +72,10 @@ function AppearanceExpense(props): JSX.Element {
                         console.log('loading states...2');
                         let dataExpense = EditExpenseController.currentExpense.data();
                         setTotalValue(Utils.toNumericText(dataExpense.totalValue||''));
-
                         //specific properties
                         setRegularWashing(dataExpense.othersdatas.regularWashing ? true : false);
                         setCompleteWashing(dataExpense.othersdatas.completeWashing ? true : false);
-                        setService(dataExpense.othersdatas.service||null);
+                        setService(dataExpense.othersdatas.othersServices ||null);
                     } else {
                        clearStates();
                     }
@@ -186,6 +185,7 @@ function AppearanceExpense(props): JSX.Element {
                 data={serviceList}
                 defaultValue={service}
                 renderButton={(selectedItem, isOpened) => {
+                    console.log(selectedItem)
                     return (
                         <View>
                             <TextInput
