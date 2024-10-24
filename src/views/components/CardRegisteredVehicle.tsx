@@ -18,6 +18,8 @@ const { width, height } = Dimensions.get('window')
  * @author Bruno
  */
 function CardRegisteredVehicle(props: React.PropsWithChildren): JSX.Element {
+    console.log(props.vehicle?._data.enabled)
+    console.log('props.vehicle.enabled')
     const navigator = useNavigation();
     var type;
     const vehicle = ((props.route || {}).params || {}).vehicle || props.vehicle || {};
@@ -36,7 +38,7 @@ function CardRegisteredVehicle(props: React.PropsWithChildren): JSX.Element {
             }}
         //Ao clicar no card, abre a tela com o veículo clicado 
         >
-            <View style={style.buttonVehicle}>
+            <View style={[style.buttonVehicle, ]}>
                 <View style={style.viewPicture}>
                     {
                         vehicle.data().photo ?
@@ -54,7 +56,7 @@ function CardRegisteredVehicle(props: React.PropsWithChildren): JSX.Element {
                 <View style={style.info}>
                     <Text numberOfLines={1} adjustsFontSizeToFit style={[style.textInfo, { fontSize: RFValue(17) }]}>{_.capitalize(Trans.t('vehicle'))}: {`${vehicle.data().model?.id}`}</Text>
                     <Text numberOfLines={1} adjustsFontSizeToFit style={style.textInfo}>{_.capitalize(Trans.t('color'))}: {vehicle.data().color}</Text>
-                    <Text style={style.textInfo}>KM: {Utils.hasValue(vehicle?.data()?.km) ? Utils.toNumber(vehicle?.data()?.km).toLocaleString({maximumFractionDigits:2}) : ''}</Text>
+                    <Text style={style.textInfo}>KM: {Utils.hasValue(vehicle?.data()?.km) ? Utils.toNumber(vehicle?.data()?.km).toLocaleString({ maximumFractionDigits: 2 }) : ''}</Text>
                     <Text style={style.textInfo}>{_.capitalize(Trans.t(type))}</Text>
                 </View>
                 <View style={style.icon}>

@@ -74,6 +74,7 @@ class Vehicles {
                     preferedFuel:docSnapshot.data().preferedFuel,
                     color:docSnapshot.data().color,
                     photo:docSnapshot.data().photo,
+                    enabled:docSnapshot.data().enabled,
                     vehicleName : `${docSnapshot.data().model.id}-${docSnapshot.data().plate?.toUpperCase()}`
                 }; 
                 this.#singleData?.push(newVehicle);

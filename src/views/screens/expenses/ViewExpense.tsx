@@ -45,28 +45,27 @@ function ViewExpense(props): JSX.Element {
                 let newTotalValue = 0;
                 let newVehiclesCollection = await Vehicles.getDBData();
                 console.log('newVehiclesCollection', newVehiclesCollection.size);
+                const enabledCars = newVehiclesCollection.docs.filter(cars => cars._data.enabled == true)
                 //newVehiclesCollection.forEach(async (docSnap)=>{                    
-                for (let k in newVehiclesCollection.docs) {
-                    console.log('vehicle', newVehiclesCollection.docs[k].id);
-                    let expensesCollection = await newVehiclesCollection.docs[k].ref.collection('expenses').get();
+                for (let k in enabledCars) {
+                    console.log('vehicle', enabledCars[k].id);
+                    let expensesCollection = await enabledCars[k].ref.collection('expenses').get();
                     console.log('expenses of vehicle size', expensesCollection.size);
-                    newVehiclesCollection.docs[k].expenses = expensesCollection.docs || [];
-                    newVehiclesCollection.docs[k].vehicleName = `${newVehiclesCollection.docs[k].data().model.id}-${newVehiclesCollection.docs[k].data().plate?.toUpperCase()}`;
-                    newVehiclesCollection.docs[k].totalValue = 0;
-                    for (let i in newVehiclesCollection.docs[k].expenses) {
-                        newVehiclesCollection.docs[k].totalValue += Utils.toNumber(newVehiclesCollection.docs[k].expenses[i].data().totalValue);
-                        newVehiclesCollection.docs[k].expenses[i].vehicleName = newVehiclesCollection.docs[k].vehicleName;
+                    enabledCars[k].expenses = expensesCollection.docs || [];
+                    enabledCars[k].vehicleName = `${enabledCars[k].data().model.id}-${enabledCars[k].data().plate?.toUpperCase()}`;
+                    enabledCars[k].totalValue = 0;
+                    for (let i in enabledCars[k].expenses) {
+                        enabledCars[k].totalValue += Utils.toNumber(enabledCars[k].expenses[i].data().totalValue);
+                        enabledCars[k].expenses[i].vehicleName = enabledCars[k].vehicleName;
                     }
-                    newTotalValue += newVehiclesCollection.docs[k].totalValue;
-                    newVehicles.push(newVehiclesCollection.docs[k]);
-                    newAllExpenses = newAllExpenses.concat(newVehiclesCollection.docs[k].expenses);
-                    console.log('vehicle', newVehiclesCollection.docs[k].id, 'end');
+                    newTotalValue += enabledCars[k].totalValue;
+                    newVehicles.push(enabledCars[k]);
+                    newAllExpenses = newAllExpenses.concat(enabledCars[k].expenses);
+                    console.log('vehicle', enabledCars[k].id, 'end');
                 };
-
                 console.log('newVehicles', newVehicles);
                 console.log('newAllExpenses', newAllExpenses);
                 console.log('newTotalValue', newTotalValue);
-                // requestNotificationPermission()
                 setVehicles(newVehicles);
                 setExpenses(newAllExpenses);
                 setTotalValue(newTotalValue);

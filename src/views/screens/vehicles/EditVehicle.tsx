@@ -53,6 +53,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
     const [selectedYear, setSelectedYear] = useState(null);
     const [selectedFuel, setSelectedFuel] = useState(null);
     const [isColorEnabled, setIsColorEnabled] = useState(false);
+    const [isCarEnabled, setIsCarEnabled] = useState(false);
     const [color, setColor] = useState('');
     const [km, setKm] = useState('');
     const [idEngineType, setIdEngineType] = useState(currentVehicle?.data()?.idEngineType || 0);
@@ -110,6 +111,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         setPhoto(currentVehicle.data().photo || '');
                         setPathOldPhoto(currentVehicle.data().photo || '');
                         setIdEngineType(currentVehicle.data().idEngineType || 0);
+                        setIsCarEnabled(currentVehicle.data().enabled ? false : true)
                     }
                 } catch (e) {
                     console.log(e);
@@ -147,7 +149,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                     PermissionsAndroid.PERMISSIONS.CAMERA,
                     {
                         title: `${Trans.t('Permission to use the camera')}`,
-                        message:`${Trans.t('This app needs to access the camera to take photos.')}`,
+                        message: `${Trans.t('This app needs to access the camera to take photos.')}`,
                         buttonNeutral: `${Trans.t('Ask later')}`,
                         buttonNegative: `${_.capitalize(Trans.t('cancel'))}`,
                         buttonPositive: "OK"
@@ -192,10 +194,11 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         idEngineType: idEngineType,
                         year: selectedYear,
                         km: Utils.hasValue(km) ? Utils.toNumber(km) : null,
-                        plate: (plate||'').toUpperCase(),
+                        plate: (plate || '').toUpperCase(),
                         color: color,
                         preferedFuel: selectedFuel,
-                        photo: fullPath
+                        photo: fullPath,
+                        enabled: isCarEnabled
                     });
 
                     //reload to update current view
@@ -209,18 +212,19 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         idEngineType: idEngineType,
                         year: selectedYear,
                         km: Utils.hasValue(km) ? Utils.toNumber(km) : null,
-                        plate: (plate||'').toUpperCase(),
+                        plate: (plate || '').toUpperCase(),
                         color: color,
                         preferedFuel: selectedFuel,
-                        photo: null
+                        photo: null,
+                        enabled: isCarEnabled
                     });
-                    console.log('newVehicleData1', newVehicle);                    
+                    console.log('newVehicleData1', newVehicle);
                     if (photo) {
                         //se tiver foto, sobe a foto no storage e atualiza a url da foto no veiculo
                         fullPath = await uploadPhoto(newVehicle._documentPath._parts[3]) as string
                         await newVehicle.update({ photo: fullPath })
                     }
-                    newVehicle = await AuthController.getLoggedUser().ref.collection('vehicles').doc(newVehicle.id).get();                    
+                    newVehicle = await AuthController.getLoggedUser().ref.collection('vehicles').doc(newVehicle.id).get();
                     console.log('newVehicleData2', newVehicle);
                     setCurrentViewVehicle(newVehicle);
                 }
@@ -495,7 +499,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         style={[DefaultStyles.textInput, { marginTop: RFValue(7) }]}
                         label={`* ${_.capitalize(Trans.t('vehicle plate'))}`}
                         value={plate}
-                        onChangeText={plate => setPlate((plate||'').toUpperCase())}
+                        onChangeText={plate => setPlate((plate || '').toUpperCase())}
                         maxLength={7}
                     />
                     <HelperText
@@ -534,6 +538,23 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         />
                         : null
                     }
+
+                    <View style={DefaultStyles.viewSwitch}>
+                        {/* se ativo, liberar input de Cor */}
+                        <Switch
+                            trackColor={{ false: "#767577", true: "rgba(0,124,118,0.6)" }}
+                            thumbColor={isCarEnabled ? "#007C76" : DefaultStyles.colors.fundoInput}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={enabled => setIsCarEnabled(enabled)}
+                            value={isCarEnabled}
+                        />
+                        {<TouchableWithoutFeedback onPress={() => setIsCarEnabled(!isCarEnabled)}>
+                            <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
+                                {_.capitalize(Trans.t('deactivate vehicle'))}
+                            </Text>
+                        </TouchableWithoutFeedback>}
+                    </View>
+
 
                     <TouchableOpacity
                         style={{ alignItems: 'center', marginTop: RFValue(10), alignSelf: 'flex-end' }}

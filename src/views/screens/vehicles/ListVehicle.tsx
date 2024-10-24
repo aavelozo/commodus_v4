@@ -1,5 +1,5 @@
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { View, StyleSheet, TouchableWithoutFeedback, Dimensions, FlatList, Image } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { DefaultStyles } from '../../DefaultStyles';
@@ -15,6 +15,7 @@ import { setCurrentVehicle } from './EditVehicle'
 import EditExpenseController from '../../../controllers/EditExpenseController'
 import Trans from '../../../controllers/internatiolization/Trans';
 const { height } = Dimensions.get('window');
+import firestore from '@react-native-firebase/firestore'
 
 /**
  * list of vehicles
@@ -26,7 +27,37 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(false);
+    const [vehiclesDisabled, setVehiclesDisabled] = useState(true);
     const [vehicles, setVehicles] = useState([]);
+    const [vehiclesNotEnabled, setVehiclesNotEnabled] = useState([]);
+    const [msgVehicleDisabled, setMsgVehicleDisabled] = useState('');
+
+    useEffect(() => {
+        if (vehiclesDisabled) {
+            setMsgVehicleDisabled('Visualizar veículos desativados')
+        } else {
+            setMsgVehicleDisabled('Esconder veículos desativados')
+            setLoading(true);
+            (async () => {
+                try {
+                    console.log('loading vehicles...');
+                    const newVehiclesCollection = await Vehicles.getDBData();
+                    newVehicles = newVehiclesCollection.docs;
+                    const disabledCars = newVehiclesCollection.docs.filter(cars => cars._data.enabled == false)
+                    console.log(disabledCars)
+                    console.log('disabledCars')
+                    setVehiclesNotEnabled(disabledCars)
+                    console.log('loading vehicles... ok size', newVehicles.length);
+                } catch (e) {
+                    console.log(e);
+                } finally {
+                    setLoaded(true);
+                    setLoading(false);
+                }
+            })();
+
+        }
+    }, [vehiclesDisabled])
 
     //carregamento dos dados do banco
     useFocusEffect(useCallback(() => {
@@ -35,11 +66,10 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
             setLoading(true);
             (async () => {
                 try {
-                    console.log('loading vehicles...');
                     const newVehiclesCollection = await Vehicles.getDBData();
                     newVehicles = newVehiclesCollection.docs;
-                    setVehicles(newVehicles);
-                    console.log('loading vehicles... ok size', newVehicles.length);
+                    const enabledCars = newVehiclesCollection.docs.filter(cars => cars._data.enabled == true)
+                    setVehicles(enabledCars)
                 } catch (e) {
                     console.log(e);
                 } finally {
@@ -74,12 +104,34 @@ function ListVehicle(props: React.PropsWithChildren): JSX.Element {
                                 <ActivityIndicator size={'large'} />
                             </View>
                             : vehicles?.length > 0 ?
-                                <FlatList
-                                    // keyExtractor={ => car.id.toString()}
-                                    data={vehicles}
-                                    renderItem={getCars}
-                                    showsVerticalScrollIndicator={false}
-                                />
+                                <>
+                                    <FlatList
+                                        // keyExtractor={ => car.id.toString()}
+                                        data={vehicles}
+                                        renderItem={getCars}
+                                        showsVerticalScrollIndicator={false}
+                                        ListFooterComponent={
+                                            <View style={{ alignSelf: 'center' }}>
+                                                <TouchableWithoutFeedback onPress={() => {
+                                                    setVehiclesDisabled(!vehiclesDisabled)
+                                                }}>
+                                                    <Text style={{ textAlign: 'center' }}>{msgVehicleDisabled}</Text>
+                                                </TouchableWithoutFeedback>
+                                                {!vehiclesDisabled && (
+                                                    <View style={{ flex: 1, marginTop: RFValue(15) }}>
+                                                        <FlatList
+                                                            data={vehiclesNotEnabled}
+                                                            renderItem={getCars}
+                                                            showsVerticalScrollIndicator={false}
+                                                        />
+                                                    </View>
+                                                )}
+                                            </View>
+                                        }
+                                    />
+
+                                </>
+
                                 :
                                 <View style={{ justifyContent: 'center', width: '90%' }}>
                                     <View style={{ flexDirection: 'row', height: '50%', width: '100%', alignItems: 'flex-end' }}>
@@ -145,7 +197,7 @@ const style = StyleSheet.create({
         fontSize: RFValue(18),
         color: '#000',
         marginLeft: RFValue(15),
-        maxWidth:'78%',
+        maxWidth: '78%',
         textAlign: 'left'
     }
 });

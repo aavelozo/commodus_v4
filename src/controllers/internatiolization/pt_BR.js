@@ -92,6 +92,7 @@ export default {
     'diagnosis': 'diagnósticos',
     'diesel': 'diesel',
     'digits': 'dígitos',
+    'deactivate vehicle':'desativar veículo',
     'document': 'documento',
     'document expense': 'despesa de documentação',
     'document name': 'nome do documento',

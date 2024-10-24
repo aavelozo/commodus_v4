@@ -55,6 +55,7 @@ function Dashboard(props): JSX.Element {
                 const cars = await getExpensesThisUser()
                 setCarsThisUser(cars)
                 console.log(cars)
+                console.log('cars')
                 getDataForGraph(cars[changeCar])
                 getExpensesForMonth(cars[changeCar]);
             } catch (e) {
@@ -116,24 +117,25 @@ function Dashboard(props): JSX.Element {
         let menor = 9999999999999;
 
         let newVehicles = await Vehicles.getDBData();
-        for (let k in newVehicles.docs) {
+        const enabledCars = newVehicles.docs.filter(cars => cars._data.enabled == true)
+        for (let k in enabledCars) {
             let newVehicle = {
-                id: newVehicles.docs[k].id,
-                plate: newVehicles.docs[k].data().plate?.toUpperCase(),
-                idEngineType: newVehicles.docs[k].data().idEngineType,
-                km: newVehicles.docs[k].data().km,
-                model: newVehicles.docs[k].data().model.id,
-                brand: newVehicles.docs[k].data().model.parent.parent.id,
-                preferedFuel: newVehicles.docs[k].data().preferedFuel,
-                color: newVehicles.docs[k].data().color,
-                photo: newVehicles.docs[k].data().photo,
-                vehicleName: `${newVehicles.docs[k].data().model.id}-${newVehicles.docs[k].data().plate?.toUpperCase()}`,
-                reminders: newVehicles.docs[k].data().reminders,
+                id: enabledCars[k].id,
+                plate: enabledCars[k].data().plate?.toUpperCase(),
+                idEngineType: enabledCars[k].data().idEngineType,
+                km: enabledCars[k].data().km,
+                model: enabledCars[k].data().model.id,
+                brand: enabledCars[k].data().model.parent.parent.id,
+                preferedFuel: enabledCars[k].data().preferedFuel,
+                color: enabledCars[k].data().color,
+                photo: enabledCars[k].data().photo,
+                vehicleName: `${enabledCars[k].data().model.id}-${enabledCars[k].data().plate?.toUpperCase()}`,
+                reminders: enabledCars[k].data().reminders,
                 expenses: []
             };
             let despesas = []
             let completo = {}
-            let newExpensesCollection = await newVehicles.docs[k].ref.collection('expenses').get();
+            let newExpensesCollection = await enabledCars[k].ref.collection('expenses').get();
 
             for (let j in newExpensesCollection.docs) {
                 let newExpense = {
