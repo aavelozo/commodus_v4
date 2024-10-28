@@ -53,9 +53,9 @@ function BaseExpense(props): JSX.Element {
                     console.log('loading expense...');
                     let newVehicles = await Vehicles.getSingleData();
                     console.log(newVehicles)
-                    console.log('newVehicles')
-                    setVehicles(newVehicles);
-                    const enabledCars = newVehicles.filter(cars => cars._data.enabled == true)
+                    console.log('newVehicles')                
+                    const enabledCars = newVehicles.filter(car => car.enabled == true)
+                    setVehicles(enabledCars);
                     console.log('EditExpenseController.currentExpense', EditExpenseController.currentExpense);
                     if (EditExpenseController.currentExpense) {
                         console.log('loading states...');

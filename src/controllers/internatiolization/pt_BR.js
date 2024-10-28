@@ -267,6 +267,7 @@ export default {
     'user registration': 'cadastro de usuário',
     'value': 'valor',
     'vehicle': 'veículo',
+    'vehicle active':'veículo ativo',
     'vehicle data': 'dados do veículo',
     'vehicle edit': 'editar veículo',
     'vehicle edition': 'edição de veículo',

@@ -53,7 +53,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
     const [selectedYear, setSelectedYear] = useState(null);
     const [selectedFuel, setSelectedFuel] = useState(null);
     const [isColorEnabled, setIsColorEnabled] = useState(false);
-    const [isCarEnabled, setIsCarEnabled] = useState(false);
+    const [isCarEnabled, setIsCarEnabled] = useState(true);
     const [color, setColor] = useState('');
     const [km, setKm] = useState('');
     const [idEngineType, setIdEngineType] = useState(currentVehicle?.data()?.idEngineType || 0);
@@ -81,12 +81,12 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
             (async () => {
                 try {
                     let newBrands = await Brands.getSingleData();
-                    console.log('newBrands', newBrands);
+                    //console.log('newBrands', newBrands);
                     setBrands(newBrands);
 
                     //use currentVehicle otherise vehicle, because setState is async
                     if (currentVehicle) {
-                        console.log('current vehicle', currentVehicle.data());
+                        //console.log('current vehicle', currentVehicle.data());
                         if (currentVehicle.data().model && newBrands.length > 0) {
                             console.log('selecting model');
                             let newSelectedBrand = null;
@@ -111,7 +111,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         setPhoto(currentVehicle.data().photo || '');
                         setPathOldPhoto(currentVehicle.data().photo || '');
                         setIdEngineType(currentVehicle.data().idEngineType || 0);
-                        setIsCarEnabled(currentVehicle.data().enabled ? false : true)
+                        setIsCarEnabled(currentVehicle.data().enabled)
                     }
                 } catch (e) {
                     console.log(e);
@@ -203,7 +203,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
 
                     //reload to update current view
                     let newVehicle = await AuthController.getLoggedUser().ref.collection('vehicles').doc(vehicle.id).get();
-                    console.log('newVehicleData');
+                    console.log('newVehicleData',isCarEnabled,newVehicle);
                     setCurrentViewVehicle(newVehicle);
                 } else {
                     //cria o veiculo sem foto               
@@ -550,7 +550,7 @@ function EditVehicle(props: React.PropsWithChildren): JSX.Element {
                         />
                         {<TouchableWithoutFeedback onPress={() => setIsCarEnabled(!isCarEnabled)}>
                             <Text style={{ fontSize: DefaultStyles.dimensions.defaultLabelFontSize, color: DefaultStyles.colors.tabBar }}>
-                                {_.capitalize(Trans.t('deactivate vehicle'))}
+                                {_.capitalize(Trans.t('vehicle active'))}
                             </Text>
                         </TouchableWithoutFeedback>}
                     </View>

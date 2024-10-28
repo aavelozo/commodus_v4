@@ -54,7 +54,7 @@ function CardRegisteredVehicle(props: React.PropsWithChildren): JSX.Element {
                 </View>
                 {/* dados do veiculo */}
                 <View style={style.info}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit style={[style.textInfo, { fontSize: RFValue(17) }]}>{_.capitalize(Trans.t('vehicle'))}: {`${vehicle.data().model?.id}`}</Text>
+                    <Text numberOfLines={1} style={[style.textInfo, { fontSize: RFValue(16)}]}>{`${vehicle.data().model?.id}`}</Text>
                     <Text numberOfLines={1} adjustsFontSizeToFit style={style.textInfo}>{_.capitalize(Trans.t('color'))}: {vehicle.data().color}</Text>
                     <Text style={style.textInfo}>KM: {Utils.hasValue(vehicle?.data()?.km) ? Utils.toNumber(vehicle?.data()?.km).toLocaleString({ maximumFractionDigits: 2 }) : ''}</Text>
                     <Text style={style.textInfo}>{_.capitalize(Trans.t(type))}</Text>
@@ -75,7 +75,7 @@ const style = StyleSheet.create({
         backgroundColor: DefaultStyles.colors.fundoInput,
         borderRadius: RFValue(15),
         marginBottom: RFValue(20),
-        paddingRight: RFValue(20),
+        paddingRight: RFValue(10),
         paddingLeft: RFValue(15),
         paddingVertical: RFValue(10),
         elevation: RFValue(3),
@@ -89,7 +89,7 @@ const style = StyleSheet.create({
     },
     info: {
         flex: 1,
-        paddingLeft: RFValue(15),
+        paddingLeft: RFValue(10),
         justifyContent: 'center',
         alignItems: 'flex-start'
 
@@ -100,7 +100,7 @@ const style = StyleSheet.create({
         width: width * 0.07,
     },
     textInfo: {
-        fontSize: RFValue(14),
+        fontSize: RFValue(12),
         color: DefaultStyles.colors.tabBar,
         fontFamily: 'verdana',
         marginBottom: RFValue(1)
